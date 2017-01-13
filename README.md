@@ -4,13 +4,14 @@
 
 ###Card
 
+#####Instance Variables:
 - Suit
 - Value
 - Texture
-Methods:
+####Methods:
 - toString()
 
-####Game
+###Game
 
 - Card[52]
 - List<Players>
@@ -20,7 +21,7 @@ Methods:
 - renamePlayers()
 - addPlayers()
 
-####Players
+###Players
 
 - List<Cards>
 - name
