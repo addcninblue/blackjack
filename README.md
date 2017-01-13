@@ -9,7 +9,10 @@ Card
 
 - Suit
 - Value
+- Texture
+
 ---
+
 - getName()
 
 Game
