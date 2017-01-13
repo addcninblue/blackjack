@@ -8,14 +8,17 @@
 - Suit
 - Value
 - Texture
+
 ####Methods:
 - toString()
 
 ###Game
 
+#####Instance Variables:
 - Card[52]
 - List<Players>
-Methods:
+
+####Methods:
 - start()
 - stop()
 - renamePlayers()
@@ -23,5 +26,6 @@ Methods:
 
 ###Players
 
+#####Instance Variables:
 - List<Cards>
 - name
