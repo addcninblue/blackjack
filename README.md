@@ -1,27 +1,26 @@
-Blackjack
-=========
+#Blackjack
 
-Class Design
-============
+##Class Design
 
-Card
-----
+###Card
 
 - Suit
 - Value
 - Texture
+Methods:
+- toString()
 
----
-
-- getName()
-
-Game
-----
+####Game
 
 - Card[52]
 - List<Players>
----
+Methods:
 - start()
 - stop()
 - renamePlayers()
 - addPlayers()
+
+####Players
+
+- List<Cards>
+- name
