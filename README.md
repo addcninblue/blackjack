@@ -12,7 +12,11 @@
 ####Methods:
 - toString()
 
+###GameDisplay
+Displays the actual game
+
 ###Game
+backend
 
 #####Instance Variables:
 - Card[52]
