@@ -1,23 +1,26 @@
-//ADD IMAGES LATER
+import java.awt.Image;
+
 public class Card {
-    public Card(Rank rank, Suit suit) {
-        rank_ = rank;
-        suit_ = suit;
+    Rank rank;
+    Suit suit;
+    Image image;
+
+    public Card(Rank rank, Suit suit, Image image) {
+        this.rank = rank;
+        this.suit = suit;
+        this.image = image;
     }
 
     public Rank getRank() {
-        return rank_;
+        return this.rank;
     }
 
     public Suit getSuit() {
-        return suit_;
+        return this.suit;
     }
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", rank_, suit_);
+        return String.format("%s (%s)", this.rank, this.suit);
     }
-
-    Rank rank_;
-    Suit suit_;
 }
