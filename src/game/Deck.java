@@ -1,4 +1,8 @@
+package game;
+
+import java.awt.image.BufferedImage;
 import java.util.Random;
+import util.SpriteLoader;
 
 public class Deck {
     private Card[] deck; //the array of cards
@@ -7,13 +11,15 @@ public class Deck {
     public Deck() {
         Rank[] ranks = Rank.values();
         Suit[] suits = Suit.values();
-        int i = 0;
-
+        BufferedImage[] cardImages = new SpriteLoader("cards").cardImages;
         this.cardsLeft = ranks.length * suits.length;
         this.deck = new Card[this.cardsLeft];
-        for (Suit s : suits) {
-            for (Rank r : ranks) {
-                this.deck[i++] = new Card(r, s, null);
+        
+        int i = 0;
+        for (Suit suit : suits) {
+            for (Rank rank : ranks) {
+                this.deck[i] = new Card(rank, suit, cardImages[i]);
+                i++;
             }
         }
     }
@@ -22,7 +28,7 @@ public class Deck {
      * Deals a card if there are cards left. Else, null is returned.
      * (Postcondition: deck_ is unchanged.)
      * @return a card if cards are left in the deck, null otherwise
-     * (Precondition: deck_ and cardsLeft_ are initialized, and deck_ is nonnull)
+     * (Precondition: deck_ and cardsLeft_ are initialized, and deck_ is non null)
      */
     public Card deal() {
         return this.cardsLeft > 0 ? this.deck[--this.cardsLeft] : null;
@@ -59,7 +65,9 @@ public class Deck {
     public static void main(String[] args) { //just to check deck & card delete for production
         Deck d = new Deck();
         Card c;
-
+        while ((c = d.deal()) != null) {
+            System.out.println(c);
+        }
         d.shuffle();
 
         while ((c = d.deal()) != null) {
