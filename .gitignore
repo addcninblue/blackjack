@@ -5,3 +5,7 @@
 build.xml
 manifest.mf
 /build/
+
+/out/
+/.idea/
+*.iml
