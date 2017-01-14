@@ -28,11 +28,22 @@ public class Deck {
         return this.cardsLeft > 0 ? this.deck[--this.cardsLeft] : null;
     }
 
+    /**
+     * Reshuffles the entire deck, putting used cards back into deck
+     * Resuffle is for used decks, shuffle is for unused decks
+     * (Postcondition: the deck is shuffled)
+     * (Precondition: deck is used (ie. there are cards taken out of deck))
+     */
     public void reshuffle() {
         this.cardsLeft = this.deck.length;
         shuffle();
     }
 
+    /**
+     * Shuffles the deck
+     * (Postcondition: Deck is shuffled (randomized))
+     * (Precondition: Brand new deck (just initialized))
+     */
     public void shuffle() {
         Random rand = new Random();
 
@@ -45,7 +56,7 @@ public class Deck {
         }
     }
 
-    public static void main(String[] args) { //just to check deck & card
+    public static void main(String[] args) { //just to check deck & card delete for production
         Deck d = new Deck();
         Card c;
 
