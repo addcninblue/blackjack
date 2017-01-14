@@ -16,12 +16,6 @@ public class Game {
      * (Precondition: game is initialized and people are added)
      */
     public ArrayList<Player> start(){
-        Card card;
-        for(Player player : players){
-            for(int i = 0; i < 13; i++){
-                player.addCard(deck.deal());
-            }
-        }
         return players;
     }
 
@@ -54,16 +48,42 @@ public class Game {
         return null;
     }
 
+    /**
+     * Hits a player
+     * (Postcondition: card is added to a player)
+     * @param the player to hit
+     * (Precondition: none)
+     * @return the card added
+     */
+    public Card hit(Player playertoHit){
+        for(Player player : players){
+            if(player == playertoHit){
+                Card card = deck.deal();
+                player.addCard(card);
+                return card;
+            }
+        }
+        return null;
+    }
+
     public static void main (String [] args){
         Game game = new Game();
-        game.addPlayer(new Player("add"));
-        game.addPlayer(new Player("daniel"));
-        game.addPlayer(new Player("darian"));
-        game.addPlayer(new Player("lucy"));
+
+        Player player1 = new Player("add");
+        Player player2 = new Player("daniel");
+        Player player3 = new Player("darian");
+        Player player4 = new Player("lucy");
+        game.addPlayer(player1);
+        game.addPlayer(player2);
+        game.addPlayer(player3);
+        game.addPlayer(player4);
 
         ArrayList<Player> players = game.start();
 
         for(Player player : players){
+            Card c = game.hit(player);
+            System.out.format("hit: %s\n", c.toString());
+            System.out.println(player.getName());
             for(Card card : player.getHand()){
                 System.out.println(card.toString());
             }
