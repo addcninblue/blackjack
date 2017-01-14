@@ -11,11 +11,12 @@ public class Game {
     }
 
     /**
-     * Starts the game
-     * (Postcondition: game is started)
+     * Returns an arraylist of the game's players
+     * (Postcondition: an arraylist of the game's players is returned)
+     * @return an arraylist of the game's players
      * (Precondition: game is initialized and people are added)
      */
-    public ArrayList<Player> start(){
+    public ArrayList<Player> getPlayers(){
         return players;
     }
 
@@ -39,7 +40,7 @@ public class Game {
      */
     public Player removePlayer(String name){
         for(int i = 0; i < players.size(); i++){
-            if(players.get(i).getName() == name){
+            if(players.get(i).getName().equals(name)){
                 Player playertoRemove = players.get(i);
                 players.remove(i);
                 return playertoRemove;
@@ -78,7 +79,7 @@ public class Game {
         game.addPlayer(player3);
         game.addPlayer(player4);
 
-        ArrayList<Player> players = game.start();
+        ArrayList<Player> players = game.getPlayers();
 
         for(Player player : players){
             Card c = game.hit(player);
