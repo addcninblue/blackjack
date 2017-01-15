@@ -36,12 +36,12 @@ public class Game {
         for (Player p : players) {
             p.resetTurn();
             while (true) {
-                System.out.printf("%s's bet ($%d left): ", p.getName(), p.getMoney());
+                System.out.printf("\n\n%s's bet ($%d left): ", p.getName(), p.getMoney());
                 int bet = in.nextInt();
                 in.nextLine();
 
                 if (bet > p.getMoney()) {
-                    System.out.printf("%s only has $%d", p.getName(), p.getMoney());
+                    System.out.printf("%s only has $%d\n", p.getName(), p.getMoney());
                     continue;
                 }
                 p.bet(bet);
@@ -76,7 +76,7 @@ public class Game {
             System.out.printf("\n\n%s's turn\n\n", p.getName());
             while (p.getHandTotal() < 21) {
                 System.out.printf("Current hand total: %d\n", p.getHandTotal());
-                System.out.print("1 - Hit\nelse - Stay\n> ");
+                System.out.print("1 - Hit\n2 - Stay\n> ");
                 if (in.nextInt() == 1) {
                     Card c = dealer.deal();
                     if (c.RANK == Rank.ACE && p.getHandTotal() <= 10) {
@@ -91,8 +91,9 @@ public class Game {
                     p.demoteAces();
                 }
             }
+
+            System.out.printf("\nCurrent hand total: %d\n", p.getHandTotal());
             if (p.getHandTotal() > 21) {
-                System.out.printf("\nCurrent hand total: %d\n", p.getHandTotal());
                 System.out.printf("%s busted!\n", p.getName());
                 in.nextLine();
             }
@@ -103,13 +104,13 @@ public class Game {
         System.out.println("\n\nDEALER's turn\n");
 
         System.out.printf("Dealer's cards: [%s] [%s]\n", dealer.getFaceUpCard(), dealer.getHand().get(1));
-        System.out.printf("DEALER's hand total: %d", dealer.getHandTotal());
+        System.out.printf("DEALER's hand total: %d\n", dealer.getHandTotal());
 
         while (!dealer.isOver16()) {
             Card c = dealer.deal();
             System.out.printf("DEALER drew: %s\n", c);
             dealer.addCard(c);
-            System.out.printf("DEALER's hand total: %d", dealer.getHandTotal());
+            System.out.printf("DEALER's hand total: %d\n", dealer.getHandTotal());
         }
         if (dealer.isOver21()) {
             System.out.println("DEALER busted!");
@@ -123,12 +124,13 @@ public class Game {
             int pTotal = p.getHandTotal();
             System.out.printf("%s: ", p.getName());
             System.out.printf(
-                    pTotal > dTotal ? "WIN"
+                    p.isOver21() ? "BUST"
+                    : pTotal < dTotal && !dealer.isOver21() ? "LOSE"
                     : pTotal == dTotal ? "PUSH"
-                    : "LOSE"
+                    : "WIN"
             );
-            if (p.getHandTotal() > dealer.getHandTotal()) {
-                p.addMoney(p.getBet());
+            if (!p.isOver21() && (pTotal > dTotal || dealer.isOver21())) {
+                p.addMoney(p.getBet() * 2);
             }
             System.out.printf(" Bet: %d, Money: %d\n", p.getBet(), p.getMoney());
         }
@@ -137,7 +139,7 @@ public class Game {
     private void removeMoneyless() {
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i).getMoney() == 0) {
-                System.out.printf("%s removed.", players.get(i).getName());
+                System.out.printf("%s removed from game.\n", players.get(i).getName());
                 players.remove(i);
             }
         }
