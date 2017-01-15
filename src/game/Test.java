@@ -32,7 +32,7 @@ public class Test extends JPanel {
         Graphics2D g2 = (Graphics2D)g;
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 13; x++) {
-                BufferedImage card = cards[x+y*13].image;
+                BufferedImage card = cards[x+y*13].IMAGE;
                 g2.drawImage(card, x*card.getWidth(), y*card.getHeight(), null);
             }
         }

@@ -15,14 +15,8 @@ public enum Rank {
     QUEEN(10), 
     KING(10);
     
-    private int value;
+    public final int VALUE;
     Rank(int value) {
-        this.value = value;
-    }
-    public int getValue() {
-        return value;
-    }
-    public void setValue(int value) {
-        this.value = value;
+        VALUE = value;
     }
 }

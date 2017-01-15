@@ -1,3 +1,5 @@
+package game;
+
 import java.util.ArrayList;
 
 public class Game {
@@ -52,7 +54,7 @@ public class Game {
     /**
      * Hits a player
      * (Postcondition: card is added to a player)
-     * @param the player to hit
+     * @param playertoHit the player to hit
      * (Precondition: none)
      * @return the card added
      */
