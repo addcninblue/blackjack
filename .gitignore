@@ -1,4 +1,5 @@
 *.class
+
 *.ctxt
 /nbproject/private/
 /nbproject
@@ -9,3 +10,7 @@ manifest.mf
 /out/
 /.idea/
 *.iml
+
+*.swp
+tags
+
