@@ -62,6 +62,10 @@ public class Deck {
         }
     }
 
+    public int getCardCount() {
+        return cardsLeft;
+    }
+
     public static void main(String[] args) { //just to check deck & card delete for production
         Deck d = new Deck();
         Card c;
