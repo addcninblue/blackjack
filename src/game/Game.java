@@ -91,9 +91,11 @@ public class Game {
                     p.demoteAces();
                 }
             }
-            System.out.printf("\nCurrent hand total: %d\n", p.getHandTotal());
-            System.out.printf("%s busted!\n", p.getName());
-            in.nextLine();
+            if (p.getHandTotal() > 21) {
+                System.out.printf("\nCurrent hand total: %d\n", p.getHandTotal());
+                System.out.printf("%s busted!\n", p.getName());
+                in.nextLine();
+            }
         }
     }
 
