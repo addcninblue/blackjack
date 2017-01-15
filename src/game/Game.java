@@ -34,7 +34,6 @@ public class Game {
 
     private void doBets() {
         for (Player p : players) {
-            p.resetTurn();
             while (true) {
                 System.out.printf("\n\n%s's bet ($%d left): ", p.getName(), p.getMoney());
                 int bet = in.nextInt();
