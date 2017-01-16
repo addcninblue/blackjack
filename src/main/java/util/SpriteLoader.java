@@ -35,7 +35,8 @@ public class SpriteLoader {
         }
     }
     public static BufferedImage loadPng(String fileName) throws IOException {
-        return ImageIO.read(new File("res/"+fileName+".png"));
+        ClassLoader loader = SpriteLoader.class.getClassLoader();
+        return ImageIO.read(new File(loader.getResource("Images/" + fileName + ".png").getFile()));
     }
     private BufferedImage getImageAtGrid(int xGrid, int yGrid) {
         return spriteSheet.getSubimage(xGrid * CARD_WIDTH + xGrid, yGrid * CARD_HEIGHT + yGrid, CARD_WIDTH, CARD_HEIGHT);

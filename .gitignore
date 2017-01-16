@@ -10,6 +10,7 @@ manifest.mf
 /out/
 /.idea/
 *.iml
+/target/
 
 *.swp
 tags
