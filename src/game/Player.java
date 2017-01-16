@@ -73,17 +73,10 @@ public class Player {
      * (Precondition: card is a valid card)
      */
     public void addCard(Card card){
+        if (card.RANK == Rank.ACE && getHandTotal() <= 10) {
+            card.setValue(11);
+        }
         hand.add(card);
-    }
-
-    /**
-     * Removes a given card from the player's hand
-     * (Postcondition: card is removed from hand)
-	 * @param card card to remove
-     * (Precondition: card is a valid card)
-     */
-    public void removeCard(Card card) {
-        hand.remove(card);
     }
 
     @Override

@@ -1,12 +1,13 @@
 package game;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BlackJackCli {
-    private Scanner in;
-    private Game game;
-    private Dealer dealer;
-    private ArrayList<Player> players;
+    private static Scanner in;
+    private static Game game;
+    private static Dealer dealer;
+    private static ArrayList<Player> players;
 
     public static void main(String[] args) {
         in = new Scanner(System.in);
@@ -17,9 +18,8 @@ public class BlackJackCli {
         in.nextLine();
         for (int i = 0; i < playerCount; i++) {
             System.out.printf("Player %d's name: ", i + 1);
-            g.addPlayer(new Player(in.nextLine()));
+            game.addPlayer(new Player(in.nextLine()));
         }
-        g.run();
         dealer = game.getDealer();
         players = game.getPlayers();
 
@@ -41,25 +41,26 @@ public class BlackJackCli {
                 String playerName = player.getName();
                 int playerMoney = player.getMoney();
 
-                System.out.printf("\n\n%s's bet ($%d left): ", playerName(), playerMoney());
+                System.out.printf("\n\n%s's bet ($%d left): ", playerName, playerMoney);
                 int bet = in.nextInt();
                 in.nextLine();
 
-                if (game.setBet()) {
+                if (game.setBet(player, bet)) {
                     break;
                 } else {
-                    System.out.printf("%s only has $%d\n", playerName(), playerMoney());
-                    continue;
+                    System.out.printf("%s can't bet $%d\n", playerName, bet);
                 }
             }
         }
     }
 
     public static void deal() {
+        game.initialDeal();
+
         System.out.println("Initial deal:\n");
         System.out.printf("Dealer: [%s] [HIDDEN]\n", dealer.getFaceUpCard());
         for(Player player : players){
-            System.out.printf("%s: ", p.getName());
+            System.out.printf("%s: ", player.getName());
             for(Card card : player.getHand()){
                 System.out.printf("[%s]", card);
             }
@@ -74,7 +75,8 @@ public class BlackJackCli {
                 System.out.printf("Current hand total: %d\n", player.getHandTotal());
                 System.out.print("1 - Hit\n2 - Stay\n> ");
                 int userChoice = in.nextInt();
-                if (userChoice) {
+                in.nextLine();
+                if (userChoice == 1) {
                     Card card = game.hit(player);
                     System.out.printf("Dealt: %s\n", card);
                 } else {
@@ -83,9 +85,8 @@ public class BlackJackCli {
             }
 
             System.out.printf("\nCurrent hand total: %d\n", player.getHandTotal());
-            if (player.getHandTotal() > 21) {
+            if (player.isOver21()) {
                 System.out.printf("%s busted!\n", player.getName());
-                in.nextLine();
             }
         }
     }
@@ -108,17 +109,10 @@ public class BlackJackCli {
 
     public static void payBets() {
         System.out.println("\n\nRESULTS: ");
-        int dealerTotal = dealer.getHandTotal();
         for (Player player : players) {
-            int dealerTotal = player.getHandTotal();
             System.out.printf("%s: ", player.getName());
-            System.out.printf(
-                    player.isOver21() ? "BUST"
-                    : dealerTotal < dealerTotal && !dealer.isOver21() ? "LOSE"
-                    : dealerTotal == dealerTotal ? "PUSH"
-                    : "WIN"
-            );
-            game.payBets(player);
+            System.out.printf(game.getResult(player));
+            game.payBet(player);
             System.out.printf(" Bet: %d, Money: %d\n", player.getBet(), player.getMoney());
         }
     }
