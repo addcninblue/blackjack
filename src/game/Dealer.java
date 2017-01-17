@@ -19,11 +19,11 @@ public class Dealer extends Player{
         return deck.deal();
     }
 
-    public boolean isOver16() {
-        return getHandTotal() > 16;
+    public Hand getHand() {
+        return getHands().get(0);
     }
 
     public Card getFaceUpCard() {
-        return getHand().get(0);
+        return getHand().getCard(0);
     }
 }

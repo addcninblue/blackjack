@@ -44,12 +44,12 @@ public class Game {
      */
     public void initialDeal() {
         for (int i = 0; i < 2; i++) {
-            dealer.addCard(dealer.deal());
+            dealer.getHand().addCard(dealer.deal());
         }
 
         for (Player p : players) {
             for (int j = 0; j < 2; j++) {
-                p.addCard(dealer.deal());
+                p.getHand(0).addCard(dealer.deal());
             }
         }
     }
@@ -57,15 +57,15 @@ public class Game {
     /**
      * The dealer deals the player a card
      * (Postcondition: player is dealt a card)
-     * @param player the player to hit
+     * @param hand the hand to hit
      * @return the card given to the player
      * (Precondition: player is nonnull)
      */
-    public Card hit(Player player) {
+    public Card hit(Hand hand) {
         Card c = dealer.deal();
-        player.addCard(c);
-        if (player.isOver21()) {
-            player.demoteAces();
+        hand.addCard(c);
+        if (hand.isOver21()) {
+            hand.demoteAces();
         }
         return c;
     }
@@ -78,7 +78,7 @@ public class Game {
      */
     public Card dealCardToDealer() {
         Card c = dealer.deal();
-        dealer.addCard(c);
+        dealer.getHand().addCard(c);
         return c;
     }
 
@@ -89,16 +89,17 @@ public class Game {
      * (Precondition: player is nonnull)
      */
     public void payBet(Player player) {
-        int dHand = dealer.getHandTotal();
-        int pHand = player.getHandTotal();
-        if (player.hasBlackJack() && !dealer.hasBlackJack()) { //blackjack
-            player.addMoney((int)(player.getBet() * 2.5));
-        } //247blackjack rounds down
-        if (!player.isOver21() && (pHand > dHand || dealer.isOver21())) { //win
-            player.addMoney(player.getBet() * 2);
-        }
-        else if(!player.isOver21() && !dealer.hasBlackJack() && pHand == dHand) { //push
-            player.addMoney(player.getBet());
+        int dHand = dealer.getHand().getTotal();
+        for (Hand h : player.getHands()) {
+            int pHand = h.getTotal();
+            if (h.isBlackJack() && !dealer.getHand().isBlackJack()) { //blackjack
+                player.addMoney((int) (player.getBet() * 2.5));
+            } //247blackjack rounds down
+            if (!h.isOver21() && (pHand > dHand || dealer.getHand().isOver21())) { //win
+                player.addMoney(player.getBet() * 2);
+            } else if (!h.isOver21() && !dealer.getHand().isBlackJack() && pHand == dHand) { //push
+                player.addMoney(player.getBet());
+            }
         }
     }
 
@@ -112,13 +113,17 @@ public class Game {
      * (Precondition: player is nonnull)
      */
     public String getResult(Player player) {
-        int dHand = dealer.getHandTotal();
-        int pHand = player.getHandTotal();
-        return player.hasBlackJack() ? "BLACKJACK"
-                : player.isOver21() ? "BUST"
-                : pHand < dHand && !dealer.isOver21() ? "LOSE"
-                : pHand == dHand ? "PUSH"
-                : "WIN";
+        int dHand = dealer.getHand().getTotal();
+        String result = "";
+        for (Hand h : player.getHands()) {
+            int pHand = h.getTotal();
+            result += h.isBlackJack() ? "BLACKJACK"
+                    : h.isOver21() ? "BUST"
+                    : pHand < dHand && !dealer.getHand().isOver21() ? "LOSE"
+                    : pHand == dHand ? "PUSH"
+                    : "WIN";
+        }
+        return result;
     }
 
     /**

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class Player {
     private String name;
-    private ArrayList<Card> hand;
+    private ArrayList<Hand> hands;
     private int money;
     private int bet; //the amount bet during a turn
 
     public Player(String name){
         this.name = name;
-        hand = new ArrayList<>();
+        hands = new ArrayList<>();
         money = 1000;
         bet = 0;
     }
@@ -24,14 +24,6 @@ public class Player {
         return name;
     }
 
-    public int getHandTotal() {
-        int sum = 0;
-        for (Card c : hand) {
-            sum += c.getValue();
-        }
-        return sum;
-    }
-
     public void bet(int amount) {
         if (amount <= money) {
             this.money -= amount;
@@ -39,44 +31,34 @@ public class Player {
         }
     }
 
-    public boolean isOver21() {
-        return getHandTotal() > 21;
-    }
-
-    public boolean hasBlackJack() {
-        return hand.size() == 2 && getHandTotal() == 21;
-    }
-
     public void addMoney(int amount) {
         money += amount;
     }
 
-    public void demoteAces() {
-        for (int i = 0; i < hand.size(); i++) {
-            if (hand.get(i).getValue() == 11) { //only promoted aces will have 11
-                hand.get(i).setValue(1); //magic numbers
-            }
-        }
-    }
-
     public void resetTurn() {
-        hand.clear();
+        hands.clear();
+        hands.add(new Hand());
         if (money < bet) {
             bet = 1;
         }
     }
 
     /**
-     * Adds a given card to a player's hand
-     * (Postcondition: card is added to hand)
-	 * @param card card to add
-     * (Precondition: card is a valid card)
+     * Splits a hand
+     * (Postcondition: the hand at index i is split)
+     * @param i the index of the hand in hands to split
+     * (Precondition: i is an index in hands)
      */
-    public void addCard(Card card){
-        if (card.RANK == Rank.ACE && getHandTotal() <= 10) {
-            card.setValue(11);
-        }
-        hand.add(card);
+    public void splitHand(int i) {
+        Hand h1 = new Hand();
+        Hand h2 = new Hand();
+        Hand original = hands.get(i);
+        h1.addCard(original.getCard(0));
+        h2.addCard(original.getCard(1));
+        hands.add(i, h1);
+        hands.add(i, h2);
+        hands.remove(original);
+        //too lazy to make a removeCard function
     }
 
     @Override
@@ -85,13 +67,17 @@ public class Player {
     }
 
     /**
-     * Returns the player's hand
-     * (Postcondition: player hand is returned)
-     * (Precondition: hand is initialized)
-     * @return player's hand
+     * Returns the player's hands
+     * (Postcondition: player hands are returned)
+     * (Precondition: hands is initialized)
+     * @return player's hands
      */
-    public ArrayList<Card> getHand(){
-        return hand;
+    public ArrayList<Hand> getHands(){
+        return hands;
+    }
+
+    public Hand getHand(int i) {
+        return hands.get(i);
     }
 
     public int getMoney() {

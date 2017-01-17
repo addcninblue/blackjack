@@ -61,32 +61,50 @@ public class BlackJackCli {
         System.out.printf("Dealer: [%s] [HIDDEN]\n", dealer.getFaceUpCard());
         for(Player player : players){
             System.out.printf("%s: ", player.getName());
-            for(Card card : player.getHand()){
+            for(Card card : player.getHand(0)){ //only one hand
                 System.out.printf("[%s]", card);
             }
-            System.out.printf(" -> Total: %d\n", player.getHandTotal());
+            System.out.printf(" -> Total: %d\n", player.getHand(0).getTotal());
         }
     }
 
     public static void playerTurns() {
         loop: for(Player player : players){
             System.out.printf("\n\n%s's turn\n\n", player.getName());
-            while (player.getHandTotal() < 21) {
-                System.out.printf("Current hand total: %d\n", player.getHandTotal());
-                System.out.print("1 - Hit\n2 - Stay\n> ");
-                int userChoice = in.nextInt();
-                in.nextLine();
-                if (userChoice == 1) {
-                    Card card = game.hit(player);
-                    System.out.printf("Dealt: %s\n", card);
-                } else {
-                    continue loop;
+            for (int i = 0; i < player.getHands().size(); i++) {
+                if (player.getHand(i).isSplittable()) {
+                    System.out.printf("Split hand? (y/n): ");
+                    if (in.nextLine().equals("y")) {
+                        player.splitHand(i);
+                        player.getHand(i).addCard(dealer.deal());
+                        player.getHand(i + 1).addCard(dealer.deal());
+                        for (int j = 0; j < player.getHands().size(); j++) {
+                            System.out.printf("Hand %d: ", j);
+                            for (Card card : player.getHand(j)) { //only one hand
+                                System.out.printf("[%s]", card);
+                            }
+                            System.out.printf(" -> Total: %d\n", player.getHand(0).getTotal());
+                        }
+                    }
                 }
-            }
+                Hand h = player.getHand(i);
+                while (h.getTotal() < 21) {
+                    System.out.printf("Current hand total: %d\n", h.getTotal());
+                    System.out.print("1 - Hit\n2 - Stay\n> ");
+                    int userChoice = in.nextInt();
+                    in.nextLine();
+                    if (userChoice == 1) {
+                        Card card = game.hit(h);
+                        System.out.printf("Dealt: %s\n", card);
+                    } else {
+                        continue loop;
+                    }
+                }
 
-            System.out.printf("\nCurrent hand total: %d\n", player.getHandTotal());
-            if (player.isOver21()) {
-                System.out.printf("%s busted!\n", player.getName());
+                System.out.printf("\nCurrent hand total: %d\n", h.getTotal());
+                if (h.isOver21()) {
+                    System.out.printf("%s busted!\n", player.getName());
+                }
             }
         }
     }
@@ -94,15 +112,15 @@ public class BlackJackCli {
     public static void dealerTurn() {
         System.out.println("\n\nDealer's turn\n");
 
-        System.out.printf("Dealer's cards: [%s] [%s]\n", dealer.getFaceUpCard(), dealer.getHand().get(1));
-        System.out.printf("Dealer's hand total: %d\n", dealer.getHandTotal());
+        System.out.printf("Dealer's cards: [%s] [%s]\n", dealer.getFaceUpCard(), dealer.getHand().getCard(1));
+        System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getTotal());
 
-        while (!dealer.isOver16()) {
+        while (!dealer.getHand().isOver16()) {
             Card card = game.dealCardToDealer();
             System.out.printf("Dealer drew: %s\n", card);
-            System.out.printf("Dealer's hand total: %d\n", dealer.getHandTotal());
+            System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getTotal());
         }
-        if (dealer.isOver21()) {
+        if (dealer.getHand().isOver21()) {
             System.out.println("Dealer busted!");
         }
     }
