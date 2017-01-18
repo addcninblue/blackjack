@@ -4,7 +4,7 @@ package util;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.MissingResourceException;
+import java.io.UncheckedIOException;
 import javax.imageio.ImageIO;
 
 /**
@@ -12,16 +12,18 @@ import javax.imageio.ImageIO;
  * @author Darian
  */
 public class SpriteLoader {
-    private BufferedImage spriteSheet;
+    public static final BufferedImage MENU_BACKGROUND = loadPng("menu");
+    
     public final BufferedImage[] cardImages;
-    public final int CARD_WIDTH = 67;
-    public final int CARD_HEIGHT = 95;
-    public SpriteLoader(String sheetFileName) {
-        try {
-            this.spriteSheet = loadPng(sheetFileName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public final int imageWidth;
+    public final int imageHeight;
+    
+    private BufferedImage spriteSheet;
+    
+    public SpriteLoader(String sheetFileName, int imageWidth, int imageHeight) {
+        this.spriteSheet = loadPng(sheetFileName);
+        this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
         this.cardImages = new BufferedImage[52];
         for (int y = 0; y < 5; y++) {
             for (int x = 0; x < 11; x++) {
@@ -34,10 +36,14 @@ public class SpriteLoader {
             }
         }
     }
-    public static BufferedImage loadPng(String fileName) throws IOException {
-        return ImageIO.read(new File("res/"+fileName+".png"));
+    public static BufferedImage loadPng(String fileName) {
+        try {
+            return ImageIO.read(new File("res/"+fileName+".png"));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Unable to load " + fileName + ".png", e);
+        }
     }
     private BufferedImage getImageAtGrid(int xGrid, int yGrid) {
-        return spriteSheet.getSubimage(xGrid * CARD_WIDTH + xGrid, yGrid * CARD_HEIGHT + yGrid, CARD_WIDTH, CARD_HEIGHT);
+        return spriteSheet.getSubimage(xGrid * imageWidth + xGrid, yGrid * imageHeight + yGrid, imageWidth, imageHeight);
     }
 }
