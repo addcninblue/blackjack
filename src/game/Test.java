@@ -17,7 +17,7 @@ public class Test extends JPanel {
     public Test() {
         super();
         cards = new Card[52];
-        BufferedImage[] cardImages = new SpriteLoader("cards").cardImages;
+        BufferedImage[] cardImages = new SpriteLoader("cards", 67, 95).cardImages;
         
         int i = 0;
         for (Suit s : Suit.values()) {

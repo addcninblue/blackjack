@@ -22,22 +22,6 @@ public class Game {
     }
 
     /**
-     * Sets a player's bet.
-     * (Postcondition: player's bet is set if player has enough money)
-     * @param player the betting player
-     * @param bet the amount bet
-     * @return whether or not the bet was possible
-     * (Precondition: player is nonnull and bet is nonnegative)
-     */
-    public boolean setBet(Player player, int bet) {
-        if (bet > player.getMoney() || bet < 1) {
-            return false;
-        }
-        player.bet(bet);
-        return true;
-    }
-
-    /**
      * Deals the initial two cards to each player
      * (Postcondition: Each player has two cards)
      * (Precondition: No players in players is null)

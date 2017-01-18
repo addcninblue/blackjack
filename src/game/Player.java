@@ -24,11 +24,13 @@ public class Player {
         return name;
     }
 
-    public void bet(int amount) {
-        if (amount <= money) {
-            this.money -= amount;
-            this.bet = amount;
+    public void bet(int betAmt) {
+        if (betAmt > money || betAmt < 1) {
+            throw new IllegalArgumentException(String.format("%s can't bet $%d\n", name, betAmt));
         }
+        
+        this.money -= betAmt;
+        this.bet = betAmt;
     }
 
     public void addMoney(int amount) {
