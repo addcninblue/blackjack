@@ -129,9 +129,11 @@ public class BlackJackCli {
         System.out.println("\n\nRESULTS: ");
         for (Player player : players) {
             System.out.printf("%s: ", player.getName());
-            System.out.printf(game.getResult(player));
-            game.payBet(player);
-            System.out.printf(" Bet: %d, Money: %d\n", player.getBet(), player.getMoney());
+            for (Hand h : player.getHands()) {
+                System.out.printf("%s ", game.getResult(h));
+                game.payBet(player);
+            }
+            System.out.printf("Bet: %d, Money: %d\n", player.getBet(), player.getMoney());
         }
     }
 

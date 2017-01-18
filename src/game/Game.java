@@ -107,23 +107,19 @@ public class Game {
      * Returns a string representing the outcome of the last round
      * for the player.
      * (Postcondition: player is unchanged)
-     * @param player the player to get the results of
+     * @param h the hand to get the result of
      * @return a string representing the outcome of the last round
      * for the player.
      * (Precondition: player is nonnull)
      */
-    public String getResult(Player player) {
+    public String getResult(Hand h) {
         int dHand = dealer.getHand().getTotal();
-        String result = "";
-        for (Hand h : player.getHands()) {
-            int pHand = h.getTotal();
-            result += h.isBlackJack() ? "BLACKJACK"
-                    : h.isOver21() ? "BUST"
-                    : pHand < dHand && !dealer.getHand().isOver21() ? "LOSE"
-                    : pHand == dHand ? "PUSH"
-                    : "WIN";
-        }
-        return result;
+        int pHand = h.getTotal();
+        return h.isBlackJack() ? "BLACKJACK"
+                : h.isOver21() ? "BUST"
+                : pHand < dHand && !dealer.getHand().isOver21() ? "LOSE"
+                : pHand == dHand ? "PUSH"
+                : "WIN";
     }
 
     /**
