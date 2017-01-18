@@ -37,6 +37,13 @@ public class Game {
         return true;
     }
 
+    public void splitPlayer(Player player, int handI) {
+        player.splitHand(handI);
+        player.getHand(handI).addCard(dealer.deal());
+        player.getHand(handI + 1).addCard(dealer.deal());
+        player.bet(player.getBet());
+    }
+
     /**
      * Deals the initial two cards to each player
      * (Postcondition: Each player has two cards)
@@ -95,7 +102,7 @@ public class Game {
             if (h.isBlackJack() && !dealer.getHand().isBlackJack()) { //blackjack
                 player.addMoney((int) (player.getBet() * 2.5));
             } //247blackjack rounds down
-            if (!h.isOver21() && (pHand > dHand || dealer.getHand().isOver21())) { //win
+            else if (!h.isOver21() && (pHand > dHand || dealer.getHand().isOver21())) { //win
                 player.addMoney(player.getBet() * 2);
             } else if (!h.isOver21() && !dealer.getHand().isBlackJack() && pHand == dHand) { //push
                 player.addMoney(player.getBet());

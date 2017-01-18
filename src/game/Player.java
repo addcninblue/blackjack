@@ -44,6 +44,17 @@ public class Player {
     }
 
     /**
+     * Returns whether or not a hand is splittable
+     * (Postcondition: hands is unchanged)
+     * @param i the index of the hand to split
+     * @return whether hands(i) is splittable
+     * (Precondition: i is a valid index in hands)
+     */
+    public boolean canSplitHand(int i) {
+        return getHand(i).isSplittable() && getMoney() >= getBet();
+    }
+
+    /**
      * Splits a hand
      * (Postcondition: the hand at index i is split)
      * @param i the index of the hand in hands to split

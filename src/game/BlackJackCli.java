@@ -69,24 +69,23 @@ public class BlackJackCli {
     }
 
     public static void playerTurns() {
-        loop: for(Player player : players){
+        for(Player player : players){
             System.out.printf("\n\n%s's turn\n\n", player.getName());
-            for (int i = 0; i < player.getHands().size(); i++) {
-                if (player.getHand(i).isSplittable()) {
+            loop: for (int i = 0; i < player.getHands().size(); i++) {
+                if (player.canSplitHand(i)) {
                     System.out.printf("Split hand? (y/n): ");
                     if (in.nextLine().equals("y")) {
-                        player.splitHand(i);
-                        player.getHand(i).addCard(dealer.deal());
-                        player.getHand(i + 1).addCard(dealer.deal());
+                        game.splitPlayer(player, i);
                         for (int j = 0; j < player.getHands().size(); j++) {
                             System.out.printf("Hand %d: ", j);
                             for (Card card : player.getHand(j)) { //only one hand
                                 System.out.printf("[%s]", card);
                             }
-                            System.out.printf(" -> Total: %d\n", player.getHand(0).getTotal());
+                            System.out.printf(" -> Total: %d\n", player.getHand(j).getTotal());
                         }
                     }
                 }
+
                 Hand h = player.getHand(i);
                 while (h.getTotal() < 21) {
                     System.out.printf("Current hand total: %d\n", h.getTotal());
@@ -131,8 +130,8 @@ public class BlackJackCli {
             System.out.printf("%s: ", player.getName());
             for (Hand h : player.getHands()) {
                 System.out.printf("%s ", game.getResult(h));
-                game.payBet(player);
             }
+            game.payBet(player);
             System.out.printf("Bet: %d, Money: %d\n", player.getBet(), player.getMoney());
         }
     }
