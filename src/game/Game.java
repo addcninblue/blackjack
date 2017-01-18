@@ -121,7 +121,7 @@ public class Game {
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i).getMoney() == 0) {
                 moneyless.add(players.get(i));
-                players.remove(i);
+                players.remove(i--);
             }
         }
         return moneyless;
