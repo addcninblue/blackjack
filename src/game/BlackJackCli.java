@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BlackJackCli {
-    private static Scanner in;
+    private static Scanner input;
     private static Game game;
     private static Dealer dealer;
     private static ArrayList<Player> players;
 
     public static void main(String[] args) {
-        in = new Scanner(System.in);
+        input = new Scanner(System.in);
         game = new Game();
 
         System.out.printf("Number of players: ");
-        int playerCount = in.nextInt();
-        in.nextLine();
+        int playerCount = input.nextInt();
+        input.nextLine();
         for (int i = 0; i < playerCount; i++) {
             System.out.printf("Player %d's name: ", i + 1);
-            game.addPlayer(new Player(in.nextLine()));
+            game.addPlayer(new Player(input.nextLine()));
         }
         dealer = game.getDealer();
         players = game.getPlayers();
@@ -26,8 +26,11 @@ public class BlackJackCli {
 
         while (game.hasPlayers()) {
             game.newRound();
-            setBets();
-            deal();
+            for (Player player : players) {
+                getBet(player);
+            }
+            game.initialDeal();
+            displayHands();
             playerTurns();
             dealerTurn();
             payBets();
@@ -35,28 +38,23 @@ public class BlackJackCli {
         }
     }
 
-    public static void setBets() {
-        for (Player player : players) {
-            while (true) {
-                String playerName = player.getName();
-                int playerMoney = player.getMoney();
+    public static void getBet(Player player) {
+        while (true) {
+            System.out.printf("\n\n%s's bet ($%d left): ", player.getName(), player.getMoney());
+            int betAmt = input.nextInt();
+            input.nextLine();
 
-                System.out.printf("\n\n%s's bet ($%d left): ", playerName, playerMoney);
-                int bet = in.nextInt();
-                in.nextLine();
-
-                if (game.setBet(player, bet)) {
-                    break;
-                } else {
-                    System.out.printf("%s can't bet $%d\n", playerName, bet);
-                }
+            try {
+                player.bet(betAmt);
+                return;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
         }
+        
     }
 
-    public static void deal() {
-        game.initialDeal();
-
+    public static void displayHands() {
         System.out.println("Initial deal:\n");
         System.out.printf("Dealer: [%s] [HIDDEN]\n", dealer.getFaceUpCard());
         for(Player player : players){
@@ -74,7 +72,7 @@ public class BlackJackCli {
             loop: for (int i = 0; i < player.getHands().size(); i++) {
                 if (player.canSplitHand(i)) {
                     System.out.printf("Split hand? (y/n): ");
-                    if (in.nextLine().equals("y")) {
+                    if (input.nextLine().equals("y")) {
                         game.splitPlayer(player, i);
                         for (int j = 0; j < player.getHands().size(); j++) {
                             System.out.printf("Hand %d: ", j);
@@ -90,8 +88,8 @@ public class BlackJackCli {
                 while (h.getTotal() < 21) {
                     System.out.printf("Current hand total: %d\n", h.getTotal());
                     System.out.print("1 - Hit\n2 - Stay\n> ");
-                    int userChoice = in.nextInt();
-                    in.nextLine();
+                    int userChoice = input.nextInt();
+                    input.nextLine();
                     if (userChoice == 1) {
                         Card card = game.hit(h);
                         System.out.printf("Dealt: %s\n", card);
