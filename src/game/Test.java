@@ -18,7 +18,6 @@ public class Test extends JPanel {
         super();
         cards = new Card[52];
         BufferedImage[] cardImages = new SpriteLoader("cards", 67, 95).cardImages;
-        
         int i = 0;
         for (Suit s : Suit.values()) {
             for (Rank r : Rank.values()) {
