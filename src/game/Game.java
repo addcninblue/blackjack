@@ -77,6 +77,20 @@ public class Game {
         return c;
     }
 
+    public Card doubleDown(Player player, int i) {
+        if (!player.canDoubleDown(i)) {
+            throw new IllegalArgumentException(
+                    String.format("%s doesn't have enough money to double down.\n", player.getName())
+            );
+        }
+
+        player.bet(player.getBet());
+        Card c = dealer.deal();
+        player.getHand(i).addCard(c);
+        player.getHand(i).setDoubleDowned();
+        return c;
+    }
+
     /**
      * Deals a card to the dealer
      * (Postcondition: dealer is dealt a card)
@@ -99,14 +113,19 @@ public class Game {
         int dHand = dealer.getHand().getTotal();
         for (Hand h : player.getHands()) {
             int pHand = h.getTotal();
-            if (h.isBlackJack() && !dealer.getHand().isBlackJack()) { //blackjack
-                player.addMoney((int) (player.getBet() * 2.5));
+            int moneyWon = 0;
+            if (h.isBlackJack() && !dealer.getHand().isBlackJack()) {
+                moneyWon = (int) (player.getBet() * 2.5); //if blackjack, not double downed
             } //247blackjack rounds down
             else if (!h.isOver21() && (pHand > dHand || dealer.getHand().isOver21())) { //win
-                player.addMoney(player.getBet() * 2);
+                moneyWon = player.getBet() * 2;
             } else if (!h.isOver21() && !dealer.getHand().isBlackJack() && pHand == dHand) { //push
-                player.addMoney(player.getBet());
+                moneyWon = player.getBet(); //not really won though
             }
+            if (h.isDoubleDowned()) {
+                moneyWon *= 2;
+            }
+            player.addMoney(moneyWon);
         }
     }
 
@@ -122,11 +141,15 @@ public class Game {
     public String getResult(Hand h) {
         int dHand = dealer.getHand().getTotal();
         int pHand = h.getTotal();
-        return h.isBlackJack() ? "BLACKJACK"
+        String result = h.isBlackJack() ? "BLACKJACK"
                 : h.isOver21() ? "BUST"
                 : pHand < dHand && !dealer.getHand().isOver21() ? "LOSE"
                 : pHand == dHand ? "PUSH"
                 : "WIN";
+        if (h.isDoubleDowned()) {
+            result += "(DOUBLE DOWN)";
+        }
+        return result;
     }
 
     /**

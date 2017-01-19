@@ -56,6 +56,10 @@ public class Player {
         return getHand(i).isSplittable() && getMoney() >= getBet();
     }
 
+    public boolean canDoubleDown(int i) {
+        return getHand(i).count() == 2 && getMoney() >= getBet();
+    }
+
     /**
      * Splits a hand
      * (Postcondition: the hand at index i is split)
@@ -63,6 +67,9 @@ public class Player {
      * (Precondition: i is an index in hands)
      */
     public void splitHand(int i) {
+        if (!getHand(i).isSplittable()) {
+            throw new IllegalArgumentException(name + " can't split.\n");
+        }
         Hand h1 = new Hand();
         Hand h2 = new Hand();
         Hand original = hands.get(i);

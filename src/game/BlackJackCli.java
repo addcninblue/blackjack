@@ -87,13 +87,21 @@ public class BlackJackCli {
                 Hand h = player.getHand(i);
                 while (h.getTotal() < 21) {
                     System.out.printf("Current hand total: %d\n", h.getTotal());
-                    System.out.print("1 - Hit\n2 - Stay\n> ");
+                    System.out.print("1 - Hit\n2 - Stay\n");
+                    if (player.canDoubleDown(i)) {
+                        System.out.println("3 - Double Down");
+                    }
+                    System.out.print("> ");
                     int userChoice = input.nextInt();
                     input.nextLine();
                     if (userChoice == 1) {
                         Card card = game.hit(h);
                         System.out.printf("Dealt: %s\n", card);
-                    } else {
+                    } else if (userChoice == 3 && player.canDoubleDown(i)) {
+                        Card card = game.doubleDown(player, i);
+                        System.out.printf("Dealt: %s\n", card);
+                        break;
+                    } else{
                         continue loop;
                     }
                 }

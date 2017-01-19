@@ -8,9 +8,11 @@ import java.util.Iterator;
  */
 public class Hand implements Iterable<Card>{
     private ArrayList<Card> cards;
+    private boolean isDoubleDowned;
 
     public Hand() {
         cards = new ArrayList<>();
+        isDoubleDowned = false;
     }
 
 
@@ -33,6 +35,10 @@ public class Hand implements Iterable<Card>{
             sum += c.getValue();
         }
         return sum;
+    }
+
+    public boolean isDoubleDowned() {
+        return isDoubleDowned;
     }
 
     public boolean isOver21() {
@@ -69,6 +75,13 @@ public class Hand implements Iterable<Card>{
 
     public ArrayList<Card> getCards() {
         return cards;
+    }
+
+    /**
+     * Sets isDoubleDowned to true
+     */
+    public void setDoubleDowned() {
+        isDoubleDowned = true;
     }
 
     @Override
