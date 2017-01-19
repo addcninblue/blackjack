@@ -7,12 +7,14 @@ public class Player {
     private ArrayList<Hand> hands;
     private int money;
     private int bet; //the amount bet during a turn
+    private boolean isInsured; //whether or not the player is insured
 
     public Player(String name){
         this.name = name;
         hands = new ArrayList<>();
         money = 1000;
         bet = 0;
+        isInsured = false;
     }
 
     /**
@@ -33,6 +35,14 @@ public class Player {
         this.bet = betAmt;
     }
 
+    public void insure() {
+        if (!hasInsuranceMoney()) {
+            throw new IllegalStateException(name + " doesn't have enough money to insure.\n");
+        }
+        money -= bet / 2;
+        isInsured = true;
+    }
+
     public void addMoney(int amount) {
         money += amount;
     }
@@ -43,6 +53,7 @@ public class Player {
         if (money < bet) {
             bet = 1;
         }
+        isInsured = false;
     }
 
     /**
@@ -58,6 +69,24 @@ public class Player {
 
     public boolean canDoubleDown(int i) {
         return getHand(i).count() == 2 && getMoney() >= getBet();
+    }
+
+    /**
+     * Returns whether or not the player can insure
+     * @param dealer the dealer
+     * @return whether or not the player can insure
+     * (Precondition: the dealer and player have not hit yet)
+     */
+    public boolean canInsure(Dealer dealer) {
+        return hasInsuranceMoney()
+                && !isInsured //hasn't insured yet
+                && hands.size() == 1 //hasn't split
+                && hands.get(0).count() == 2 //hasn't hit
+                && dealer.getFaceUpCard().RANK == Rank.ACE;
+    }
+
+    public boolean hasInsuranceMoney() {
+        return money >= bet / 2; //this is used in two methods
     }
 
     /**
@@ -101,6 +130,10 @@ public class Player {
     @Override
     public String toString() {
         return String.format("Player: %s\nMoney: %d", name, money);
+    }
+
+    public boolean isInsured() {
+        return isInsured;
     }
 
     /**

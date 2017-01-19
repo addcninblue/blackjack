@@ -90,6 +90,26 @@ public class Game {
     }
 
     /**
+     *
+     * @param player the player to insure
+     */
+    public void insure(Player player) {
+        if (dealer.getFaceUpCard().RANK != Rank.ACE) {
+            throw new IllegalStateException("The dealer does not have a face-up Ace.\n");
+        }
+        player.insure();
+    }
+
+    /**
+     * Returns whether or not the player can insure
+     * @param player the player to check if can insure
+     * @return whether or not player can insure
+     */
+    public boolean canInsure(Player player) {
+        return player.hasInsuranceMoney() && dealer.getFaceUpCard().RANK != Rank.ACE;
+    }
+
+    /**
      * Pays the player according to their result and bet
      * (Postcondition: the player is paid according to their result and bet)
      * @param player the player to pay
@@ -112,6 +132,9 @@ public class Game {
                 moneyWon *= 2;
             }
             player.addMoney(moneyWon);
+        }
+        if (player.isInsured() && dealer.getHand().isBlackJack()) {
+            player.addMoney((int)(player.getBet() * 1.5));
         }
     }
 

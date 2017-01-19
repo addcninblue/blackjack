@@ -91,6 +91,9 @@ public class BlackJackCli {
                     if (player.canDoubleDown(i)) {
                         System.out.println("3 - Double Down");
                     }
+                    if (player.canInsure(dealer)) {
+                        System.out.println("4 - Insure");
+                    }
                     System.out.print("> ");
                     int userChoice = input.nextInt();
                     input.nextLine();
@@ -101,7 +104,9 @@ public class BlackJackCli {
                         Card card = game.doubleDown(player, i);
                         System.out.printf("Dealt: %s\n", card);
                         break;
-                    } else{
+                    } else if (userChoice == 4 && player.canInsure(dealer)) {
+                        player.insure();
+                    } else {
                         continue loop;
                     }
                 }
