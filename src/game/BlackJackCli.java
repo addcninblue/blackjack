@@ -121,7 +121,7 @@ public class BlackJackCli {
         System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getTotal());
 
         while (!dealer.getHand().isOver16()) {
-            Card card = game.dealCardToDealer();
+            Card card = game.hit(dealer.getHand());
             System.out.printf("Dealer drew: %s\n", card);
             System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getTotal());
         }

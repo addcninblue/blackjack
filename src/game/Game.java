@@ -90,18 +90,6 @@ public class Game {
     }
 
     /**
-     * Deals a card to the dealer
-     * (Postcondition: dealer is dealt a card)
-     * @return the card dealt
-     * (Precondition: dealer is nonnull and has a hand under 21)
-     */
-    public Card dealCardToDealer() {
-        Card c = dealer.deal();
-        dealer.getHand().addCard(c);
-        return c;
-    }
-
-    /**
      * Pays the player according to their result and bet
      * (Postcondition: the player is paid according to their result and bet)
      * @param player the player to pay
