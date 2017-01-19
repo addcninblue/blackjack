@@ -80,7 +80,7 @@ public class Game {
     public Card doubleDown(Player player, int i) {
         if (!player.canDoubleDown(i)) {
             throw new IllegalArgumentException(
-                    String.format("%s doesn't have enough money to double down.\n", player.getName())
+                    String.format("%s can't double down.\n", player.getName())
             );
         }
 
