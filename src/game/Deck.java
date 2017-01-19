@@ -12,7 +12,6 @@ public class Deck {
         Rank[] ranks = Rank.values();
         Suit[] suits = Suit.values();
         BufferedImage[] cardImages = new SpriteLoader("cards", 67, 95).cardImages;
-        this.cardsLeft = ranks.length * suits.length;
         this.deck = new Card[this.cardsLeft];
         
         int i = 0;
