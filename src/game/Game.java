@@ -77,17 +77,15 @@ public class Game {
         return c;
     }
 
+    /**
+     *
+     * @param player the player to double down
+     * @param i the index of the player's hand to double down
+     * @return the card dealt to the hand
+     */
     public Card doubleDown(Player player, int i) {
-        if (!player.canDoubleDown(i)) {
-            throw new IllegalArgumentException(
-                    String.format("%s can't double down.\n", player.getName())
-            );
-        }
-
-        player.bet(player.getBet());
         Card c = dealer.deal();
-        player.getHand(i).addCard(c);
-        player.getHand(i).setDoubleDowned();
+        player.doubleDown(c, i);
         return c;
     }
 

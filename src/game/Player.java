@@ -61,6 +61,23 @@ public class Player {
     }
 
     /**
+     *
+     * @param c the card dealt to the hand
+     * @param i the index of the hand to double down
+     */
+    public void doubleDown(Card c, int i) {
+        if (!canDoubleDown(i)) {
+            throw new IllegalArgumentException(
+                    String.format("%s can't double down.\n", name)
+            );
+        }
+
+        bet(getBet());
+        getHand(i).addCard(c);
+        getHand(i).setDoubleDowned();
+    }
+
+    /**
      * Splits a hand
      * (Postcondition: the hand at index i is split)
      * @param i the index of the hand in hands to split
