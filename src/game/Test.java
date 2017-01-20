@@ -21,7 +21,7 @@ public class Test extends JPanel {
         int i = 0;
         for (Suit s : Suit.values()) {
             for (Rank r : Rank.values()) {
-                this.cards[i] = new Card(r, s, cardImages[i]);
+                this.cards[i] = new Card(r, s, cardImages[i], cardImages[52]);
                 i++;
             }
         }
@@ -31,7 +31,7 @@ public class Test extends JPanel {
         Graphics2D g2 = (Graphics2D)g;
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 13; x++) {
-                BufferedImage card = cards[x+y*13].IMAGE;
+                BufferedImage card = cards[x+y*13].getImage();
                 g2.drawImage(card, x*card.getWidth(), y*card.getHeight(), null);
             }
         }

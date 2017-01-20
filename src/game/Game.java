@@ -30,14 +30,21 @@ public class Game {
         for (int i = 0; i < 2; i++) {
             dealer.getHand().addCard(dealer.deal());
         }
+        dealer.getHand().getCard(0).setHidden(true);
 
-        for (Player p : players) {
+        for (Player player : players) {
             for (int j = 0; j < 2; j++) {
-                p.getHand(0).addCard(dealer.deal());
+                player.getHand(0).addCard(dealer.deal());
             }
         }
     }
-
+    
+    public void splitPlayer(Player player, Hand hand) {
+        if (!hand.isSplittable()) {
+            throw new IllegalArgumentException(String.format("%s's hand can't be split.", player.getName()));
+        }
+        
+    }
     /**
      * The dealer deals the player a card
      * (Postcondition: player is dealt a card)
@@ -53,7 +60,9 @@ public class Game {
         }
         return c;
     }
-
+    /*public Card deal(Player player, Hand hand) {
+        
+    }*/
     /**
      * Deals a card to the dealer
      * (Postcondition: dealer is dealt a card)

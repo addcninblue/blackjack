@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
  */
 public class SpriteLoader {
     public static final BufferedImage MENU_BACKGROUND = loadPng("menu");
+    public static final BufferedImage TABLE_TOP = loadPng("table");
     
     public final BufferedImage[] cardImages;
     public final int imageWidth;
@@ -24,14 +25,14 @@ public class SpriteLoader {
         this.spriteSheet = loadPng(sheetFileName);
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
-        this.cardImages = new BufferedImage[52];
+        this.cardImages = new BufferedImage[53];
         for (int y = 0; y < 5; y++) {
             for (int x = 0; x < 11; x++) {
                 int index = x + 11*y;
-                if (index == 52) {
+                if (index == cardImages.length) {
                     break;
                 } else {
-                    cardImages[11*y+x] = getImageAtGrid(x, y);
+                    cardImages[index] = getImageAtGrid(x, y);
                 }
             }
         }

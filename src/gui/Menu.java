@@ -1,12 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gui;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import util.SpriteLoader;
 
 /**
@@ -24,6 +21,7 @@ public class Menu extends javax.swing.JPanel {
     
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         g2.drawImage(SpriteLoader.MENU_BACKGROUND, 0, 0, getWidth(), getHeight(), null);
     }
@@ -42,6 +40,12 @@ public class Menu extends javax.swing.JPanel {
 
         jButton3.setText("jButton3");
 
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
+
         startBtn.setText("Start");
         startBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -50,6 +54,11 @@ public class Menu extends javax.swing.JPanel {
         });
 
         exitBtn.setText("Exit");
+        exitBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -76,8 +85,20 @@ public class Menu extends javax.swing.JPanel {
     private void startBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startBtnActionPerformed
         this.setVisible(false);
         GamePanel gamePanel = new GamePanel();
+        JFrame frame = (JFrame)SwingUtilities.getWindowAncestor(this);
+        frame.add(gamePanel);
         gamePanel.setVisible(true);
+        frame.setResizable(false);
     }//GEN-LAST:event_startBtnActionPerformed
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formComponentResized
+
+    private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
+        this.setVisible(false);
+        System.exit(0);
+    }//GEN-LAST:event_exitBtnActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

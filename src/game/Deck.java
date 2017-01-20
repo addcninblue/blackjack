@@ -6,18 +6,19 @@ import util.SpriteLoader;
 
 public class Deck {
     private Card[] deck; //the array of cards
-    private int cardsLeft; //the number of cards left still not dealt
+    private int remainingCards; //the number of cards left still not dealt
 
     public Deck() {
         Rank[] ranks = Rank.values();
         Suit[] suits = Suit.values();
         BufferedImage[] cardImages = new SpriteLoader("cards", 67, 95).cardImages;
-        this.deck = new Card[this.cardsLeft];
-        
+        this.remainingCards = ranks.length * suits.length;
+        this.deck = new Card[this.remainingCards];
+        BufferedImage cardBack = cardImages[52];
         int i = 0;
         for (Suit suit : suits) {
             for (Rank rank : ranks) {
-                this.deck[i] = new Card(rank, suit, cardImages[i]);
+                this.deck[i] = new Card(rank, suit, cardImages[i], cardBack);
                 i++;
             }
         }
@@ -30,7 +31,7 @@ public class Deck {
      * (Precondition: deck_ and cardsLeft_ are initialized, and deck_ is non null)
      */
     public Card deal() {
-        return this.cardsLeft > 0 ? this.deck[--this.cardsLeft] : null;
+        return this.remainingCards > 0 ? this.deck[--this.remainingCards] : null;
     }
 
     /**
@@ -40,7 +41,7 @@ public class Deck {
      * (Precondition: deck is used (ie. there are cards taken out of deck))
      */
     public void reshuffle() {
-        this.cardsLeft = this.deck.length;
+        this.remainingCards = this.deck.length;
         shuffle();
     }
 
@@ -62,27 +63,6 @@ public class Deck {
     }
 
     public int getCardCount() {
-        return cardsLeft;
+        return remainingCards;
     }
-
-    public static void main(String[] args) { //just to check deck & card delete for production
-        Deck d = new Deck();
-        Card c;
-        while ((c = d.deal()) != null) {
-            System.out.println(c);
-        }
-        d.shuffle();
-
-        while ((c = d.deal()) != null) {
-            System.out.println(c);
-        }
-        System.out.println();
-
-        d.reshuffle();
-
-        while ((c = d.deal()) != null) {
-            System.out.println(c);
-        }
-    }
-
 }

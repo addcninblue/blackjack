@@ -18,7 +18,7 @@ public class Dealer extends Player{
         }
         return deck.deal();
     }
-
+    
     public Hand getHand() {
         return getHands().get(0);
     }
