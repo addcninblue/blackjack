@@ -64,7 +64,7 @@ public class BlackJackCli {
             for(Card card : player.getHand(0)){ //only one hand
                 System.out.printf("[%s]", card);
             }
-            System.out.printf(" -> Total: %d\n", player.getHand(0).getTotal());
+            System.out.printf(" -> Total: %d\n", player.getHand(0).getValue());
         }
     }
 
@@ -82,13 +82,13 @@ public class BlackJackCli {
                         for (Card card : player.getHand(j)) { //only one hand
                             System.out.printf("[%s]", card);
                         }
-                        System.out.printf(" -> Total: %d\n", player.getHand(0).getTotal());
+                        System.out.printf(" -> Total: %d\n", player.getHand(0).getValue());
                     }
                 }
             }
             Hand hand = player.getHand(i);
-            while (hand.getTotal() < 21) {
-                System.out.printf("Current hand total: %d\n", hand.getTotal());
+            while (hand.getValue() < 21) {
+                System.out.printf("Current hand total: %d\n", hand.getValue());
                 System.out.print("1 - Hit\n2 - Stay\n> ");
                 int userChoice = input.nextInt();
                 input.nextLine();
@@ -100,7 +100,7 @@ public class BlackJackCli {
                 }
             }
 
-            System.out.printf("\nCurrent hand total: %d\n", hand.getTotal());
+            System.out.printf("\nCurrent hand total: %d\n", hand.getValue());
             if (hand.isOver21()) {
                 System.out.printf("%s busted!\n", player.getName());
             }
@@ -112,12 +112,12 @@ public class BlackJackCli {
         System.out.println("\n\nDealer's turn\n");
 
         System.out.printf("Dealer's cards: [%s] [%s]\n", dealer.getFaceUpCard(), dealer.getHand().getCard(1));
-        System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getTotal());
+        System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getValue());
 
         while (!dealer.getHand().isOver16()) {
             Card card = game.dealCardToDealer();
             System.out.printf("Dealer drew: %s\n", card);
-            System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getTotal());
+            System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getValue());
         }
         if (dealer.getHand().isOver21()) {
             System.out.println("Dealer busted!");

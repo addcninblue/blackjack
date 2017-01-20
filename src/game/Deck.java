@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.List;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import util.SpriteLoader;
@@ -61,7 +62,10 @@ public class Deck {
             this.deck[index] = temp;
         }
     }
-
+    
+    public Card[] getCards() {
+        return deck;
+    }
     public int getCardCount() {
         return remainingCards;
     }

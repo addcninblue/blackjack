@@ -13,6 +13,15 @@ public class Player {
         hands = new ArrayList<>();
         money = 1000;
         bet = 0;
+        
+        //initHands();
+    }
+    
+    private void initHands() {
+        hands.add(new Hand());
+        if (money < bet) {
+            bet = 1;
+        }
     }
 
     /**

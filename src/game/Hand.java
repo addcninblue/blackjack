@@ -1,5 +1,6 @@
 package game;
 
+import gui.Controller;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -12,22 +13,36 @@ public class Hand implements Iterable<Card>{
     public Hand() {
         cards = new ArrayList<>();
     }
-
-
-    /**
-     * Adds a given card to a player's hand
-     * (Postcondition: card is added to hand)
-     * @param card card to add
-     * (Precondition: card is a valid card)
-     */
+    
     public void addCard(Card card){
-        if (card.RANK == Rank.ACE && getTotal() <= 10) {
+        if (card.RANK == Rank.ACE && getValue() <= 10) {
             card.setValue(11);
         }
         cards.add(card);
     }
-
-    public int getTotal() {
+    
+     public void demoteAces() {
+        for (int i = 0; i < cards.size(); i++) {
+            if (cards.get(i).getValue() == 11) { //only promoted aces will have 11
+                cards.get(i).setValue(1); //magic numbers
+            }
+        }
+    }
+     
+    @Override
+    public Iterator<Card> iterator() {
+        return cards.iterator();
+    }
+    
+    @Override
+    public String toString() {
+        String msg = "";
+        for (Card card : this) {
+            msg += card + " ";
+        }
+        return msg;
+    }
+    public int getValue() {
         int sum = 0;
         for (Card c : cards) {
             sum += c.getValue();
@@ -36,28 +51,22 @@ public class Hand implements Iterable<Card>{
     }
 
     public boolean isOver21() {
-        return getTotal() > 21;
+        return getValue() > 21;
     }
 
     public boolean isOver16() { //only matters for dealer
-        return getTotal() > 16;
+        return getValue() > 16;
     }
 
     public boolean isBlackJack() {
-        return cards.size() == 2 && getTotal() == 21;
+        return cards.size() == 2 && getValue() == 21;
     }
 
     public boolean isSplittable() {
         return cards.size() == 2 && cards.get(0).RANK == cards.get(1).RANK;
     }
 
-    public void demoteAces() {
-        for (int i = 0; i < cards.size(); i++) {
-            if (cards.get(i).getValue() == 11) { //only promoted aces will have 11
-                cards.get(i).setValue(1); //magic numbers
-            }
-        }
-    }
+   
 
     public int count() {
         return cards.size();
@@ -69,10 +78,5 @@ public class Hand implements Iterable<Card>{
 
     public ArrayList<Card> getCards() {
         return cards;
-    }
-
-    @Override
-    public Iterator<Card> iterator() {
-        return cards.iterator();
     }
 }

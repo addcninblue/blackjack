@@ -1,6 +1,7 @@
 package game;
 
 import java.util.ArrayList;
+import javax.swing.SwingUtilities;
 
 public class Game {
     private ArrayList<Player> players;
@@ -10,7 +11,7 @@ public class Game {
         this.players = new ArrayList<>();
         dealer = new Dealer("DEALER");
     }
-
+    
     /**
      * Prepares for a new round by emptying each player's hand
      * (Postcondition: the dealer and players' hands are emptied)
@@ -53,6 +54,9 @@ public class Game {
      * (Precondition: player is nonnull)
      */
     public Card hit(Hand hand) {
+        if (hand.isOver21()) {
+            throw new IllegalStateException("Your hand is already busted!");
+        }
         Card c = dealer.deal();
         hand.addCard(c);
         if (hand.isOver21()) {
@@ -82,9 +86,9 @@ public class Game {
      * (Precondition: player is nonnull)
      */
     public void payBet(Player player) {
-        int dHand = dealer.getHand().getTotal();
+        int dHand = dealer.getHand().getValue();
         for (Hand h : player.getHands()) {
-            int pHand = h.getTotal();
+            int pHand = h.getValue();
             if (h.isBlackJack() && !dealer.getHand().isBlackJack()) { //blackjack
                 player.addMoney((int) (player.getBet() * 2.5));
             } //247blackjack rounds down
@@ -106,8 +110,8 @@ public class Game {
      * (Precondition: player is nonnull)
      */
     public String getResult(Hand h) {
-        int dHand = dealer.getHand().getTotal();
-        int pHand = h.getTotal();
+        int dHand = dealer.getHand().getValue();
+        int pHand = h.getValue();
         return h.isBlackJack() ? "BLACKJACK"
                 : h.isOver21() ? "BUST"
                 : pHand < dHand && !dealer.getHand().isOver21() ? "LOSE"

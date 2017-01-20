@@ -1,3 +1,3 @@
 package game;
 
-public enum Suit { SPADES, CLUBS, DIAMONDS, HEARTS }
+public enum Suit { CLUBS, SPADES, DIAMONDS, HEARTS }

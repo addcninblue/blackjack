@@ -5,6 +5,7 @@
  */
 package gui;
 
+import game.Game;
 import javax.swing.JFrame;
 
 /**
