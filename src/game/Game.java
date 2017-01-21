@@ -1,7 +1,7 @@
 package game;
 
 import java.util.ArrayList;
-import javax.swing.SwingUtilities;
+import java.util.List;
 
 public class Game {
     private ArrayList<Player> players;
@@ -10,6 +10,13 @@ public class Game {
     public Game(){
         this.players = new ArrayList<>();
         dealer = new Dealer("DEALER");
+    }
+    
+    public Game(List<Player> playersList) {
+        this();
+        for (Player player : playersList) {
+            players.add(player);
+        }
     }
     
     /**

@@ -3,6 +3,7 @@ package gui;
 import game.Card;
 import game.Game;
 import game.Hand;
+import game.Rank;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -11,28 +12,28 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 /**
- *
+ * Represents a Controller UI element, unique to each of a player's hand,
+ * for a player to operate.
  * @author Darian
  */
 public class Controller extends JComponent {
     private final Game game;
     private Hand hand;
+    private boolean running;
     
     private JButton doubleBtn;
     private JButton hitBtn;
     private JButton insureBtn;
     private JButton splitBtn;
     private JButton standBtn;
-    /**
-     * Creates new form Controller
-     */
+
     public Controller(Game game, Hand hand) {
         init();
         this.game = game;
         this.hand = hand;
-        //hide special buttons until ready
-        insureBtn.setVisible(false);
-        splitBtn.setVisible(false);
+        this.running = false;
+        
+        showButtons();
     }
     
     private void init() {
@@ -59,16 +60,34 @@ public class Controller extends JComponent {
         
         hitBtn.addActionListener((ActionEvent event) -> {
             Card card = game.hit(hand);
-            if (hand.isOver21()) {
+            
+            doubleBtn.setVisible(false); //can't double after first move!
+            
+            System.out.println(hand.getValue()); //DEBUG
+            if (hand.getValue() == 21 || hand.isOver21()) {
                 endTurn();
-            }
-            update();
+            } 
+            
+            repaint();
         });
         
         standBtn.addActionListener((ActionEvent event) -> {
             endTurn();
         });
         
+        doubleBtn.addActionListener((ActionEvent event) -> {
+           //invoke hit
+           hitBtn.getActionListeners()[0].actionPerformed(event);
+           endTurn();
+        });
+        
+        splitBtn.addActionListener((ActionEvent event) -> {
+            //TODO
+        });
+        
+        insureBtn.addActionListener((ActionEvent event) -> {
+            //TODO
+        });
         add(hitBtn);
         add(standBtn);
         add(doubleBtn);
@@ -76,27 +95,61 @@ public class Controller extends JComponent {
         add(insureBtn);
     }
     
-    public synchronized void startTurn() {
-        try {
-            this.wait();
-        } catch (InterruptedException e) {}
-    }
-    public synchronized void endTurn() {
-        update();
-        this.setVisible(false);
-        this.notify();
+    private void showButtons() {
+        doubleBtn.setVisible(true);
+        splitBtn.setVisible(false);
+        insureBtn.setVisible(false);
+        
+        if (hand.isBlackJack()) {
+            running = false;
+            endTurn();
+        } else if (hand.isSplittable()) {
+            splitBtn.setVisible(true);
+        }
+        
+        if (game.getDealer().getFaceUpCard().RANK == Rank.ACE) {
+            insureBtn.setVisible(true);
+        }
     }
     
-    private void update() {
-        //this is required because repaint() alone will repaint Controller
-        //we want it to repaint GamePanel
+    public synchronized void startTurn() {
+        running = true;
+        setVisible(true);
+
+        showButtons();
+        
+        try {
+            while (this.isRunning()) {
+                wait();
+            }
+        } catch (InterruptedException e) {}
+    }
+    
+    public synchronized void endTurn() {
+        repaint();
+        setVisible(false);
+        if (this.isRunning()) {
+            this.running = false;
+            this.notify();
+        }
+    }
+    
+    @Override
+    public void repaint() {
+        //this is required because otherwise, repaint() will repaint Controller
+        //instead, we want it to repaint GamePanel
         SwingUtilities.getWindowAncestor(this).repaint();
     }
+    
     public void showInsureBtn(boolean show) {
         insureBtn.setVisible(show);
     }
     
     public void showSplitBtn(boolean show) {
         splitBtn.setVisible(show);
+    }
+    
+    public boolean isRunning() {
+        return running;
     }
 }

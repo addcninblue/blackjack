@@ -1,6 +1,5 @@
 package game;
 
-import java.awt.List;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import util.SpriteLoader;

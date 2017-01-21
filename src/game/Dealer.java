@@ -24,6 +24,6 @@ public class Dealer extends Player{
     }
 
     public Card getFaceUpCard() {
-        return getHand().getCard(0);
+        return getHand().getCard(1);
     }
 }

@@ -13,3 +13,4 @@ manifest.mf
 *.swp
 tags
 
+/dist/
