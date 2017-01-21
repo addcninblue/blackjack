@@ -19,6 +19,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import util.SpriteLoader;
 
+import java.util.Scanner;
+import java.util.ArrayList;
+
 /**
  *
  * @author Darian
@@ -29,10 +32,14 @@ public class GamePanel extends JPanel implements Runnable {
     public GamePanel() {
         super();
         init();
-        String playerName = JOptionPane.showInputDialog("What is your name?");
-        Player player = new Player(playerName);
+
         game = new Game();
-        game.addPlayer(player);
+        int playerCount = Integer.parseInt(JOptionPane.showInputDialog("How many players (1-4)?"));
+        for(int i = 0; i < playerCount; i++){
+            String playerName = JOptionPane.showInputDialog("What is player " + (i+1) + "'s name?");
+            Player player = new Player(playerName);
+            game.addPlayer(player);
+        }
         start(); //make sure this is always the last line of the constructor!
     }
     public GamePanel(List<Player> players) {
@@ -62,9 +69,21 @@ public class GamePanel extends JPanel implements Runnable {
         
         while (game.hasPlayers()) {
             game.newRound();
-            
-            //bets
-            //TODO
+            for (Player player : players) {
+                Scanner input = new Scanner(System.in);
+                while (true) {
+                    String betAmt = JOptionPane.showInputDialog(
+                            String.format("\n\n%s's bet ($%d left): ", player.getName(), player.getMoney()));
+
+                    try {
+                        player.bet(Integer.parseInt(betAmt));
+                        break;
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+
+            }
             
             game.initialDeal();
             update();
@@ -73,7 +92,7 @@ public class GamePanel extends JPanel implements Runnable {
             for (Player player : players) {
                 for (Hand hand : player.getHands()) {
                     Controller controller = new Controller(game, hand);
-                    controller.setLocation(0, getHeight()/2);
+                    controller.setLocation(900, getHeight()/2);
                     this.add(controller);
                     
                     controller.startTurn();
@@ -92,12 +111,18 @@ public class GamePanel extends JPanel implements Runnable {
             //get results
             for (Player player : players) {
                 for (Hand hand : player.getHands()) {
-                    System.out.printf("%s ", game.getResult(hand));
+                    JOptionPane.showMessageDialog(null, String.format("%s %s", player.getName(), game.getResult(hand)));
+                    System.out.format("%s %s\n", player.getName(), game.getResult(hand));
                 }
-                //game.payBet(player);
-                //TODO
+                game.payBet(player);
             }
-            update(5000);
+
+            ArrayList<Player> peopleRemoved = game.removeMoneyless();
+            for (Player player : peopleRemoved) {
+                JOptionPane.showMessageDialog(null, String.format("%s removed from game.", player.getName()));
+                // System.out.printf("%s removed from game.\n", player.getName());
+            }
+            update(500);
         }
     }
     
@@ -110,7 +135,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
     
     private void update() {
-        update(2000);
+        update(200);
     }
     
     @Override

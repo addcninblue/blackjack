@@ -171,10 +171,10 @@ public class Game {
         int dHand = dealer.getHand().getValue();
         int pHand = h.getValue();
         String result = h.isBlackJack() ? "BLACKJACK"
-                : h.isOver21() ? "BUST"
-                : pHand < dHand && !dealer.getHand().isOver21() ? "LOSE"
-                : pHand == dHand ? "PUSH"
-                : "WIN";
+                : h.isOver21() ? "busted!"
+                : pHand < dHand && !dealer.getHand().isOver21() ? "lost!"
+                : pHand == dHand ? "pushed!"
+                : "won!";
         if (h.isDoubleDowned()) {
             result += "(DOUBLE DOWN)";
         }
