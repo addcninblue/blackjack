@@ -3,7 +3,7 @@ package game;
 /**
  * @author Daniel Phan
  */
-public class Dealer extends Player{
+public class Dealer extends Player {
     Deck deck;
 
     public Dealer(String name) {

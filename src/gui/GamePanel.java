@@ -12,8 +12,9 @@ import game.Hand;
 import game.Player;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import util.SpriteLoader;
@@ -55,17 +56,36 @@ public class GamePanel extends JPanel implements Runnable {
     public void run() {
         game.newRound();
         game.initialDeal();
+        Map<Controller, Player> controllerToPlayer = new HashMap<Controller, Player>();
+        //init base controllers
         for (Player player : game.getPlayers()) {
             for (Hand hand : player.getHands()) {
                 Controller controller = new Controller(game, hand);
                 controller.setLocation(0, getHeight()/2);
                 
+                controllerToPlayer.put(controller, player);
                 this.add(controller);
             }  
         }
         
         while (game.hasPlayers()) {
-            //TODO
+            for (Controller controller : controllerToPlayer.keySet()) {
+                controller.startTurn(); //wait for endTurn()
+                
+                /*Hand hand = controller.getHand();
+                if (hand.isBlackJack()) {
+                    //TODO
+                } else if (hand.getValue() == 21) {
+                    
+                }*/
+            }
+            for (Player player : game.getPlayers()) {
+                for (Hand hand : player.getHands()) {
+                    System.out.printf("%s ", game.getResult(hand));
+                }
+                //game.payBet(player);
+            }
+            
         }
     }
     @Override

@@ -88,6 +88,7 @@ public class Controller extends JComponent {
         insureBtn.addActionListener((ActionEvent event) -> {
             //TODO
         });
+        
         add(hitBtn);
         add(standBtn);
         add(doubleBtn);
@@ -141,14 +142,9 @@ public class Controller extends JComponent {
         SwingUtilities.getWindowAncestor(this).repaint();
     }
     
-    public void showInsureBtn(boolean show) {
-        insureBtn.setVisible(show);
+    public Hand getHand() {
+        return hand;
     }
-    
-    public void showSplitBtn(boolean show) {
-        splitBtn.setVisible(show);
-    }
-    
     public boolean isRunning() {
         return running;
     }
