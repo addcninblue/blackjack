@@ -45,8 +45,9 @@ public class Game {
         return true;
     }
 
-    public void splitPlayer(Player player, int handI) {
-        player.splitHand(handI);
+    public void splitPlayer(Player player, Hand hand) {
+        int handI = player.getHands().indexOf(hand);
+        player.splitHand(hand);
         player.getHand(handI).addCard(dealer.deal());
         player.getHand(handI + 1).addCard(dealer.deal());
         player.bet(player.getBet());
@@ -69,13 +70,7 @@ public class Game {
             }
         }
     }
-    
-    public void splitPlayer(Player player, Hand hand) {
-        if (!hand.isSplittable()) {
-            throw new IllegalArgumentException(String.format("%s's hand can't be split.", player.getName()));
-        }
-        
-    }
+
     /**
      * The dealer deals the player a card
      * (Postcondition: player is dealt a card)
@@ -100,12 +95,12 @@ public class Game {
     /**
      *
      * @param player the player to double down
-     * @param i the index of the player's hand to double down
+     * @param hand
      * @return the card dealt to the hand
      */
-    public Card doubleDown(Player player, int i) {
+    public Card doubleDown(Player player, Hand hand) {
         Card c = dealer.deal();
-        player.doubleDown(c, i);
+        player.doubleDown(c, hand);
         return c;
     }
 

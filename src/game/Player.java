@@ -59,16 +59,18 @@ public class Player {
     /**
      * Returns whether or not a hand is splittable
      * (Postcondition: hands is unchanged)
-     * @param i the index of the hand to split
+     * @param hand
      * @return whether hands(i) is splittable
      * (Precondition: i is a valid index in hands)
      */
-    public boolean canSplitHand(int i) {
-        return getHand(i).isSplittable() && getMoney() >= getBet();
+    public boolean canSplitHand(Hand hand) {
+        checkHand(hand);
+        return hand.isSplittable() && getMoney() >= getBet();
     }
 
-    public boolean canDoubleDown(int i) {
-        return getHand(i).count() == 2 && getMoney() >= getBet();
+    public boolean canDoubleDown(Hand hand) {
+        checkHand(hand);
+        return hand.count() == 2 && getMoney() >= getBet();
     }
 
     /**
@@ -92,39 +94,51 @@ public class Player {
     /**
      *
      * @param c the card dealt to the hand
-     * @param i the index of the hand to double down
+     * @param hand
      */
-    public void doubleDown(Card c, int i) {
-        if (!canDoubleDown(i)) {
+    public void doubleDown(Card c, Hand hand) {
+        checkHand(hand);
+        if (!canDoubleDown(hand)) {
             throw new IllegalArgumentException(
                     String.format("%s can't double down.\n", name)
             );
         }
 
         bet(getBet());
-        getHand(i).addCard(c);
-        getHand(i).setDoubleDowned();
+        hand.addCard(c);
+        hand.setDoubleDowned();
     }
 
     /**
      * Splits a hand
      * (Postcondition: the hand at index i is split)
-     * @param i the index of the hand in hands to split
+     * @param hand
      * (Precondition: i is an index in hands)
      */
-    public void splitHand(int i) {
-        if (!getHand(i).isSplittable()) {
+    public void splitHand(Hand hand) {
+        checkHand(hand);
+        if (!canSplitHand(hand)) {
             throw new IllegalArgumentException(name + " can't split.\n");
         }
         Hand h1 = new Hand();
         Hand h2 = new Hand();
-        Hand original = hands.get(i);
-        h1.addCard(original.getCard(0));
-        h2.addCard(original.getCard(1));
+        h1.addCard(hand.getCard(0));
+        h2.addCard(hand.getCard(1));
+        int i = hands.indexOf(hand);
         hands.add(i, h1);
         hands.add(i, h2);
-        hands.remove(original);
+        hands.remove(hand);
         //too lazy to make a removeCard function
+    }
+
+    /**
+     * Throws an IllegalArgumentException if hand is not player's
+     * @param hand
+     */
+    private void checkHand(Hand hand) {
+        if (!hands.contains(hand)) {
+            throw new IllegalArgumentException("This hand doesn't belong to " + name);
+        }
     }
 
     @Override

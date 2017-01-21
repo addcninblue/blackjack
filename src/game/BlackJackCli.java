@@ -70,10 +70,10 @@ public class BlackJackCli {
     public static void playerTurns(Player player) {
             System.out.printf("\n\n%s's turn\n\n", player.getName());
             loop: for (int i = 0; i < player.getHands().size(); i++) {
-                if (player.canSplitHand(i)) {
+                if (player.canSplitHand(player.getHand(i))) {
                     System.out.printf("Split hand? (y/n): ");
                     if (input.nextLine().equals("y")) {
-                        game.splitPlayer(player, i);
+                        game.splitPlayer(player, player.getHand(i));
                         for (int j = 0; j < player.getHands().size(); j++) {
                             System.out.printf("Hand %d: ", j);
                             for (Card card : player.getHand(j)) { //only one hand
@@ -89,7 +89,7 @@ public class BlackJackCli {
                 while (h.getValue() < 21) {
                     System.out.printf("Current hand total: %d\n", h.getValue());
                     System.out.print("1 - Hit\n2 - Stay\n");
-                    if (player.canDoubleDown(i)) {
+                    if (player.canDoubleDown(player.getHand(i))) {
                         System.out.println("3 - Double Down");
                     }
                     if (player.canInsure(dealer)) {
@@ -101,8 +101,8 @@ public class BlackJackCli {
                     if (userChoice == 1) {
                         Card card = game.hit(h);
                         System.out.printf("Dealt: %s\n", card);
-                    } else if (userChoice == 3 && player.canDoubleDown(i)) {
-                        Card card = game.doubleDown(player, i);
+                    } else if (userChoice == 3 && player.canDoubleDown(player.getHand(i))) {
+                        Card card = game.doubleDown(player, player.getHand(i));
                         System.out.printf("Dealt: %s\n", card);
                         break;
                     } else if (userChoice == 4 && player.canInsure(dealer)) {
@@ -121,7 +121,7 @@ public class BlackJackCli {
     public static void dealerTurn() {
         System.out.println("\n\nDealer's turn\n");
 
-        System.out.printf("Dealer's cards: [%s] [%s]\n", dealer.getFaceUpCard(), dealer.getHand().getCard(1));
+        System.out.printf("Dealer's cards: [%s] [%s]\n", dealer.getFaceUpCard(), dealer.getHand().getCard(0));
         System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getValue());
 
         while (!dealer.getHand().isOver16()) {
