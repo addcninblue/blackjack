@@ -30,6 +30,29 @@ public class Game {
     }
 
     /**
+     * Sets a player's bet.
+     * (Postcondition: player's bet is set if player has enough money)
+     * @param player the betting player
+     * @param bet the amount bet
+     * @return whether or not the bet was possible
+     * (Precondition: player is nonnull and bet is nonnegative)
+     */
+    public boolean setBet(Player player, int bet) {
+        if (bet > player.getMoney() || bet < 1) {
+            return false;
+        }
+        player.bet(bet);
+        return true;
+    }
+
+    public void splitPlayer(Player player, int handI) {
+        player.splitHand(handI);
+        player.getHand(handI).addCard(dealer.deal());
+        player.getHand(handI + 1).addCard(dealer.deal());
+        player.bet(player.getBet());
+    }
+
+    /**
      * Deals the initial two cards to each player
      * (Postcondition: Each player has two cards)
      * (Precondition: No players in players is null)
@@ -75,15 +98,35 @@ public class Game {
         
     }*/
     /**
-     * Deals a card to the dealer
-     * (Postcondition: dealer is dealt a card)
-     * @return the card dealt
-     * (Precondition: dealer is nonnull and has a hand under 21)
+     *
+     * @param player the player to double down
+     * @param i the index of the player's hand to double down
+     * @return the card dealt to the hand
      */
-    public Card dealCardToDealer() {
+    public Card doubleDown(Player player, int i) {
         Card c = dealer.deal();
-        dealer.getHand().addCard(c);
+        player.doubleDown(c, i);
         return c;
+    }
+
+    /**
+     *
+     * @param player the player to insure
+     */
+    public void insure(Player player) {
+        if (dealer.getFaceUpCard().RANK != Rank.ACE) {
+            throw new IllegalStateException("The dealer does not have a face-up Ace.\n");
+        }
+        player.insure();
+    }
+
+    /**
+     * Returns whether or not the player can insure
+     * @param player the player to check if can insure
+     * @return whether or not player can insure
+     */
+    public boolean canInsure(Player player) {
+        return player.hasInsuranceMoney() && dealer.getFaceUpCard().RANK != Rank.ACE;
     }
 
     /**
@@ -94,16 +137,24 @@ public class Game {
      */
     public void payBet(Player player) {
         int dHand = dealer.getHand().getValue();
-        for (Hand h : player.getHands()) {
-            int pHand = h.getValue();
-            if (h.isBlackJack() && !dealer.getHand().isBlackJack()) { //blackjack
-                player.addMoney((int) (player.getBet() * 2.5));
+        for (Hand hand : player.getHands()) {
+            int pHand = hand.getValue();
+            int moneyWon = 0;
+            if (hand.isBlackJack() && !dealer.getHand().isBlackJack()) {
+                moneyWon = (int) (player.getBet() * 2.5); //if blackjack, not double downed
             } //247blackjack rounds down
-            if (!h.isOver21() && (pHand > dHand || dealer.getHand().isOver21())) { //win
-                player.addMoney(player.getBet() * 2);
-            } else if (!h.isOver21() && !dealer.getHand().isBlackJack() && pHand == dHand) { //push
-                player.addMoney(player.getBet());
+            else if (!hand.isOver21() && (pHand > dHand || dealer.getHand().isOver21())) { //win
+                moneyWon = player.getBet() * 2;
+            } else if (!hand.isOver21() && !dealer.getHand().isBlackJack() && pHand == dHand) { //push
+                moneyWon = player.getBet(); //not really won though
             }
+            if (hand.isDoubleDowned()) {
+                moneyWon *= 2;
+            }
+            player.addMoney(moneyWon);
+        }
+        if (player.isInsured() && dealer.getHand().isBlackJack()) {
+            player.addMoney((int)(player.getBet() * 1.5));
         }
     }
 
@@ -119,11 +170,15 @@ public class Game {
     public String getResult(Hand h) {
         int dHand = dealer.getHand().getValue();
         int pHand = h.getValue();
-        return h.isBlackJack() ? "BLACKJACK"
+        String result = h.isBlackJack() ? "BLACKJACK"
                 : h.isOver21() ? "BUST"
                 : pHand < dHand && !dealer.getHand().isOver21() ? "LOSE"
                 : pHand == dHand ? "PUSH"
                 : "WIN";
+        if (h.isDoubleDowned()) {
+            result += "(DOUBLE DOWN)";
+        }
+        return result;
     }
 
     /**

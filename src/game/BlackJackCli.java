@@ -67,45 +67,55 @@ public class BlackJackCli {
             System.out.printf(" -> Total: %d\n", player.getHand(0).getValue());
         }
     }
-
     public static void playerTurns(Player player) {
-        System.out.printf("\n\n%s's turn\n\n", player.getName());
-        for (int i = 0; i < player.getHands().size(); i++) {
-            if (player.getHand(i).isSplittable()) {
-                System.out.printf("Split hand? (y/n): ");
-                if (input.nextLine().equals("y")) {
-                    player.splitHand(i);
-                    player.getHand(i).addCard(dealer.deal());
-                    player.getHand(i + 1).addCard(dealer.deal());
-                    for (int j = 0; j < player.getHands().size(); j++) {
-                        System.out.printf("Hand %d: ", j);
-                        for (Card card : player.getHand(j)) { //only one hand
-                            System.out.printf("[%s]", card);
+            System.out.printf("\n\n%s's turn\n\n", player.getName());
+            loop: for (int i = 0; i < player.getHands().size(); i++) {
+                if (player.canSplitHand(i)) {
+                    System.out.printf("Split hand? (y/n): ");
+                    if (input.nextLine().equals("y")) {
+                        game.splitPlayer(player, i);
+                        for (int j = 0; j < player.getHands().size(); j++) {
+                            System.out.printf("Hand %d: ", j);
+                            for (Card card : player.getHand(j)) { //only one hand
+                                System.out.printf("[%s]", card);
+                            }
+                            System.out.printf(" -> Total: %d\n", player.getHand(j).getValue());
                         }
                         System.out.printf(" -> Total: %d\n", player.getHand(0).getValue());
                     }
                 }
-            }
-            Hand hand = player.getHand(i);
-            while (hand.getValue() < 21) {
-                System.out.printf("Current hand total: %d\n", hand.getValue());
-                System.out.print("1 - Hit\n2 - Stay\n> ");
-                int userChoice = input.nextInt();
-                input.nextLine();
-                if (userChoice == 1) {
-                    Card card = game.hit(hand);
-                    System.out.printf("Dealt: %s\n", card);
-                } else {
-                    return;
+
+                Hand h = player.getHand(i);
+                while (h.getValue() < 21) {
+                    System.out.printf("Current hand total: %d\n", h.getValue());
+                    System.out.print("1 - Hit\n2 - Stay\n");
+                    if (player.canDoubleDown(i)) {
+                        System.out.println("3 - Double Down");
+                    }
+                    if (player.canInsure(dealer)) {
+                        System.out.println("4 - Insure");
+                    }
+                    System.out.print("> ");
+                    int userChoice = input.nextInt();
+                    input.nextLine();
+                    if (userChoice == 1) {
+                        Card card = game.hit(h);
+                        System.out.printf("Dealt: %s\n", card);
+                    } else if (userChoice == 3 && player.canDoubleDown(i)) {
+                        Card card = game.doubleDown(player, i);
+                        System.out.printf("Dealt: %s\n", card);
+                        break;
+                    } else if (userChoice == 4 && player.canInsure(dealer)) {
+                        player.insure();
+                    } else {
+                        continue loop;
+                    }
+                }
+                System.out.printf("\nCurrent hand total: %d\n", h.getValue());
+                if (h.isOver21()) {
+                    System.out.printf("%s busted!\n", player.getName());
                 }
             }
-
-            System.out.printf("\nCurrent hand total: %d\n", hand.getValue());
-            if (hand.isOver21()) {
-                System.out.printf("%s busted!\n", player.getName());
-            }
-        }
-        
     }
 
     public static void dealerTurn() {
@@ -115,7 +125,7 @@ public class BlackJackCli {
         System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getValue());
 
         while (!dealer.getHand().isOver16()) {
-            Card card = game.dealCardToDealer();
+            Card card = game.hit(dealer.getHand());
             System.out.printf("Dealer drew: %s\n", card);
             System.out.printf("Dealer's hand total: %d\n", dealer.getHand().getValue());
         }
@@ -130,8 +140,8 @@ public class BlackJackCli {
             System.out.printf("%s: ", player.getName());
             for (Hand h : player.getHands()) {
                 System.out.printf("%s ", game.getResult(h));
-                game.payBet(player);
             }
+            game.payBet(player);
             System.out.printf("Bet: %d, Money: %d\n", player.getBet(), player.getMoney());
         }
     }

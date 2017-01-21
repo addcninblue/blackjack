@@ -7,21 +7,14 @@ public class Player {
     private ArrayList<Hand> hands;
     private int money;
     private int bet; //the amount bet during a turn
+    private boolean isInsured; //whether or not the player is insured
 
     public Player(String name){
         this.name = name;
         hands = new ArrayList<>();
         money = 1000;
         bet = 0;
-        
-        //initHands();
-    }
-    
-    private void initHands() {
-        hands.add(new Hand());
-        if (money < bet) {
-            bet = 1;
-        }
+        isInsured = false;
     }
 
     /**
@@ -42,6 +35,14 @@ public class Player {
         this.bet = betAmt;
     }
 
+    public void insure() {
+        if (!hasInsuranceMoney()) {
+            throw new IllegalStateException(name + " doesn't have enough money to insure.\n");
+        }
+        money -= bet / 2;
+        isInsured = true;
+    }
+
     public void addMoney(int amount) {
         money += amount;
     }
@@ -52,6 +53,57 @@ public class Player {
         if (money < bet) {
             bet = 1;
         }
+        isInsured = false;
+    }
+
+    /**
+     * Returns whether or not a hand is splittable
+     * (Postcondition: hands is unchanged)
+     * @param i the index of the hand to split
+     * @return whether hands(i) is splittable
+     * (Precondition: i is a valid index in hands)
+     */
+    public boolean canSplitHand(int i) {
+        return getHand(i).isSplittable() && getMoney() >= getBet();
+    }
+
+    public boolean canDoubleDown(int i) {
+        return getHand(i).count() == 2 && getMoney() >= getBet();
+    }
+
+    /**
+     * Returns whether or not the player can insure
+     * @param dealer the dealer
+     * @return whether or not the player can insure
+     * (Precondition: the dealer and player have not hit yet)
+     */
+    public boolean canInsure(Dealer dealer) {
+        return hasInsuranceMoney()
+                && !isInsured //hasn't insured yet
+                && hands.size() == 1 //hasn't split
+                && hands.get(0).count() == 2 //hasn't hit
+                && dealer.getFaceUpCard().RANK == Rank.ACE;
+    }
+
+    public boolean hasInsuranceMoney() {
+        return money >= bet / 2; //this is used in two methods
+    }
+
+    /**
+     *
+     * @param c the card dealt to the hand
+     * @param i the index of the hand to double down
+     */
+    public void doubleDown(Card c, int i) {
+        if (!canDoubleDown(i)) {
+            throw new IllegalArgumentException(
+                    String.format("%s can't double down.\n", name)
+            );
+        }
+
+        bet(getBet());
+        getHand(i).addCard(c);
+        getHand(i).setDoubleDowned();
     }
 
     /**
@@ -61,6 +113,9 @@ public class Player {
      * (Precondition: i is an index in hands)
      */
     public void splitHand(int i) {
+        if (!getHand(i).isSplittable()) {
+            throw new IllegalArgumentException(name + " can't split.\n");
+        }
         Hand h1 = new Hand();
         Hand h2 = new Hand();
         Hand original = hands.get(i);
@@ -75,6 +130,10 @@ public class Player {
     @Override
     public String toString() {
         return String.format("Player: %s\nMoney: %d", name, money);
+    }
+
+    public boolean isInsured() {
+        return isInsured;
     }
 
     /**

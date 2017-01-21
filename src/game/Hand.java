@@ -9,9 +9,11 @@ import java.util.Iterator;
  */
 public class Hand implements Iterable<Card>{
     private ArrayList<Card> cards;
+    private boolean isDoubleDowned;
 
     public Hand() {
         cards = new ArrayList<>();
+        isDoubleDowned = false;
     }
     
     public void addCard(Card card){
@@ -50,6 +52,10 @@ public class Hand implements Iterable<Card>{
         return sum;
     }
 
+    public boolean isDoubleDowned() {
+        return isDoubleDowned;
+    }
+
     public boolean isOver21() {
         return getValue() > 21;
     }
@@ -78,5 +84,9 @@ public class Hand implements Iterable<Card>{
 
     public ArrayList<Card> getCards() {
         return cards;
+    }
+
+    public void setDoubleDowned() {
+        isDoubleDowned = true;
     }
 }
