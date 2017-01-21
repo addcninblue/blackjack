@@ -56,38 +56,63 @@ public class GamePanel extends JPanel implements Runnable {
     public void run() {
         game.newRound();
         game.initialDeal();
-        Map<Controller, Player> controllerToPlayer = new HashMap<Controller, Player>();
-        //init base controllers
-        for (Player player : game.getPlayers()) {
-            for (Hand hand : player.getHands()) {
-                Controller controller = new Controller(game, hand);
-                controller.setLocation(0, getHeight()/2);
-                
-                controllerToPlayer.put(controller, player);
-                this.add(controller);
-            }  
-        }
+        
+        Dealer dealer = game.getDealer();
+        List<Player> players = game.getPlayers();
         
         while (game.hasPlayers()) {
-            for (Controller controller : controllerToPlayer.keySet()) {
-                controller.startTurn(); //wait for endTurn()
-                
-                /*Hand hand = controller.getHand();
-                if (hand.isBlackJack()) {
-                    //TODO
-                } else if (hand.getValue() == 21) {
+            game.newRound();
+            
+            //bets
+            //TODO
+            
+            game.initialDeal();
+            update();
+            
+            //player turns
+            for (Player player : players) {
+                for (Hand hand : player.getHands()) {
+                    Controller controller = new Controller(game, hand);
+                    controller.setLocation(0, getHeight()/2);
+                    this.add(controller);
                     
-                }*/
+                    controller.startTurn();
+                    System.out.println("HAND: " + hand.toString());
+                }  
             }
-            for (Player player : game.getPlayers()) {
+            
+            //dealer turn
+            dealer.unhideHand();
+            update();
+            while (!dealer.getHand().isOver16()) {
+                update();
+                Card card = game.hit(dealer.getHand());
+            }
+            
+            //get results
+            for (Player player : players) {
                 for (Hand hand : player.getHands()) {
                     System.out.printf("%s ", game.getResult(hand));
                 }
                 //game.payBet(player);
+                //TODO
             }
-            
+            update(5000);
         }
     }
+    
+    private void update(int delay) {
+        repaint();
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+        }
+    }
+    
+    private void update() {
+        update(2000);
+    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

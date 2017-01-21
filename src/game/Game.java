@@ -60,8 +60,8 @@ public class Game {
     public void initialDeal() {
         for (int i = 0; i < 2; i++) {
             dealer.getHand().addCard(dealer.deal());
+            dealer.hideHand();
         }
-        dealer.getHand().getCard(0).setHidden(true);
 
         for (Player player : players) {
             for (int j = 0; j < 2; j++) {

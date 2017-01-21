@@ -32,8 +32,6 @@ public class Controller extends JComponent {
         this.game = game;
         this.hand = hand;
         this.running = false;
-        
-        showButtons();
     }
     
     private void init() {
@@ -63,7 +61,6 @@ public class Controller extends JComponent {
             
             doubleBtn.setVisible(false); //can't double after first move!
             
-            System.out.println(hand.getValue()); //DEBUG
             if (hand.getValue() == 21 || hand.isOver21()) {
                 endTurn();
             } 
@@ -142,6 +139,9 @@ public class Controller extends JComponent {
         SwingUtilities.getWindowAncestor(this).repaint();
     }
     
+    public void setHand(Hand hand) {
+        this.hand = hand;
+    }
     public Hand getHand() {
         return hand;
     }

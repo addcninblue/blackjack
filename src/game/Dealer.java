@@ -1,5 +1,7 @@
 package game;
 
+import javax.swing.SwingUtilities;
+
 /**
  * @author Daniel Phan
  */
@@ -16,7 +18,20 @@ public class Dealer extends Player {
         if (deck.getCardCount() <= 0) {
             deck.reshuffle();
         }
-        return deck.deal();
+        Card card = deck.deal();
+        card.setHidden(false);
+        return card;
+    }
+    
+    public void hideHand() {
+        getHand().getCard(0).setHidden(true);
+    }
+    
+    public void unhideHand() {
+        System.out.println(SwingUtilities.isEventDispatchThread());
+        for (Card card : getHand()) {
+            card.setHidden(false);
+        }
     }
     
     public Hand getHand() {
