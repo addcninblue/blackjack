@@ -69,7 +69,7 @@ public class GamePanel extends JPanel implements Runnable {
             game.newRound();
 
             for (Player player : players) {
-                //getBetFromPlayer(player);
+                getBetFromPlayer(player);
             }
 
             game.initialDeal();
@@ -111,13 +111,13 @@ public class GamePanel extends JPanel implements Runnable {
                     System.out.format("%s %s\n", player.getName(), game.getResult(hand));
                 }
                 game.payBet(player);
-            }
+            }*/
 
-            ArrayList<Player> peopleRemoved = game.removeMoneyless();
+            List<Player> peopleRemoved = game.removeMoneyless();
             for (Player player : peopleRemoved) {
                 JOptionPane.showMessageDialog(null, String.format("%s removed from game.", player.getName()));
                 // System.out.printf("%s removed from game.\n", player.getName());
-            }*/
+            }
 
             endRoundBtn.start();
         }
