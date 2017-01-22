@@ -168,9 +168,7 @@ public class GamePanel extends JPanel implements Runnable {
             AffineTransform at = new AffineTransform();
             at.setToRotation(0.785, 180, 160);
             g3.setTransform(at);
-
-            g3.drawImage(card.getBack(), 180-i, 140-i, null);
-
+            g3.drawImage(card.getBack(), (int)Math.floor(180-i/3), (int)Math.floor(140-i/3), null);
             g3.dispose();
         }
 
