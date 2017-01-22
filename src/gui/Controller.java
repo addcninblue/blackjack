@@ -74,14 +74,13 @@ public class Controller extends JComponent {
         });
 
         doubleBtn.addActionListener((ActionEvent event) -> {
-           //invoke hit
-           Card card = game.hit(hand);
-           card.setHidden(true);
+           game.doubleDown(player);
            endTurn();
         });
 
         splitBtn.addActionListener((ActionEvent event) -> {
             //TODO
+
             repaint();
         });
 
@@ -105,12 +104,14 @@ public class Controller extends JComponent {
         if (hand.isBlackJack()) {
             running = false;
             endTurn();
-        } else if (player.canDoubleDown()) {
-            doubleBtn.setVisible(true);
-        } else if (hand.isSplittable()) {
-            splitBtn.setVisible(true);
         }
 
+        if (player.canDoubleDown()) {
+            doubleBtn.setVisible(true);
+        }
+        if (player.canSplitHand(hand)) {
+            splitBtn.setVisible(true);
+        }
         if (game.getDealer().getFaceUpCard().RANK == Rank.ACE) {
             insureBtn.setVisible(true);
         }

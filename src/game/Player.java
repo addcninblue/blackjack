@@ -7,14 +7,16 @@ public class Player {
     private ArrayList<Hand> hands;
     private int money;
     private int bet; //the amount bet during a turn
-    private boolean isInsured; //whether or not the player is insured
+    private boolean insured; //whether or not the player is insured
+    private boolean doubleDowned;
 
     public Player(String name){
         this.name = name;
         hands = new ArrayList<>();
         money = 1000;
         bet = 0;
-        isInsured = false;
+        insured = false;
+        doubleDowned = false;
     }
 
     /**
@@ -43,7 +45,7 @@ public class Player {
             throw new IllegalStateException(name + " doesn't have enough money to insure.\n");
         }
         money -= bet / 2;
-        isInsured = true;
+        insured = true;
     }
 
     public void addMoney(int amount) {
@@ -62,7 +64,7 @@ public class Player {
         if (money < bet) {
             bet = 1;
         }
-        isInsured = false;
+        insured = false;
     }
 
     /**
@@ -81,7 +83,7 @@ public class Player {
         Hand hand = hands.get(0);
         //has not split, has not hit, and has enough money
         return hands.size() == 1 && hand.count() == 2
-                && getMoney() >= getBet()*2;
+                && getMoney() >= getBet();
     }
 
     /**
@@ -92,7 +94,7 @@ public class Player {
      */
     public boolean canInsure(Dealer dealer) {
         return hasInsuranceMoney()
-                && !isInsured //hasn't insured yet
+                && !insured //hasn't insured yet
                 && hands.size() == 1 //hasn't split
                 && hands.get(0).count() == 2 //hasn't hit
                 && dealer.getFaceUpCard().RANK == Rank.ACE;
@@ -100,24 +102,6 @@ public class Player {
 
     public boolean hasInsuranceMoney() {
         return money >= bet / 2; //this is used in two methods
-    }
-
-    /**
-     *
-     * @param c the card dealt to the hand
-     * @param hand
-     */
-    public void doubleDown(Card c) {
-        Hand hand = hands.get(0);
-        if (!canDoubleDown()) {
-            throw new IllegalArgumentException(
-                    String.format("%s can't double down.\n", name)
-            );
-        }
-
-        bet(getBet());
-        hand.addCard(c);
-        hand.setDoubleDowned();
     }
 
     /**
@@ -158,7 +142,15 @@ public class Player {
     }
 
     public boolean isInsured() {
-        return isInsured;
+        return insured;
+    }
+
+    public boolean isDoubleDowned() {
+        return doubleDowned;
+    }
+
+    public void setDoubleDowned(boolean doubleDowned) {
+        this.doubleDowned = doubleDowned;
     }
 
     /**

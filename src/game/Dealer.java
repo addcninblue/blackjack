@@ -19,7 +19,7 @@ public class Dealer extends Player {
             deck.reshuffle();
         }
         Card card = deck.deal();
-        //card.setHidden(false);
+        //card.setHidden(false); probably not needed
         return card;
     }
 

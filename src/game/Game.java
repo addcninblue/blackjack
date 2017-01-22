@@ -94,9 +94,18 @@ public class Game {
      * @return the card dealt to the hand
      */
     public Card doubleDown(Player player) {
-        Card c = dealer.deal();
-        player.doubleDown(c);
-        return c;
+        if (!player.canDoubleDown()) {
+            throw new IllegalArgumentException(
+                    String.format("%s can't double down.\n", player.getName()));
+        }
+        Hand hand = player.getHand(0);
+        Card card = hit(hand);
+
+        card.setHidden(true);
+        player.setDoubleDowned(true);
+        
+        player.bet(player.getBet());
+        return card;
     }
 
     /**
@@ -138,7 +147,7 @@ public class Game {
             } else if (!hand.isOver21() && !dealer.getHand().isBlackJack() && pHand == dHand) { //push
                 moneyWon = player.getBet(); //not really won though
             }
-            if (hand.isDoubleDowned()) {
+            if (player.isDoubleDowned()) {
                 moneyWon *= 2;
             }
             player.addMoney(moneyWon);
@@ -165,9 +174,6 @@ public class Game {
                 : pHand < dHand && !dealer.getHand().isOver21() ? "lost!"
                 : pHand == dHand ? "pushed!"
                 : "won!";
-        if (h.isDoubleDowned()) {
-            result += "(DOUBLE DOWN)";
-        }
         return result;
     }
 
