@@ -27,8 +27,11 @@ public class Player {
     }
 
     public void bet(int betAmt) {
-        if (betAmt > money || betAmt < 1) {
-            throw new IllegalArgumentException(String.format("%s can't bet $%d\n", name, betAmt));
+        if (betAmt < 1) {
+            throw new IllegalArgumentException("You can't bet below $1!");
+        }
+        if (betAmt > money) {
+            throw new IllegalArgumentException("You don't have enough money to bet!");
         }
         
         this.money -= betAmt;

@@ -28,7 +28,6 @@ public class Dealer extends Player {
     }
     
     public void unhideHand() {
-        System.out.println(SwingUtilities.isEventDispatchThread());
         for (Card card : getHand()) {
             card.setHidden(false);
         }
@@ -40,5 +39,9 @@ public class Dealer extends Player {
 
     public Card getFaceUpCard() {
         return getHand().getCard(1);
+    }
+    
+    public Deck getDeck() {
+        return deck;
     }
 }

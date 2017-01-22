@@ -5,7 +5,7 @@ import java.util.Random;
 import util.SpriteLoader;
 
 public class Deck {
-    private Card[] deck; //the array of cards
+    private Card[] cards; //the array of cards
     private int remainingCards; //the number of cards left still not dealt
 
     public Deck() {
@@ -14,13 +14,13 @@ public class Deck {
         BufferedImage[] cardImages = new SpriteLoader("cards", 67, 95).cardImages;
         
         this.remainingCards = ranks.length * suits.length;
-        this.deck = new Card[this.remainingCards];
+        this.cards = new Card[this.remainingCards];
         
         BufferedImage cardBack = cardImages[52];
         int i = 0;
         for (Suit suit : suits) {
             for (Rank rank : ranks) {
-                this.deck[i] = new Card(rank, suit, cardImages[i], cardBack);
+                this.cards[i] = new Card(rank, suit, cardImages[i], cardBack);
                 i++;
             }
         }
@@ -33,7 +33,7 @@ public class Deck {
      * (Precondition: deck_ and cardsLeft_ are initialized, and deck_ is non null)
      */
     public Card deal() {
-        return this.remainingCards > 0 ? this.deck[--this.remainingCards] : null;
+        return this.remainingCards > 0 ? this.cards[--this.remainingCards] : null;
     }
 
     /**
@@ -43,7 +43,7 @@ public class Deck {
      * (Precondition: deck is used (ie. there are cards taken out of deck))
      */
     public void reshuffle() {
-        this.remainingCards = this.deck.length;
+        this.remainingCards = this.cards.length;
         shuffle();
     }
 
@@ -55,17 +55,17 @@ public class Deck {
     public void shuffle() {
         Random rand = new Random();
 
-        for (int i = 0; i < this.deck.length; i++) {
-            int index = rand.nextInt(this.deck.length - i) + i;
+        for (int i = 0; i < this.cards.length; i++) {
+            int index = rand.nextInt(this.cards.length - i) + i;
 
-            Card temp = this.deck[i];
-            this.deck[i] = this.deck[index];
-            this.deck[index] = temp;
+            Card temp = this.cards[i];
+            this.cards[i] = this.cards[index];
+            this.cards[index] = temp;
         }
     }
     
     public Card[] getCards() {
-        return deck;
+        return cards;
     }
     public int getCardCount() {
         return remainingCards;

@@ -37,9 +37,7 @@ public class Controller extends JComponent {
     private void init() {
         this.setVisible(false);
         this.setOpaque(false);
-        this.setPreferredSize(new Dimension(300, 100));
-        Dimension size = getPreferredSize();
-        this.setBounds(0, 0, size.width, size.height);
+        this.setSize(new Dimension(300, 100));
         this.setLayout(new FlowLayout());
         hitBtn = new JButton("HIT!!!");
         hitBtn.setPreferredSize(new Dimension(90, 50));
@@ -113,9 +111,8 @@ public class Controller extends JComponent {
     public synchronized void startTurn() {
         running = true;
         setVisible(true);
-
         showButtons();
-        
+        repaint();
         try {
             while (this.isRunning()) {
                 wait();
@@ -136,6 +133,7 @@ public class Controller extends JComponent {
     public void repaint() {
         //this is required because otherwise, repaint() will repaint Controller
         //instead, we want it to repaint GamePanel
+        super.repaint();
         SwingUtilities.getWindowAncestor(this).repaint();
     }
     
