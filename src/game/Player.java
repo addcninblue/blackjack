@@ -33,7 +33,7 @@ public class Player {
         if (betAmt > money) {
             throw new IllegalArgumentException("You don't have enough money to bet!");
         }
-        
+
         this.money -= betAmt;
         this.bet = betAmt;
     }
@@ -48,6 +48,12 @@ public class Player {
 
     public void addMoney(int amount) {
         money += amount;
+    }
+
+    public void unhideHand() {
+        for (Card card : hands.get(0)) {
+            card.setHidden(false);
+        }
     }
 
     public void resetTurn() {
@@ -71,9 +77,11 @@ public class Player {
         return hand.isSplittable() && getMoney() >= getBet();
     }
 
-    public boolean canDoubleDown(Hand hand) {
-        checkHand(hand);
-        return hand.count() == 2 && getMoney() >= getBet();
+    public boolean canDoubleDown() {
+        Hand hand = hands.get(0);
+        //has not split, has not hit, and has enough money
+        return hands.size() == 1 && hand.count() == 2
+                && getMoney() >= getBet()*2;
     }
 
     /**
@@ -99,9 +107,9 @@ public class Player {
      * @param c the card dealt to the hand
      * @param hand
      */
-    public void doubleDown(Card c, Hand hand) {
-        checkHand(hand);
-        if (!canDoubleDown(hand)) {
+    public void doubleDown(Card c) {
+        Hand hand = hands.get(0);
+        if (!canDoubleDown()) {
             throw new IllegalArgumentException(
                     String.format("%s can't double down.\n", name)
             );

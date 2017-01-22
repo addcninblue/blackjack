@@ -9,13 +9,13 @@ public class Card {
     private final BufferedImage BACK;
     private int value;
     private boolean hidden;
-    
+
     public Card(Rank rank, Suit suit, BufferedImage image, BufferedImage back) {
         RANK = rank;
         SUIT = suit;
         FACE = image;
         BACK = back;
-        
+
         value = rank.VALUE;
         hidden = false;
     }
@@ -27,15 +27,19 @@ public class Card {
     public void setValue(int value) {
         this.value = value; //all for that one ace
     }
-    
+
     public BufferedImage getImage() {
         return isHidden() ? BACK : FACE;
     }
-    
+
+    public BufferedImage getBack() {
+        return BACK;
+    }
+
     public boolean isHidden() {
         return hidden;
     }
-    
+
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
     }

@@ -11,14 +11,14 @@ public class Game {
         this.players = new ArrayList<>();
         dealer = new Dealer("DEALER");
     }
-    
+
     public Game(List<Player> playersList) {
         this();
         for (Player player : playersList) {
             players.add(player);
         }
     }
-    
+
     /**
      * Prepares for a new round by emptying each player's hand
      * (Postcondition: the dealer and players' hands are emptied)
@@ -53,6 +53,7 @@ public class Game {
         player.bet(player.getBet());
     }
 
+
     /**
      * Deals the initial two cards to each player
      * (Postcondition: Each player has two cards)
@@ -79,9 +80,6 @@ public class Game {
      * (Precondition: player is nonnull)
      */
     public Card hit(Hand hand) {
-        if (hand.isOver21()) {
-            throw new IllegalStateException("Your hand is already busted!");
-        }
         Card c = dealer.deal();
         hand.addCard(c);
         if (hand.isOver21()) {
@@ -89,18 +87,15 @@ public class Game {
         }
         return c;
     }
-    /*public Card deal(Player player, Hand hand) {
-        
-    }*/
     /**
      *
      * @param player the player to double down
      * @param hand
      * @return the card dealt to the hand
      */
-    public Card doubleDown(Player player, Hand hand) {
+    public Card doubleDown(Player player) {
         Card c = dealer.deal();
-        player.doubleDown(c, hand);
+        player.doubleDown(c);
         return c;
     }
 

@@ -15,27 +15,27 @@ public class Hand implements Iterable<Card>{
         cards = new ArrayList<>();
         isDoubleDowned = false;
     }
-    
+
     public void addCard(Card card){
         if (card.RANK == Rank.ACE && getValue() <= 10) {
             card.setValue(11);
         }
         cards.add(card);
     }
-    
-     public void demoteAces() {
+
+    public void demoteAces() {
         for (int i = 0; i < cards.size(); i++) {
             if (cards.get(i).getValue() == 11) { //only promoted aces will have 11
                 cards.get(i).setValue(1); //magic numbers
             }
         }
     }
-     
+
     @Override
     public Iterator<Card> iterator() {
         return cards.iterator();
     }
-    
+
     @Override
     public String toString() {
         String msg = "";
@@ -72,7 +72,7 @@ public class Hand implements Iterable<Card>{
         return cards.size() == 2 && cards.get(0).RANK == cards.get(1).RANK;
     }
 
-   
+
 
     public int count() {
         return cards.size();

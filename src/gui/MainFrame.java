@@ -5,7 +5,7 @@
  */
 package gui;
 
-import game.Game;
+import java.awt.Dimension;
 import javax.swing.JFrame;
 
 /**
@@ -15,7 +15,7 @@ import javax.swing.JFrame;
 public class MainFrame {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
-        frame.setSize(1280, 720);
+        frame.setSize(new Dimension(1280, 720));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new Menu());
         frame.setVisible(true);

@@ -3,6 +3,7 @@ package gui;
 import game.Card;
 import game.Game;
 import game.Hand;
+import game.Player;
 import game.Rank;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -18,22 +19,25 @@ import javax.swing.SwingUtilities;
  */
 public class Controller extends JComponent {
     private final Game game;
+    private Player player;
     private Hand hand;
     private boolean running;
-    
+
     private JButton doubleBtn;
     private JButton hitBtn;
     private JButton insureBtn;
     private JButton splitBtn;
     private JButton standBtn;
 
-    public Controller(Game game, Hand hand) {
+    public Controller(Game game, Player player, Hand hand) {
         init();
         this.game = game;
+        this.player = player;
         this.hand = hand;
+
         this.running = false;
     }
-    
+
     private void init() {
         this.setVisible(false);
         this.setOpaque(false);
@@ -41,73 +45,77 @@ public class Controller extends JComponent {
         this.setLayout(new FlowLayout());
         hitBtn = new JButton("HIT!!!");
         hitBtn.setPreferredSize(new Dimension(90, 50));
-        
+
         standBtn = new JButton("Stand");
         standBtn.setPreferredSize(new Dimension(70, 40));
-        
+
         doubleBtn = new JButton("Double");
         doubleBtn.setPreferredSize(new Dimension(80, 40));
-        
+
         splitBtn = new JButton("Split");
         splitBtn.setPreferredSize(new Dimension(80, 40));
-        
+
         insureBtn = new JButton("Insure");
         insureBtn.setPreferredSize(new Dimension(80, 40));
-        
+
         hitBtn.addActionListener((ActionEvent event) -> {
             Card card = game.hit(hand);
-            
+
             doubleBtn.setVisible(false); //can't double after first move!
-            
+
             if (hand.getValue() == 21 || hand.isOver21()) {
                 endTurn();
-            } 
-            
+            }
             repaint();
         });
-        
+
         standBtn.addActionListener((ActionEvent event) -> {
             endTurn();
         });
-        
+
         doubleBtn.addActionListener((ActionEvent event) -> {
            //invoke hit
-           hitBtn.getActionListeners()[0].actionPerformed(event);
+           Card card = game.hit(hand);
+           card.setHidden(true);
            endTurn();
         });
-        
+
         splitBtn.addActionListener((ActionEvent event) -> {
             //TODO
+            repaint();
         });
-        
+
         insureBtn.addActionListener((ActionEvent event) -> {
             //TODO
+            endTurn();
         });
-        
+
         add(hitBtn);
         add(standBtn);
         add(doubleBtn);
         add(splitBtn);
         add(insureBtn);
     }
-    
+
     private void showButtons() {
-        doubleBtn.setVisible(true);
+        doubleBtn.setVisible(false);
         splitBtn.setVisible(false);
         insureBtn.setVisible(false);
-        
+
         if (hand.isBlackJack()) {
             running = false;
             endTurn();
+        } else if (player.canDoubleDown()) {
+            doubleBtn.setVisible(true);
         } else if (hand.isSplittable()) {
             splitBtn.setVisible(true);
         }
-        
+
         if (game.getDealer().getFaceUpCard().RANK == Rank.ACE) {
             insureBtn.setVisible(true);
         }
     }
-    
+
     public synchronized void startTurn() {
         running = true;
         setVisible(true);
@@ -119,7 +127,7 @@ public class Controller extends JComponent {
             }
         } catch (InterruptedException e) {}
     }
-    
+
     public synchronized void endTurn() {
         repaint();
         setVisible(false);
@@ -128,7 +136,7 @@ public class Controller extends JComponent {
             this.notify();
         }
     }
-    
+
     @Override
     public void repaint() {
         //this is required because otherwise, repaint() will repaint Controller
@@ -136,7 +144,7 @@ public class Controller extends JComponent {
         super.repaint();
         SwingUtilities.getWindowAncestor(this).repaint();
     }
-    
+
     public void setHand(Hand hand) {
         this.hand = hand;
     }

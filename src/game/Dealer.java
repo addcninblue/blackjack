@@ -19,20 +19,20 @@ public class Dealer extends Player {
             deck.reshuffle();
         }
         Card card = deck.deal();
-        card.setHidden(false);
+        //card.setHidden(false);
         return card;
     }
-    
+
     public void hideHand() {
         getHand().getCard(0).setHidden(true);
     }
-    
+
     public void unhideHand() {
         for (Card card : getHand()) {
             card.setHidden(false);
         }
     }
-    
+
     public Hand getHand() {
         return getHands().get(0);
     }
@@ -40,7 +40,7 @@ public class Dealer extends Player {
     public Card getFaceUpCard() {
         return getHand().getCard(1);
     }
-    
+
     public Deck getDeck() {
         return deck;
     }

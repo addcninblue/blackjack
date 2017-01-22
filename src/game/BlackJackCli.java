@@ -53,7 +53,7 @@ public class BlackJackCli {
                 System.out.println(e.getMessage());
             }
         }
-        
+
     }
 
     public static void displayAllHands() {
@@ -89,7 +89,7 @@ public class BlackJackCli {
                 while (h.getValue() < 21) {
                     System.out.printf("Current hand total: %d\n", h.getValue());
                     System.out.print("1 - Hit\n2 - Stay\n");
-                    if (player.canDoubleDown(player.getHand(i))) {
+                    if (player.canDoubleDown()) {
                         System.out.println("3 - Double Down");
                     }
                     if (player.canInsure(dealer)) {
@@ -101,8 +101,8 @@ public class BlackJackCli {
                     if (userChoice == 1) {
                         Card card = game.hit(h);
                         System.out.printf("Dealt: %s\n", card);
-                    } else if (userChoice == 3 && player.canDoubleDown(player.getHand(i))) {
-                        Card card = game.doubleDown(player, player.getHand(i));
+                    } else if (userChoice == 3 && player.canDoubleDown()) {
+                        Card card = game.doubleDown(player);
                         System.out.printf("Dealt: %s\n", card);
                         break;
                     } else if (userChoice == 4 && player.canInsure(dealer)) {
