@@ -17,7 +17,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -65,11 +67,13 @@ public class GamePanel extends JPanel implements Runnable {
         Dealer dealer = game.getDealer();
         List<Player> players = game.getPlayers();
 
+        Map<Player, Integer> playerToPreviousBet = new HashMap<Player, Integer>();
         while (game.hasPlayers()) {
             game.newRound();
 
+
             for (Player player : players) {
-                getBetFromPlayer(player);
+                getBetFromPlayer(player, playerToPreviousBet);
             }
 
             game.initialDeal();
@@ -100,18 +104,17 @@ public class GamePanel extends JPanel implements Runnable {
 
             update();
             while (!dealer.getHand().isOver16()) {
-                update();
                 Card card = game.hit(dealer.getHand());
+                update();
             }
-
             //get results
-            /*for (Player player : players) {
+            for (Player player : players) {
                 for (Hand hand : player.getHands()) {
-                    JOptionPane.showMessageDialog(null, String.format("%s %s", player.getName(), game.getResult(hand)));
+                    //JOptionPane.showMessageDialog(null, String.format("%s %s", player.getName(), game.getResult(hand)));
                     System.out.format("%s %s\n", player.getName(), game.getResult(hand));
                 }
                 game.payBet(player);
-            }*/
+            }
 
             List<Player> peopleRemoved = game.removeMoneyless();
             for (Player player : peopleRemoved) {
@@ -123,14 +126,24 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private void getBetFromPlayer(Player player) {
-        int betAmt = 0;
-        while (betAmt <= 0) {
+    private void getBetFromPlayer(Player player, Map<Player, Integer> playerToPreviousBet) {
+        String betMsg = String.format("\n\n%s's bet ($%d left): ",
+                                      player.getName(), player.getMoney());
+
+        int previousBet = playerToPreviousBet.getOrDefault(player, 0);
+        if (player.getMoney() < previousBet) {
+            previousBet = 0;
+        }
+
+        while (player.getBet() == 0) {
             try {
-                betAmt = Integer.parseInt(JOptionPane.showInputDialog(
-                         String.format("\n\n%s's bet ($%d left): ",
-                                player.getName(), player.getMoney())));
+                int betAmt = Integer.parseInt(JOptionPane.showInputDialog(betMsg,
+                         previousBet == 0 ? null : previousBet));
                 player.bet(betAmt);
+                playerToPreviousBet.put(player, betAmt);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "That is not a valid number!",
+                        "Invalid bet!", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(),
                         "Invalid bet!", JOptionPane.ERROR_MESSAGE);

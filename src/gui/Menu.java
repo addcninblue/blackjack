@@ -22,7 +22,7 @@ public class Menu extends javax.swing.JPanel {
     public Menu() {
         initComponents();
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -85,20 +85,20 @@ public class Menu extends javax.swing.JPanel {
 
     private void startBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startBtnActionPerformed
         JFrame frame = (JFrame)SwingUtilities.getWindowAncestor(this);
-        
+
         //{"1 player", "2 players", "3 players", "4 players"};
         String[] options = {"I'm alone :(", "Company", "Crowd", "Gathering"};
-        int playerCount = 1 + JOptionPane.showOptionDialog(this, 
-                        "How many people are playing?", "Blackjack", 
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, 
+        int playerCount = 1 + JOptionPane.showOptionDialog(this,
+                        "How many people are playing?", "Blackjack",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
                         null, options, options[0]);
-        
+
         List<Player> players = new ArrayList<Player>(playerCount);
         for (int i = 0; i < playerCount; i++) {
             String playerName = JOptionPane.showInputDialog("What is player " + (i+1) + "'s name?");
             players.add(new Player("playerName"));
         }
-        
+
         this.setVisible(false);
         GamePanel gamePanel = new GamePanel(players);
         frame.add(gamePanel);
