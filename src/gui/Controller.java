@@ -95,15 +95,11 @@ public class Controller extends JComponent {
             game.splitPlayer(player, hand);
             // System.out.printf(" -> Total: %d\n", player.getHand(0).getValue());
 
-            //TODO
-
             repaint();
         });
 
         insureBtn.addActionListener((ActionEvent event) -> {
             player.insure();
-            //TODO
-            // endTurn();
             insureBtn.setVisible(false);
             repaint();
         });
@@ -129,16 +125,19 @@ public class Controller extends JComponent {
     }
     
     private void replaceHand(Player player) {
-        hand = new Hand();
+        Hand newHand = new Hand();
         player.getHands().clear();
-        player.getHands().add(hand);
+        player.getHands().add(newHand);
         BufferedImage[] cardImages = game.getDealer().getDeck().getCardImages();
         for (int i = 0; i < 2; i++) {
             int cardId = JOptionPane.showOptionDialog(this, "Choose Card", "DEBUG PLAYER", 
                     JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, 
                     null, Rank.values(), null);
-            hand.addCard(new Card(Rank.values()[cardId], Suit.CLUBS, cardImages[cardId], cardImages[52]));
+            newHand.addCard(new Card(Rank.values()[cardId], Suit.CLUBS, cardImages[cardId], cardImages[52]));
         }
+        if(game.getPlayers().contains(player))
+            hand = newHand;
+        showButtons();
         repaint();
     }
 
