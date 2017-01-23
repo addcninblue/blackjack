@@ -90,7 +90,6 @@ public class Game {
     /**
      *
      * @param player the player to double down
-     * @param hand
      * @return the card dealt to the hand
      */
     public Card doubleDown(Player player) {
@@ -144,7 +143,8 @@ public class Game {
             } //247blackjack rounds down
             else if (!hand.isOver21() && (pHand > dHand || dealer.getHand().isOver21())) { //win
                 moneyWon = player.getBet() * 2;
-            } else if (!hand.isOver21() && !dealer.getHand().isBlackJack() && pHand == dHand) { //push
+            } else if ((!hand.isOver21() && !dealer.getHand().isBlackJack() && pHand == dHand)
+                    || (hand.isBlackJack() && dealer.getHand().isBlackJack())) { //push
                 moneyWon = player.getBet(); //not really won though
             }
             if (player.isDoubleDowned()) {
