@@ -115,14 +115,15 @@ public class Player {
         if (!canSplitHand(hand)) {
             throw new IllegalArgumentException(name + " can't split.\n");
         }
-        Hand h1 = new Hand();
+        // Hand h1 = new Hand();
         Hand h2 = new Hand();
-        h1.addCard(hand.getCard(0));
+        // h1.addCard(hand.getCard(0));
         h2.addCard(hand.getCard(1));
         int i = hands.indexOf(hand);
-        hands.add(i, h1);
-        hands.add(i, h2);
-        hands.remove(hand);
+        // hands.add(i, h1);
+        hands.add(i + 1, h2);
+        hand.getCards().remove(1);
+        // hands.remove(hand);
         //too lazy to make a removeCard function
     }
 

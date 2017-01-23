@@ -79,14 +79,21 @@ public class Controller extends JComponent {
         });
 
         splitBtn.addActionListener((ActionEvent event) -> {
+
+            game.splitPlayer(player, hand);
+            // System.out.printf(" -> Total: %d\n", player.getHand(0).getValue());
+
             //TODO
 
             repaint();
         });
 
         insureBtn.addActionListener((ActionEvent event) -> {
+            player.insure();
             //TODO
-            endTurn();
+            // endTurn();
+            insureBtn.setVisible(false);
+            repaint();
         });
 
         add(hitBtn);
@@ -112,7 +119,7 @@ public class Controller extends JComponent {
         if (player.canSplitHand(hand)) {
             splitBtn.setVisible(true);
         }
-        if (game.getDealer().getFaceUpCard().RANK == Rank.ACE) {
+        if (player.canInsure(game.getDealer())) {
             insureBtn.setVisible(true);
         }
     }
