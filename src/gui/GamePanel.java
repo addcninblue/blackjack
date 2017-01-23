@@ -55,7 +55,6 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void start() {
-
         Thread logicThread = new Thread(this);
         logicThread.start();
     }
@@ -68,9 +67,9 @@ public class GamePanel extends JPanel implements Runnable {
         List<Player> players = game.getPlayers();
 
         Map<Player, Integer> playerToPreviousBet = new HashMap<Player, Integer>();
+        
         while (game.hasPlayers()) {
             game.newRound();
-
 
             for (Player player : players) {
                 getBetFromPlayer(player, playerToPreviousBet);

@@ -5,11 +5,14 @@ import game.Game;
 import game.Hand;
 import game.Player;
 import game.Rank;
+import game.Suit;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -28,6 +31,9 @@ public class Controller extends JComponent {
     private JButton insureBtn;
     private JButton splitBtn;
     private JButton standBtn;
+    
+    private JButton debugPlayerBtn;
+    private JButton debugDealerBtn;
 
     public Controller(Game game, Player player, Hand hand) {
         init();
@@ -57,6 +63,12 @@ public class Controller extends JComponent {
 
         insureBtn = new JButton("Insure");
         insureBtn.setPreferredSize(new Dimension(80, 40));
+        
+        debugPlayerBtn = new JButton("P");
+        debugPlayerBtn.setPreferredSize(new Dimension(80, 40));
+        
+        debugDealerBtn = new JButton("D");
+        debugDealerBtn.setPreferredSize(new Dimension(80, 40));
 
         hitBtn.addActionListener((ActionEvent event) -> {
             Card card = game.hit(hand);
@@ -88,12 +100,39 @@ public class Controller extends JComponent {
             //TODO
             endTurn();
         });
+        
+        debugPlayerBtn.addActionListener((ActionEvent event) -> {
+            replaceHand(player);
+            showButtons();
+            
+        });
+        
+        debugDealerBtn.addActionListener((ActionEvent event) -> {
+            replaceHand(game.getDealer());
+        });
 
         add(hitBtn);
         add(standBtn);
         add(doubleBtn);
         add(splitBtn);
         add(insureBtn);
+        
+        add(debugPlayerBtn);
+        add(debugDealerBtn);
+    }
+    
+    private void replaceHand(Player player) {
+        hand = new Hand();
+        player.getHands().clear();
+        player.getHands().add(hand);
+        BufferedImage[] cardImages = game.getDealer().getDeck().getCardImages();
+        for (int i = 0; i < 2; i++) {
+            int cardId = JOptionPane.showOptionDialog(this, "Choose Card", "DEBUG PLAYER", 
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, 
+                    null, Rank.values(), null);
+            hand.addCard(new Card(Rank.values()[cardId], Suit.CLUBS, cardImages[cardId], cardImages[52]));
+        }
+        repaint();
     }
 
     private void showButtons() {
