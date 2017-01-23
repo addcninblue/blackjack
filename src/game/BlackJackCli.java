@@ -22,8 +22,7 @@ public class BlackJackCli {
         }
         dealer = game.getDealer();
         players = game.getPlayers();
-
-
+        
         while (game.hasPlayers()) {
             game.newRound();
             for (Player player : players) {

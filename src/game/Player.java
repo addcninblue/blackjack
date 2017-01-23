@@ -8,7 +8,6 @@ public class Player {
     private int money;
     private int bet; //the amount bet during a turn
     private boolean insured; //whether or not the player is insured
-    private boolean doubleDowned;
 
     public Player(String name){
         this.name = name;
@@ -16,16 +15,6 @@ public class Player {
         money = 1000;
         bet = 0;
         insured = false;
-        doubleDowned = false;
-    }
-
-    /**
-     * Returns name
-     * (Postcondition: name is returned)
-     * (Precondition: none)
-     */
-    public String getName(){
-        return name;
     }
 
     public void bet(int betAmt) {
@@ -37,7 +26,7 @@ public class Player {
         }
 
         this.money -= betAmt;
-        this.bet = betAmt;
+        this.bet += betAmt;
     }
 
     public void insure() {
@@ -61,9 +50,7 @@ public class Player {
     public void resetTurn() {
         hands.clear();
         hands.add(new Hand());
-        if (money < bet) {
-            bet = 1;
-        }
+        bet = 0;
         insured = false;
     }
 
@@ -93,10 +80,11 @@ public class Player {
      * (Precondition: the dealer and player have not hit yet)
      */
     public boolean canInsure(Dealer dealer) {
+        Hand hand = hands.get(0);
         return hasInsuranceMoney()
                 && !insured //hasn't insured yet
                 && hands.size() == 1 //hasn't split
-                && hands.get(0).count() == 2 //hasn't hit
+                && hand.count() == 2 //hasn't hit
                 && dealer.getFaceUpCard().RANK == Rank.ACE;
     }
 
@@ -137,6 +125,10 @@ public class Player {
         }
     }
 
+    public String getName(){
+        return name;
+    }
+
     @Override
     public String toString() {
         return String.format("Player: %s\nMoney: %d", name, money);
@@ -146,20 +138,6 @@ public class Player {
         return insured;
     }
 
-    public boolean isDoubleDowned() {
-        return doubleDowned;
-    }
-
-    public void setDoubleDowned(boolean doubleDowned) {
-        this.doubleDowned = doubleDowned;
-    }
-
-    /**
-     * Returns the player's hands
-     * (Postcondition: player hands are returned)
-     * (Precondition: hands is initialized)
-     * @return player's hands
-     */
     public ArrayList<Hand> getHands(){
         return hands;
     }

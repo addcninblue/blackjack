@@ -7,11 +7,12 @@ import util.SpriteLoader;
 public class Deck {
     private Card[] cards; //the array of cards
     private int remainingCards; //the number of cards left still not dealt
+    private BufferedImage[] cardImages;
 
     public Deck() {
         Rank[] ranks = Rank.values();
         Suit[] suits = Suit.values();
-        BufferedImage[] cardImages = new SpriteLoader("cards", 67, 95).cardImages;
+        cardImages = new SpriteLoader("cards", 67, 95).cardImages;
         
         this.remainingCards = ranks.length * suits.length;
         this.cards = new Card[this.remainingCards];
@@ -69,5 +70,9 @@ public class Deck {
     }
     public int getCardCount() {
         return remainingCards;
+    }
+    
+    public BufferedImage[] getCardImages() {
+        return cardImages;
     }
 }

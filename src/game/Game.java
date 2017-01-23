@@ -29,22 +29,6 @@ public class Game {
         players.forEach(Player::resetTurn);
     }
 
-    /**
-     * Sets a player's bet.
-     * (Postcondition: player's bet is set if player has enough money)
-     * @param player the betting player
-     * @param bet the amount bet
-     * @return whether or not the bet was possible
-     * (Precondition: player is nonnull and bet is nonnegative)
-     */
-    public boolean setBet(Player player, int bet) {
-        if (bet > player.getMoney() || bet < 1) {
-            return false;
-        }
-        player.bet(bet);
-        return true;
-    }
-
     public void splitPlayer(Player player, Hand hand) {
         int handI = player.getHands().indexOf(hand);
         player.splitHand(hand);
@@ -90,7 +74,6 @@ public class Game {
     /**
      *
      * @param player the player to double down
-     * @param hand
      * @return the card dealt to the hand
      */
     public Card doubleDown(Player player) {
@@ -102,8 +85,7 @@ public class Game {
         Card card = hit(hand);
 
         card.setHidden(true);
-        player.setDoubleDowned(true);
-        
+
         player.bet(player.getBet());
         return card;
     }
@@ -135,20 +117,20 @@ public class Game {
      * (Precondition: player is nonnull)
      */
     public void payBet(Player player) {
-        int dHand = dealer.getHand().getValue();
+        int dealerHand = dealer.getHand().getValue();
         for (Hand hand : player.getHands()) {
-            int pHand = hand.getValue();
+            int playerHand = hand.getValue();
             int moneyWon = 0;
-            if (hand.isBlackJack() && !dealer.getHand().isBlackJack()) {
-                moneyWon = (int) (player.getBet() * 2.5); //if blackjack, not double downed
-            } //247blackjack rounds down
-            else if (!hand.isOver21() && (pHand > dHand || dealer.getHand().isOver21())) { //win
-                moneyWon = player.getBet() * 2;
-            } else if (!hand.isOver21() && !dealer.getHand().isBlackJack() && pHand == dHand) { //push
-                moneyWon = player.getBet(); //not really won though
-            }
-            if (player.isDoubleDowned()) {
-                moneyWon *= 2;
+
+            if (hand.isBlackJack() && !dealer.getHand().isBlackJack()) { //blackjack
+                moneyWon = player.getBet(); //return bet
+                moneyWon += (int)(player.getBet() * 1.5); //pay 3:2
+            } else if (!hand.isOver21() && (playerHand > dealerHand || dealer.getHand().isOver21())) { //win
+                moneyWon = player.getBet(); //return bet
+                moneyWon += player.getBet(); //pay 1:1
+            } else if ((!hand.isOver21() && !dealer.getHand().isBlackJack() && playerHand == dealerHand)
+                    || (hand.isBlackJack() && dealer.getHand().isBlackJack())) { //push
+                moneyWon = player.getBet(); //return bet
             }
             player.addMoney(moneyWon);
         }
