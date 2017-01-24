@@ -72,7 +72,7 @@ public class BlackJackCli {
                 if (player.canSplitHand(player.getHand(i))) {
                     System.out.printf("Split hand? (y/n): ");
                     if (input.nextLine().equals("y")) {
-                        game.splitPlayer(player, player.getHand(i));
+                        game.split(player, player.getHand(i));
                         for (int j = 0; j < player.getHands().size(); j++) {
                             System.out.printf("Hand %d: ", j);
                             for (Card card : player.getHand(j)) { //only one hand

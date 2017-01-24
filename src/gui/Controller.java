@@ -49,8 +49,8 @@ public class Controller extends JComponent {
         this.setOpaque(false);
         this.setSize(new Dimension(300, 100));
         this.setLayout(new FlowLayout());
-        hitBtn = new JButton("HIT!!!");
-        hitBtn.setPreferredSize(new Dimension(90, 50));
+        hitBtn = new JButton("HIT");
+        hitBtn.setPreferredSize(new Dimension(80, 50));
 
         standBtn = new JButton("Stand");
         standBtn.setPreferredSize(new Dimension(70, 40));
@@ -93,7 +93,7 @@ public class Controller extends JComponent {
         });
 
         splitBtn.addActionListener((ActionEvent event) -> {
-            game.splitPlayer(player, hand);
+            game.split(player, hand);
             // System.out.printf(" -> Total: %d\n", player.getHand(0).getValue());
 
             showButtons();
@@ -181,7 +181,6 @@ public class Controller extends JComponent {
     }
 
     public synchronized void endTurn() {
-        System.out.println("ASDF");
         repaint();
         setVisible(false);
         this.notify();

@@ -35,28 +35,6 @@ public class Player {
         bet = 0;
         insured = false;
     }
-    
-    /**
-     * Splits a hand
-     * (Postcondition: the hand at index i is split)
-     * @param hand
-     * (Precondition: i is an index in hands)
-     */
-    public void splitHand(Hand hand) {
-        if (!canSplitHand(hand)) {
-            throw new IllegalArgumentException(name + " can't split.\n");
-        }
-        // Hand h1 = new Hand();
-        Hand h2 = new Hand();
-        // h1.addCard(hand.getCard(0));
-        h2.addCard(hand.getCard(1));
-        int i = hands.indexOf(hand);
-        // hands.add(i, h1);
-        hands.add(i + 1, h2);
-        hand.getCards().remove(1);
-        // hands.remove(hand);
-        //too lazy to make a removeCard function
-    }
 
     @Override
     public String toString() {
@@ -80,15 +58,15 @@ public class Player {
         return hands.size() == 1 && hand.count() == 2 && !hand.isBlackJack()
                 && getMoney() >= getBet();
     }
-    
+
     public String getName(){
         return name;
     }
-    
+
     public boolean isInsured() {
         return insured;
     }
-    
+
     public void setInsured(boolean insured) {
         this.insured = insured;
     }
@@ -104,7 +82,7 @@ public class Player {
     public int getMoney() {
         return money;
     }
-    
+
     public void setMoney(int money) {
         this.money = money;
     }

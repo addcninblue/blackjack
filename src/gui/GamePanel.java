@@ -10,6 +10,7 @@ import game.Dealer;
 import game.Game;
 import game.Hand;
 import game.Player;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -25,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import util.SpriteLoader;
 
 
@@ -34,20 +36,23 @@ import util.SpriteLoader;
  */
 public class GamePanel extends JPanel implements Runnable {
     private Game game;
-    
+    private Menu menu;
+
     private EndRoundButton endRoundBtn;
     private JToggleButton debugBtn;
-    public GamePanel() {
+    public GamePanel(Menu menu) {
         super();
         init();
 
+        this.menu = menu;
         game = new Game();
         game.addPlayer(new Player("Darian"));
     }
-    public GamePanel(List<Player> players) {
+    public GamePanel(Menu menu, List<Player> players) {
         super();
         init();
 
+        this.menu = menu;
         game = new Game(players);
     }
 
@@ -56,7 +61,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         endRoundBtn = new EndRoundButton();
         add(endRoundBtn);
-        
+
         debugBtn = new JToggleButton("DEBUG");
         debugBtn.addActionListener((ActionEvent event) -> {
             Controller.setDebug(!Controller.isDebug());
@@ -66,19 +71,23 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void start() {
+        setVisible(true);
+        Dimension size = SwingUtilities.getWindowAncestor(this).getSize();
+        System.out.println(size.width);
+        endRoundBtn.setLocation(size.width/2 - 80, size.height/3);
+        debugBtn.setLocation(7*size.width/8, size.height/4);
+
         Thread logicThread = new Thread(this);
         logicThread.start();
     }
 
     @Override
     public void run() {
-        setVisible(true);
-
         Dealer dealer = game.getDealer();
         List<Player> players = game.getPlayers();
 
         Map<Player, Integer> playerToPreviousBet = new HashMap<Player, Integer>();
-        
+
         while (game.hasPlayers()) {
             game.newRound();
 
@@ -120,8 +129,10 @@ public class GamePanel extends JPanel implements Runnable {
                 update();
             }
             //get results
+            String[] results = new String[game.getPlayers().size()];
             for (Player player : players) {
                 for (Hand hand : player.getHands()) {
+
                     //JOptionPane.showMessageDialog(null, String.format("%s %s", player.getName(), game.getResult(hand)));
                     System.out.format("%s %s\n", player.getName(), game.getResult(hand));
                 }
@@ -131,11 +142,12 @@ public class GamePanel extends JPanel implements Runnable {
             List<Player> peopleRemoved = game.removeMoneyless();
             for (Player player : peopleRemoved) {
                 JOptionPane.showMessageDialog(null, String.format("%s removed from game.", player.getName()));
-                // System.out.printf("%s removed from game.\n", player.getName());
             }
 
             endRoundBtn.start();
         }
+        setVisible(false);
+        menu.setVisible(true);
     }
 
     private void getBetFromPlayer(Player player, Map<Player, Integer> playerToPreviousBet) {
@@ -179,8 +191,7 @@ public class GamePanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
-        endRoundBtn.setLocation(getWidth()/2 - 80, getHeight()/3);
-        debugBtn.setLocation(7*getWidth()/8, getHeight()/4);
+
         g2.drawImage(SpriteLoader.TABLE_TOP, 0, 0, getWidth(), getHeight(), null);
 
         //draw deck
@@ -200,34 +211,50 @@ public class GamePanel extends JPanel implements Runnable {
 
         //draw dealer's hand
         for (int i = 0; i < dealer.getHand().getCards().size(); i++) {
+            Hand dealerHand = dealer.getHand();
             int xOffset = (int)(getWidth()/2 - 50);
             int yOffset = (int)(getHeight()/8);
-            g2.drawImage(dealer.getHand().getCard(i).getImage(), xOffset + i*CARD_OFFSET, yOffset, null);
+            g2.drawImage(dealerHand.getCard(i).getImage(), xOffset + i*CARD_OFFSET, yOffset, null);
+            drawCenteredString(g2, "" + dealerHand.getValue(), Color.GRAY,
+                               new Rectangle(xOffset, yOffset, 90, 250),
+                               new Font("Courier", Font.PLAIN, 30));
 	}
-        int playerCounter = 0;
+
+        //draw players
         for (int i = 0; i < game.getPlayers().size(); i++) {
             Player player = game.getPlayers().get(i);
+            int xOffset = (int)(0.0625 * getWidth());
+            int yOffset = (int)(0.125*getHeight()) + getHeight()/2;
+
+            //draw
+            drawCenteredString(g2, "$" + player.getMoney(), Color.ORANGE,
+                               new Rectangle(xOffset, 7*getHeight()/8 - 40, 150, 150),
+                               new Font("Courier", Font.PLAIN, 30));
             for (int j = 0; j < player.getHands().size(); j++) {
                 Hand hand = player.getHand(j);
+
+                drawCenteredString(g2, "" + hand.getValue(), Color.BLACK,
+                                   new Rectangle(5 + i*300, yOffset + j*50, 50, 100),
+                                   new Font("Courier", Font.PLAIN, 30));
                 for (int k = 0; k < hand.getCards().size(); k++) {
                     Card card = hand.getCard(k);
-
-                    int xOffset = (int)(0.0625 * getWidth());
-                    int yOffset = (int)(0.125*getHeight()) + getHeight()/2;
-                    g2.drawImage(card.getImage(), xOffset + i*300 + k*CARD_OFFSET, yOffset + j * 50, null);
+                    g2.drawImage(card.getImage(), xOffset + i*300 + k*CARD_OFFSET, yOffset + j*50, null);
                 }
             }
         }
-        /*drawCenteredString(g2, game.getResult(dealer.getHand()),
-                new Rectangle(0, 0, getWidth(), getHeight()), new Font("Cambria", Font.PLAIN, 20));*/
+        /*drawCenteredString(g2, "" + game.getResult(dealer.getHand()), Color.ORANGE,
+                           new Rectangle(0, 0, getWidth(), getHeight()),
+                           new Font("Cambria", Font.PLAIN, 30));*/
     }
 
-    private void drawCenteredString(Graphics g, String text, Rectangle rect, Font font) {
+    private void drawCenteredString(Graphics g, String text, Color color, Rectangle rect, Font font) {
         FontMetrics metrics = g.getFontMetrics(font);
         int x = (rect.width - metrics.stringWidth(text)) / 2;
         int y = ((rect.height - metrics.getHeight()) / 2) + metrics.getAscent();
+
         g.setFont(font);
-        g.drawString(text, x, y);
+        g.setColor(color);
+        g.drawString(text, rect.x + x, rect.y + y);
     }
 
     private class EndRoundButton extends JButton {

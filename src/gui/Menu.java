@@ -100,7 +100,7 @@ public class Menu extends javax.swing.JPanel {
         }
 
         this.setVisible(false);
-        GamePanel gamePanel = new GamePanel(players);
+        GamePanel gamePanel = new GamePanel(this, players);
         frame.add(gamePanel);
         frame.setResizable(false);
         gamePanel.start();

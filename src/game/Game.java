@@ -29,11 +29,23 @@ public class Game {
         players.forEach(Player::resetTurn);
     }
 
-    public void splitPlayer(Player player, Hand hand) {
-        int handI = player.getHands().indexOf(hand);
-        player.splitHand(hand);
-        player.getHand(handI).addCard(dealer.deal());
-        player.getHand(handI + 1).addCard(dealer.deal());
+    public void split(Player player, Hand hand) {
+        if (!player.canSplitHand(hand)) {
+            throw new IllegalArgumentException(player.getName() + " can't split.\n");
+        }
+
+        List<Hand> hands = player.getHands();
+        int handIndex = hands.indexOf(hand);
+        int newHandIndex = handIndex + 1;
+        Hand newHand = new Hand();
+        newHand.addCard(hand.getCard(1));
+
+        hands.add(newHandIndex, newHand);
+        hand.getCards().remove(1);
+
+        hit(player.getHand(handIndex));
+        hit(player.getHand(newHandIndex));
+
         player.bet(player.getBet());
     }
 
@@ -45,13 +57,13 @@ public class Game {
      */
     public void initialDeal() {
         for (int i = 0; i < 2; i++) {
-            dealer.getHand().addCard(dealer.deal());
+            hit(dealer.getHand());
             dealer.hideHand();
         }
 
         for (Player player : players) {
             for (int j = 0; j < 2; j++) {
-                player.getHand(0).addCard(dealer.deal());
+                hit(player.getHand(0));
             }
         }
     }
@@ -175,7 +187,7 @@ public class Game {
                 && player.getHand(0).count() == 2 //hasn't hit
                 && dealer.getFaceUpCard().RANK == Rank.ACE;
     }
-    
+
     public boolean hasPlayers() {
         return players.size() > 0;
     }
