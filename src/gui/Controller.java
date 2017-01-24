@@ -8,6 +8,7 @@ import game.Rank;
 import game.Suit;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JButton;
@@ -21,10 +22,11 @@ import javax.swing.SwingUtilities;
  * @author Darian
  */
 public class Controller extends JComponent {
+    private static boolean debug;
+    
     private final Game game;
     private Player player;
     private Hand hand;
-    private boolean running;
 
     private JButton doubleBtn;
     private JButton hitBtn;
@@ -40,8 +42,6 @@ public class Controller extends JComponent {
         this.game = game;
         this.player = player;
         this.hand = hand;
-
-        this.running = false;
     }
 
     private void init() {
@@ -65,10 +65,10 @@ public class Controller extends JComponent {
         insureBtn.setPreferredSize(new Dimension(80, 40));
         
         debugPlayerBtn = new JButton("P");
-        debugPlayerBtn.setPreferredSize(new Dimension(80, 40));
+        debugPlayerBtn.setPreferredSize(new Dimension(50, 40));
         
         debugDealerBtn = new JButton("D");
-        debugDealerBtn.setPreferredSize(new Dimension(80, 40));
+        debugDealerBtn.setPreferredSize(new Dimension(50, 40));
 
         hitBtn.addActionListener((ActionEvent event) -> {
             Card card = game.hit(hand);
@@ -78,7 +78,8 @@ public class Controller extends JComponent {
             if (hand.getValue() == 21 || hand.isOver21()) {
                 endTurn();
             }
-            repaint();
+            
+            showButtons();
         });
 
         standBtn.addActionListener((ActionEvent event) -> {
@@ -87,31 +88,33 @@ public class Controller extends JComponent {
 
         doubleBtn.addActionListener((ActionEvent event) -> {
            game.doubleDown(player);
+           
            endTurn();
         });
 
         splitBtn.addActionListener((ActionEvent event) -> {
-
             game.splitPlayer(player, hand);
             // System.out.printf(" -> Total: %d\n", player.getHand(0).getValue());
 
-            repaint();
+            showButtons();
         });
 
         insureBtn.addActionListener((ActionEvent event) -> {
-            player.insure();
-            insureBtn.setVisible(false);
-            repaint();
+            game.insure(player);
+            
+            showButtons();
         });
         
         debugPlayerBtn.addActionListener((ActionEvent event) -> {
-            replaceHand(player);
-            showButtons();
+            debugHand(hand);
             
+            showButtons();
         });
         
         debugDealerBtn.addActionListener((ActionEvent event) -> {
-            replaceHand(game.getDealer());
+            debugHand(game.getDealer().getHand());
+            
+            showButtons();
         });
 
         add(hitBtn);
@@ -124,21 +127,20 @@ public class Controller extends JComponent {
         add(debugDealerBtn);
     }
     
-    private void replaceHand(Player player) {
-        Hand newHand = new Hand();
-        player.getHands().clear();
-        player.getHands().add(newHand);
+    private void debugHand(Hand hand) {
+        hand.getCards().clear();
         BufferedImage[] cardImages = game.getDealer().getDeck().getCardImages();
         for (int i = 0; i < 2; i++) {
             int cardId = JOptionPane.showOptionDialog(this, "Choose Card", "DEBUG PLAYER", 
                     JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, 
                     null, Rank.values(), null);
-            newHand.addCard(new Card(Rank.values()[cardId], Suit.CLUBS, cardImages[cardId], cardImages[52]));
+            if (cardId != JOptionPane.CLOSED_OPTION) {
+                hand.addCard(new Card(Rank.values()[cardId], Suit.CLUBS, 
+                                      cardImages[cardId], cardImages[52]));
+            }
         }
-        if(game.getPlayers().contains(player))
-            hand = newHand;
+        
         showButtons();
-        repaint();
     }
 
     private void showButtons() {
@@ -146,9 +148,15 @@ public class Controller extends JComponent {
         splitBtn.setVisible(false);
         insureBtn.setVisible(false);
 
+        debugPlayerBtn.setVisible(false);
+        debugDealerBtn.setVisible(false);
+        if (isDebug()) {
+            debugPlayerBtn.setVisible(true);
+            debugDealerBtn.setVisible(true);
+        }
+        
         if (hand.isBlackJack()) {
-            running = false;
-            endTurn();
+            hitBtn.setVisible(false);
         }
 
         if (player.canDoubleDown()) {
@@ -157,30 +165,26 @@ public class Controller extends JComponent {
         if (player.canSplitHand(hand)) {
             splitBtn.setVisible(true);
         }
-        if (player.canInsure(game.getDealer())) {
+        if (game.canInsure(player)) {
             insureBtn.setVisible(true);
         }
+        
+        repaint();
     }
 
     public synchronized void startTurn() {
-        running = true;
         setVisible(true);
         showButtons();
-        repaint();
         try {
-            while (this.isRunning()) {
-                wait();
-            }
+            wait();
         } catch (InterruptedException e) {}
     }
 
     public synchronized void endTurn() {
+        System.out.println("ASDF");
         repaint();
         setVisible(false);
-        if (this.isRunning()) {
-            this.running = false;
-            this.notify();
-        }
+        this.notify();
     }
 
     @Override
@@ -197,7 +201,11 @@ public class Controller extends JComponent {
     public Hand getHand() {
         return hand;
     }
-    public boolean isRunning() {
-        return running;
+
+    public static boolean isDebug() {
+        return debug;
+    }
+    public static void setDebug(boolean debug) {
+        Controller.debug = debug;
     }
 }

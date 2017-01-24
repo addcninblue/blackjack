@@ -28,6 +28,12 @@ public class Hand implements Iterable<Card>{
             }
         }
     }
+    
+    public void unhideCards() {
+        for (Card card : cards) {
+            card.setHidden(false);
+        }
+    }
 
     @Override
     public Iterator<Card> iterator() {

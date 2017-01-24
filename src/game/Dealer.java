@@ -1,17 +1,15 @@
 package game;
 
-import javax.swing.SwingUtilities;
-
 /**
  * @author Daniel Phan
  */
-public class Dealer extends Player {
+public class Dealer {
     Deck deck;
-
-    public Dealer(String name) {
-        super(name);
+    Hand hand;
+    public Dealer() {
         deck = new Deck();
         deck.shuffle();
+        this.hand = new Hand();
     }
 
     public Card deal() {
@@ -19,26 +17,23 @@ public class Dealer extends Player {
             deck.reshuffle();
         }
         Card card = deck.deal();
-        //card.setHidden(false); probably not needed
         return card;
     }
 
-    public void hideHand() {
-        getHand().getCard(0).setHidden(true);
+    public void resetTurn() {
+        hand = new Hand();
     }
-
-    public void unhideHand() {
-        for (Card card : getHand()) {
-            card.setHidden(false);
-        }
+    
+    public void hideHand() {
+        hand.getCard(0).setHidden(true);
     }
 
     public Hand getHand() {
-        return getHands().get(0);
+        return hand;
     }
 
     public Card getFaceUpCard() {
-        return getHand().getCard(1);
+        return hand.getCard(1);
     }
 
     public Deck getDeck() {

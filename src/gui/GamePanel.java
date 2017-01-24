@@ -16,6 +16,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import util.SpriteLoader;
 
 
@@ -32,7 +34,9 @@ import util.SpriteLoader;
  */
 public class GamePanel extends JPanel implements Runnable {
     private Game game;
+    
     private EndRoundButton endRoundBtn;
+    private JToggleButton debugBtn;
     public GamePanel() {
         super();
         init();
@@ -52,6 +56,13 @@ public class GamePanel extends JPanel implements Runnable {
 
         endRoundBtn = new EndRoundButton();
         add(endRoundBtn);
+        
+        debugBtn = new JToggleButton("DEBUG");
+        debugBtn.addActionListener((ActionEvent event) -> {
+            Controller.setDebug(!Controller.isDebug());
+        });
+        debugBtn.setSize(80, 40);
+        add(debugBtn);
     }
 
     public void start() {
@@ -97,9 +108,11 @@ public class GamePanel extends JPanel implements Runnable {
 
             //dealer turn
             for (Player player : players) {
-                player.unhideHand();
+                for (Hand hand : player.getHands()) {
+                    hand.unhideCards();
+                }
             }
-            dealer.unhideHand();
+            dealer.getHand().unhideCards();
 
             update();
             while (!dealer.getHand().isOver16()) {
@@ -167,6 +180,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         endRoundBtn.setLocation(getWidth()/2 - 80, getHeight()/3);
+        debugBtn.setLocation(7*getWidth()/8, getHeight()/4);
         g2.drawImage(SpriteLoader.TABLE_TOP, 0, 0, getWidth(), getHeight(), null);
 
         //draw deck

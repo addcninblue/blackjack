@@ -9,7 +9,7 @@ public class Game {
 
     public Game(){
         this.players = new ArrayList<>();
-        dealer = new Dealer("DEALER");
+        dealer = new Dealer();
     }
 
     public Game(List<Player> playersList) {
@@ -95,19 +95,11 @@ public class Game {
      * @param player the player to insure
      */
     public void insure(Player player) {
-        if (dealer.getFaceUpCard().RANK != Rank.ACE) {
-            throw new IllegalStateException("The dealer does not have a face-up Ace.\n");
+        if (!canInsure(player)) {
+            throw new IllegalStateException("Can't insure this player!\n");
         }
-        player.insure();
-    }
-
-    /**
-     * Returns whether or not the player can insure
-     * @param player the player to check if can insure
-     * @return whether or not player can insure
-     */
-    public boolean canInsure(Player player) {
-        return player.hasInsuranceMoney() && dealer.getFaceUpCard().RANK != Rank.ACE;
+        player.setMoney(player.getMoney() - player.getBet()/2);
+        player.setInsured(true);
     }
 
     /**
@@ -132,10 +124,10 @@ public class Game {
                     || (hand.isBlackJack() && dealer.getHand().isBlackJack())) { //push
                 moneyWon = player.getBet(); //return bet
             }
-            player.addMoney(moneyWon);
+            player.setMoney(player.getMoney() + moneyWon);
         }
         if (player.isInsured() && dealer.getHand().isBlackJack()) {
-            player.addMoney((int)(player.getBet() * 1.5));
+            player.setMoney(player.getMoney() + (int)(player.getBet()*1.5));
         }
     }
 
@@ -176,6 +168,14 @@ public class Game {
         return moneyless;
     }
 
+    public boolean canInsure(Player player) {
+        return player.getMoney() >= player.getBet() / 2 //has money
+                && !player.isInsured() //hasn't insured yet
+                && player.getHands().size() == 1 //hasn't split
+                && player.getHand(0).count() == 2 //hasn't hit
+                && dealer.getFaceUpCard().RANK == Rank.ACE;
+    }
+    
     public boolean hasPlayers() {
         return players.size() > 0;
     }
