@@ -1,7 +1,9 @@
 package game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Game {
     private ArrayList<Player> players;
@@ -122,9 +124,9 @@ public class Game {
      */
     public void payBet(Player player) {
         int dealerHand = dealer.getHand().getValue();
+        int moneyWon = 0;
         for (Hand hand : player.getHands()) {
             int playerHand = hand.getValue();
-            int moneyWon = 0;
 
             if (hand.isBlackJack() && !dealer.getHand().isBlackJack()) { //blackjack
                 moneyWon = player.getBet(); //return bet
@@ -136,11 +138,12 @@ public class Game {
                     || (hand.isBlackJack() && dealer.getHand().isBlackJack())) { //push
                 moneyWon = player.getBet(); //return bet
             }
-            player.setMoney(player.getMoney() + moneyWon);
         }
         if (player.isInsured() && dealer.getHand().isBlackJack()) {
-            player.setMoney(player.getMoney() + (int)(player.getBet()*1.5));
+            moneyWon += player.getBet()*1.5;
         }
+
+        player.setMoney(player.getMoney() + moneyWon);
     }
 
     /**
@@ -155,11 +158,11 @@ public class Game {
     public String getResult(Hand h) {
         int dHand = dealer.getHand().getValue();
         int pHand = h.getValue();
-        String result = h.isBlackJack() ? "BLACKJACK"
-                : h.isOver21() ? "busted!"
-                : pHand < dHand && !dealer.getHand().isOver21() ? "lost!"
-                : pHand == dHand ? "pushed!"
-                : "won!";
+        String result = h.isBlackJack() ? "BJ"
+                : h.isOver21() ? "BUST"
+                : pHand < dHand && !dealer.getHand().isOver21() ? "LOSE"
+                : pHand == dHand ? "PUSH"
+                : "WIN";
         return result;
     }
 

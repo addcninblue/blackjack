@@ -96,7 +96,7 @@ public class Menu extends javax.swing.JPanel {
         List<Player> players = new ArrayList<Player>(playerCount);
         for (int i = 0; i < playerCount; i++) {
             String playerName = JOptionPane.showInputDialog("What is player " + (i+1) + "'s name?");
-            players.add(new Player("playerName"));
+            players.add(new Player(playerName));
         }
 
         this.setVisible(false);

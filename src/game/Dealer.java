@@ -13,17 +13,18 @@ public class Dealer {
     }
 
     public Card deal() {
-        if (deck.getCardCount() <= 0) {
+        if (deck.isEmpty()) {
             deck.reshuffle();
         }
         Card card = deck.deal();
+
         return card;
     }
 
     public void resetTurn() {
         hand = new Hand();
     }
-    
+
     public void hideHand() {
         hand.getCard(0).setHidden(true);
     }
