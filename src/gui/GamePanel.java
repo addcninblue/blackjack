@@ -192,7 +192,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
 
-        g2.drawImage(SpriteLoader.TABLE_TOP, 0, 0, getWidth(), getHeight(), null);
+        g2.drawImage(SpriteLoader.SOLARIZED_TABLE_TOP, 0, 0, getWidth(), getHeight(), null);
 
         //draw deck
         final int CARD_OFFSET = 14;
@@ -223,8 +223,11 @@ public class GamePanel extends JPanel implements Runnable {
         //draw players
         for (int i = 0; i < game.getPlayers().size(); i++) {
             Player player = game.getPlayers().get(i);
-            int xOffset = (int)(0.0625 * getWidth());
-            int yOffset = (int)(0.125*getHeight()) + getHeight()/2;
+            int xOffset = getWidth() / 16;
+            int yOffset = getHeight() / 8 + getHeight()/2;
+
+            // draw border
+            g2.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, getWidth() / 16 + i * 300 - 30, yOffset - 50, getWidth() / 6, getHeight() / 3, null);
 
             //draw
             drawCenteredString(g2, "$" + player.getMoney(), Color.ORANGE,

@@ -14,6 +14,9 @@ import javax.imageio.ImageIO;
 public class SpriteLoader {
     public static final BufferedImage MENU_BACKGROUND = loadPng("menu");
     public static final BufferedImage TABLE_TOP = loadPng("table");
+    public static final BufferedImage RECTANGLE = loadPng("rectangle");
+    public static final BufferedImage SOLARIZED_TABLE_TOP = loadPng("solarizedBackground");
+    public static final BufferedImage SOLARIZED_RECTANGLE = loadPng("solarizedRectangle");
     
     public final BufferedImage[] cardImages;
     public final int imageWidth;
