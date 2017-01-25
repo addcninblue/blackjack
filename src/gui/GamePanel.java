@@ -38,12 +38,15 @@ public class GamePanel extends JPanel implements Runnable {
     private Game game;
     private Menu menu;
 
+    private boolean drawingResults;
+
     private EndRoundButton endRoundBtn;
     private JToggleButton debugBtn;
     public GamePanel(Menu menu) {
         super();
         init();
 
+        this.drawingResults = false;
         this.menu = menu;
         game = new Game();
         game.addPlayer(new Player("Darian"));
@@ -52,6 +55,7 @@ public class GamePanel extends JPanel implements Runnable {
         super();
         init();
 
+        this.drawingResults = false;
         this.menu = menu;
         game = new Game(players);
     }
@@ -99,21 +103,7 @@ public class GamePanel extends JPanel implements Runnable {
             update();
 
             //player turns
-            for (int i = 0; i < players.size(); i++) {
-                Player player = players.get(i);
-                for (int j = 0; j < player.getHands().size(); j++) {
-                    Hand hand = player.getHand(j);
-                    Controller controller = new Controller(game, player, hand);
-
-                    int xOffset = (int)(0.015625*getWidth());
-                    int yOffset = getHeight()/2 - 30;
-                    controller.setLocation(xOffset + i*300, yOffset);
-
-                    this.add(controller);
-                    controller.startTurn();
-                    this.remove(controller);
-                }
-            }
+            runPlayerTurns();
 
             //dealer turn
             for (Player player : players) {
@@ -129,13 +119,10 @@ public class GamePanel extends JPanel implements Runnable {
                 update();
             }
             //get results
+            drawingResults = true;
             String[] results = new String[game.getPlayers().size()];
             for (Player player : players) {
-                for (Hand hand : player.getHands()) {
-
-                    //JOptionPane.showMessageDialog(null, String.format("%s %s", player.getName(), game.getResult(hand)));
-                    System.out.format("%s %s\n", player.getName(), game.getResult(hand));
-                }
+                update();
                 game.payBet(player);
             }
 
@@ -173,6 +160,25 @@ public class GamePanel extends JPanel implements Runnable {
                         "Invalid bet!", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    private void runPlayerTurns() {
+        List<Player> players = game.getPlayers();
+        for (int i = 0; i < players.size(); i++) {
+                Player player = players.get(i);
+                for (int j = 0; j < player.getHands().size(); j++) {
+                    Hand hand = player.getHand(j);
+                    Controller controller = new Controller(game, player, hand);
+
+                    int xOffset = (int)(0.015625*getWidth());
+                    int yOffset = getHeight()/2 - 30;
+                    controller.setLocation(xOffset + i*300, yOffset);
+
+                    this.add(controller);
+                    controller.startTurn();
+                    this.remove(controller);
+                }
+            }
     }
 
     private void update(int delay) {
@@ -215,9 +221,6 @@ public class GamePanel extends JPanel implements Runnable {
             int xOffset = (int)(getWidth()/2 - 50);
             int yOffset = (int)(getHeight()/8);
             g2.drawImage(dealerHand.getCard(i).getImage(), xOffset + i*CARD_OFFSET, yOffset, null);
-            drawCenteredString(g2, "" + dealerHand.getValue(), Color.GRAY,
-                               new Rectangle(xOffset, yOffset, 90, 250),
-                               new Font("Courier", Font.PLAIN, 30));
 	}
 
         //draw players
@@ -226,25 +229,30 @@ public class GamePanel extends JPanel implements Runnable {
             int xOffset = (int)(0.0625 * getWidth());
             int yOffset = (int)(0.125*getHeight()) + getHeight()/2;
 
-            //draw
-            drawCenteredString(g2, "$" + player.getMoney(), Color.ORANGE,
+            //draw names
+            drawCenteredString(g2, player.getName(), Color.ORANGE,
                                new Rectangle(xOffset, 7*getHeight()/8 - 40, 150, 150),
                                new Font("Courier", Font.PLAIN, 30));
+
+            //draw money
+            drawCenteredString(g2, String.format("%8s: $%d", player.getName(), player.getMoney()), Color.ORANGE,
+                               new Rectangle(9*getWidth()/10, 30 + i*50, 80, 10),
+                               new Font("Courier", Font.PLAIN, 20));
             for (int j = 0; j < player.getHands().size(); j++) {
                 Hand hand = player.getHand(j);
 
-                drawCenteredString(g2, "" + hand.getValue(), Color.BLACK,
-                                   new Rectangle(5 + i*300, yOffset + j*50, 50, 100),
-                                   new Font("Courier", Font.PLAIN, 30));
+                //draw results if necessary
+                if (drawingResults) {
+                    drawCenteredString(g2, game.getResult(hand), Color.ORANGE,
+                                       new Rectangle(i*300, yOffset + j*50, 80, 80),
+                                       new Font("Courier", Font.BOLD, 25));
+                }
                 for (int k = 0; k < hand.getCards().size(); k++) {
                     Card card = hand.getCard(k);
                     g2.drawImage(card.getImage(), xOffset + i*300 + k*CARD_OFFSET, yOffset + j*50, null);
                 }
             }
         }
-        /*drawCenteredString(g2, "" + game.getResult(dealer.getHand()), Color.ORANGE,
-                           new Rectangle(0, 0, getWidth(), getHeight()),
-                           new Font("Cambria", Font.PLAIN, 30));*/
     }
 
     private void drawCenteredString(Graphics g, String text, Color color, Rectangle rect, Font font) {
@@ -279,6 +287,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         public synchronized void stop() {
             setVisible(false);
+            drawingResults = false;
             notify();
         }
     }
