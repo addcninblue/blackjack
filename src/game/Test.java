@@ -15,7 +15,7 @@ public class Test extends JPanel {
     public Test() {
         super();
         Deck deck = new Deck();
-        cards = deck.getCards();
+        cards = deck.stream().toArray(Card[]::new);
     }
     @Override
     protected void paintComponent(Graphics g) {

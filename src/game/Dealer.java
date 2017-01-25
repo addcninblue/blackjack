@@ -13,7 +13,7 @@ public class Dealer {
     }
 
     public Card deal() {
-        if (deck.getCardCount() <= 0) {
+        if (deck.isEmpty()) {
             deck.reshuffle();
         }
         Card card = deck.deal();

@@ -1,27 +1,30 @@
 package game;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 import util.SpriteLoader;
 
-public class Deck {
-    private Card[] cards; //the array of cards
-    private int remainingCards; //the number of cards left still not dealt
+public class Deck extends ArrayList<Card> {
     private BufferedImage[] cardImages;
 
     public Deck() {
+        resetDeck();
+    }
+
+    private void resetDeck() {
+        cardImages = new SpriteLoader("cards", 67, 95).cardImages;
+        BufferedImage cardBack = cardImages[52];
+
         Rank[] ranks = Rank.values();
         Suit[] suits = Suit.values();
-        cardImages = new SpriteLoader("cards", 67, 95).cardImages;
-        
-        this.remainingCards = ranks.length * suits.length;
-        this.cards = new Card[this.remainingCards];
-        
-        BufferedImage cardBack = cardImages[52];
         int i = 0;
+
+        clear();
         for (Suit suit : suits) {
             for (Rank rank : ranks) {
-                this.cards[i] = new Card(rank, suit, cardImages[i], cardBack);
+                this.add(new Card(rank, suit, cardImages[i], cardBack));
                 i++;
             }
         }
@@ -34,7 +37,7 @@ public class Deck {
      * (Precondition: deck_ and cardsLeft_ are initialized, and deck_ is non null)
      */
     public Card deal() {
-        return this.remainingCards > 0 ? this.cards[--this.remainingCards] : null;
+        return isEmpty() ? null : remove(0);
     }
 
     /**
@@ -44,7 +47,7 @@ public class Deck {
      * (Precondition: deck is used (ie. there are cards taken out of deck))
      */
     public void reshuffle() {
-        this.remainingCards = this.cards.length;
+        resetDeck();
         shuffle();
     }
 
@@ -56,22 +59,12 @@ public class Deck {
     public void shuffle() {
         Random rand = new Random();
 
-        for (int i = 0; i < this.cards.length; i++) {
-            int index = rand.nextInt(this.cards.length - i) + i;
-
-            Card temp = this.cards[i];
-            this.cards[i] = this.cards[index];
-            this.cards[index] = temp;
+        for (int i = 0; i < size(); i++) {
+            int index = rand.nextInt(size() - i) + i;
+            Collections.swap(this, i, index);
         }
     }
-    
-    public Card[] getCards() {
-        return cards;
-    }
-    public int getCardCount() {
-        return remainingCards;
-    }
-    
+
     public BufferedImage[] getCardImages() {
         return cardImages;
     }
