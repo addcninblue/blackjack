@@ -5,6 +5,7 @@ import game.Dealer;
 import game.Game;
 import game.Hand;
 import game.Player;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -18,7 +19,7 @@ import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JButton;
+import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -37,43 +38,41 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean drawingResults;
     private Hand activeHand;
 
-    private EndRoundButton endRoundBtn;
+    private DealerPanel dealerPnl;
     private JToggleButton debugBtn;
     public GamePanel(Menu menu) {
-        super();
-        init();
-
         this.menu = menu;
         game = new Game();
         game.addPlayer(new Player("Darian"));
-    }
-    public GamePanel(Menu menu, List<Player> players) {
-        super();
-        init();
 
+        initGUI();
+    }
+
+    public GamePanel(Menu menu, List<Player> players) {
         this.menu = menu;
         game = new Game(players);
+
+        initGUI();
     }
 
-    private void init() {
-        setLayout(null);
+    private void initGUI() {
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        endRoundBtn = new EndRoundButton();
-        add(endRoundBtn);
+        dealerPnl = new DealerPanel(game.getDealer());
 
         debugBtn = new JToggleButton("DEBUG");
         debugBtn.addActionListener((ActionEvent event) -> {
             Controller.setDebug(!Controller.isDebug());
         });
-        debugBtn.setSize(80, 40);
+        debugBtn.setPreferredSize(new Dimension(80, 40));
+
+        add(dealerPnl);
         add(debugBtn);
     }
 
     public void start() {
         setVisible(true);
         Dimension size = SwingUtilities.getWindowAncestor(this).getSize();
-        endRoundBtn.setLocation(size.width/2 - 80, size.height/3);
-        debugBtn.setLocation(7*size.width/8, size.height/4);
 
         Thread logicThread = new Thread(this);
         logicThread.start();
@@ -109,7 +108,7 @@ public class GamePanel extends JPanel implements Runnable {
                                               "Player Eliminated!", JOptionPane.WARNING_MESSAGE);
                 render();
             }
-            endRoundBtn.start();
+            dealerPnl.start();
         }
         setVisible(false);
         menu.setVisible(true);
@@ -201,9 +200,6 @@ public class GamePanel extends JPanel implements Runnable {
         final int CARD_OFFSET = 14;
         paintDeck(g2);
 
-        //draw dealer's hand
-        paintDealer(g2, CARD_OFFSET);
-
         //draw players
         paintPlayers(g2, CARD_OFFSET);
     }
@@ -223,18 +219,6 @@ public class GamePanel extends JPanel implements Runnable {
             g3.drawImage(card.getBack(), (int)Math.floor(180-i/3), (int)Math.floor(140-i/3), null);
         }
         g3.dispose();
-    }
-
-    private void paintDealer(Graphics2D g2, final int CARD_OFFSET) {
-        Dealer dealer = game.getDealer();
-        for (int i = 0; i < dealer.getHand().getCards().size(); i++) {
-            Hand dealerHand = dealer.getHand();
-            int xOffset = (int)(getWidth()/2 - 50);
-            int yOffset = (int)(getHeight()/9);
-
-            //draw hand
-            g2.drawImage(dealerHand.getCard(i).getImage(), xOffset + i*CARD_OFFSET, yOffset, null);
-        }
     }
 
     private void paintPlayers(Graphics2D g2, final int CARD_OFFSET) {
@@ -287,31 +271,5 @@ public class GamePanel extends JPanel implements Runnable {
         g.drawString(text, rect.x + x, rect.y + y);
     }
 
-    private class EndRoundButton extends JButton {
-        public EndRoundButton() {
-            init();
-        }
-        private void init() {
-            setVisible(false);
-            setSize(new Dimension(120, 60));
-            setText("Next Round");
-            addActionListener((ActionEvent) -> {
-                stop();
-            });
-        }
 
-        public synchronized void start() {
-            setVisible(true);
-            render();
-            try {
-                wait();
-            } catch (InterruptedException e) {}
-        }
-
-        public synchronized void stop() {
-            setVisible(false);
-            drawingResults = false;
-            notify();
-        }
-    }
 }
