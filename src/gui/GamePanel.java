@@ -148,8 +148,8 @@ public class GamePanel extends JPanel implements Runnable {
                     activeHand = hand;
                     Controller controller = new Controller(game, player, hand);
 
-                    int xOffset = (int)(0.015625*getWidth());
-                    int yOffset = getHeight()/2 - 30;
+                    int xOffset = getWidth()/64 - 10;
+                    int yOffset = getHeight()/2 - 35;
                     controller.setLocation(xOffset + i*300, yOffset);
 
                     this.add(controller);
@@ -244,16 +244,16 @@ public class GamePanel extends JPanel implements Runnable {
             int yOffset = getHeight()/6 + getHeight()/2;
 
             //draw border
-            g2.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, getWidth()/16 + i*300 - 30, yOffset - 50, getWidth()/6, getHeight()/3, null);
+            g2.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, getWidth()/16 + i*300 - 30, yOffset - 50, getWidth()/6, getHeight()/3 + 20, null);
 
             //draw name
             drawCenteredString(g2, player.getName(), Color.ORANGE,
-                    new Rectangle(xOffset + i*300, 7*getHeight()/8 - 40, 150, 150),
+                    new Rectangle(xOffset + i*300, 7*getHeight()/8, 150, 150),
                     new Font("Courier", Font.PLAIN, 30));
 
             //draw money
-            drawCenteredString(g2, String.format("%8s: $%d", player.getName(), player.getMoney()), Color.ORANGE,
-                    new Rectangle(9*getWidth()/10, 30 + i*30, 80, 10),
+            drawCenteredString(g2, String.format("%8s: $%d ($%d)", player.getName(), player.getMoney(), player.getBet()), Color.ORANGE,
+                    new Rectangle(9*getWidth()/10, 30 + i*30, 70, 10),
                     new Font("Courier", Font.PLAIN, 20));
             for (int j = 0; j < player.getHands().size(); j++) {
                 Hand hand = player.getHand(j);
