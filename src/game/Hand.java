@@ -1,6 +1,5 @@
 package game;
 
-import gui.Controller;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -28,7 +27,7 @@ public class Hand implements Iterable<Card>{
             }
         }
     }
-    
+
     public void unhideCards() {
         for (Card card : cards) {
             card.setHidden(false);

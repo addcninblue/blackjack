@@ -5,16 +5,12 @@ import java.awt.image.BufferedImage;
 public class Card {
     public final Rank RANK;
     public final Suit SUIT;
-    private final BufferedImage FACE;
-    private final BufferedImage BACK;
     private int value;
     private boolean hidden;
 
-    public Card(Rank rank, Suit suit, BufferedImage image, BufferedImage back) {
+    public Card(Rank rank, Suit suit) {
         RANK = rank;
         SUIT = suit;
-        FACE = image;
-        BACK = back;
 
         value = rank.VALUE;
         hidden = false;
@@ -26,14 +22,6 @@ public class Card {
 
     public void setValue(int value) {
         this.value = value; //all for that one ace
-    }
-
-    public BufferedImage getImage() {
-        return isHidden() ? BACK : FACE;
-    }
-
-    public BufferedImage getBack() {
-        return BACK;
     }
 
     public boolean isHidden() {

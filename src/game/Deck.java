@@ -4,28 +4,20 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
-import util.SpriteLoader;
 
 public class Deck extends ArrayList<Card> {
-    private BufferedImage[] cardImages;
-
     public Deck() {
         resetDeck();
     }
 
     private void resetDeck() {
-        cardImages = new SpriteLoader("cards", 67, 95).cardImages;
-        BufferedImage cardBack = cardImages[52];
-
         Rank[] ranks = Rank.values();
         Suit[] suits = Suit.values();
-        int i = 0;
 
         clear();
         for (Suit suit : suits) {
             for (Rank rank : ranks) {
-                this.add(new Card(rank, suit, cardImages[i], cardBack));
-                i++;
+                this.add(new Card(rank, suit));
             }
         }
     }
@@ -63,9 +55,5 @@ public class Deck extends ArrayList<Card> {
             int index = rand.nextInt(size() - i) + i;
             Collections.swap(this, i, index);
         }
-    }
-
-    public BufferedImage[] getCardImages() {
-        return cardImages;
     }
 }
