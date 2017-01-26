@@ -3,27 +3,41 @@ package game;
 /**
  * @author Daniel Phan
  */
-public class Dealer extends Player{
+public class Dealer {
     Deck deck;
-
-    public Dealer(String name) {
-        super(name);
+    Hand hand;
+    public Dealer() {
         deck = new Deck();
         deck.shuffle();
+        this.hand = new Hand();
     }
 
     public Card deal() {
-        if (deck.getCardCount() <= 0) {
+        if (deck.isEmpty()) {
             deck.reshuffle();
         }
-        return deck.deal();
+        Card card = deck.deal();
+
+        return card;
     }
 
-    public boolean isOver16() {
-        return getHandTotal() > 16;
+    public void resetTurn() {
+        hand = new Hand();
+    }
+
+    public void hideHand() {
+        hand.getCard(0).setHidden(true);
+    }
+
+    public Hand getHand() {
+        return hand;
     }
 
     public Card getFaceUpCard() {
-        return getHand().get(0);
+        return hand.getCard(1);
+    }
+
+    public Deck getDeck() {
+        return deck;
     }
 }

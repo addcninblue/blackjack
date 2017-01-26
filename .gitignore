@@ -2,7 +2,6 @@
 
 *.ctxt
 /nbproject/private/
-/nbproject
 build.xml
 manifest.mf
 /build/
@@ -14,3 +13,4 @@ out/
 *.swp
 tags
 
+/dist/

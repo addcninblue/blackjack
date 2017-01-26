@@ -1,6 +1,9 @@
 package game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Game {
     private ArrayList<Player> players;
@@ -8,7 +11,14 @@ public class Game {
 
     public Game(){
         this.players = new ArrayList<>();
-        dealer = new Dealer("DEALER");
+        dealer = new Dealer();
+    }
+
+    public Game(List<Player> playersList) {
+        this();
+        for (Player player : playersList) {
+            players.add(player);
+        }
     }
 
     /**
@@ -21,21 +31,26 @@ public class Game {
         players.forEach(Player::resetTurn);
     }
 
-    /**
-     * Sets a player's bet.
-     * (Postcondition: player's bet is set if player has enough money)
-     * @param player the betting player
-     * @param bet the amount bet
-     * @return whether or not the bet was possible
-     * (Precondition: player is nonnull and bet is nonnegative)
-     */
-    public boolean setBet(Player player, int bet) {
-        if (bet > player.getMoney() || bet < 1) {
-            return false;
+    public void split(Player player, Hand hand) {
+        if (!player.canSplitHand(hand)) {
+            throw new IllegalArgumentException(player.getName() + " can't split.\n");
         }
-        player.bet(bet);
-        return true;
+
+        List<Hand> hands = player.getHands();
+        int handIndex = hands.indexOf(hand);
+        int newHandIndex = handIndex + 1;
+        Hand newHand = new Hand();
+        newHand.addCard(hand.getCard(1));
+
+        hands.add(newHandIndex, newHand);
+        hand.getCards().remove(1);
+
+        hit(player.getHand(handIndex));
+        hit(player.getHand(newHandIndex));
+
+        player.bet(player.getBet());
     }
+
 
     /**
      * Deals the initial two cards to each player
@@ -44,12 +59,13 @@ public class Game {
      */
     public void initialDeal() {
         for (int i = 0; i < 2; i++) {
-            dealer.addCard(dealer.deal());
+            hit(dealer.getHand());
+            dealer.hideHand();
         }
 
-        for (Player p : players) {
+        for (Player player : players) {
             for (int j = 0; j < 2; j++) {
-                p.addCard(dealer.deal());
+                hit(player.getHand(0));
             }
         }
     }
@@ -57,29 +73,47 @@ public class Game {
     /**
      * The dealer deals the player a card
      * (Postcondition: player is dealt a card)
-     * @param player the player to hit
+     * @param hand the hand to hit
      * @return the card given to the player
      * (Precondition: player is nonnull)
      */
-    public Card hit(Player player) {
+    public Card hit(Hand hand) {
         Card c = dealer.deal();
-        player.addCard(c);
-        if (player.isOver21()) {
-            player.demoteAces();
+        hand.addCard(c);
+        if (hand.isOver21()) {
+            hand.demoteAces();
         }
         return c;
     }
+    /**
+     *
+     * @param player the player to double down
+     * @return the card dealt to the hand
+     */
+    public Card doubleDown(Player player) {
+        if (!player.canDoubleDown()) {
+            throw new IllegalArgumentException(
+                    String.format("%s can't double down.\n", player.getName()));
+        }
+        Hand hand = player.getHand(0);
+        Card card = hit(hand);
+
+        card.setHidden(true);
+
+        player.bet(player.getBet());
+        return card;
+    }
 
     /**
-     * Deals a card to the dealer
-     * (Postcondition: dealer is dealt a card)
-     * @return the card dealt
-     * (Precondition: dealer is nonnull and has a hand under 21)
+     *
+     * @param player the player to insure
      */
-    public Card dealCardToDealer() {
-        Card c = dealer.deal();
-        dealer.addCard(c);
-        return c;
+    public void insure(Player player) {
+        if (!canInsure(player)) {
+            throw new IllegalStateException("Can't insure this player!\n");
+        }
+        player.setMoney(player.getMoney() - player.getBet()/2);
+        player.setInsured(true);
     }
 
     /**
@@ -89,36 +123,47 @@ public class Game {
      * (Precondition: player is nonnull)
      */
     public void payBet(Player player) {
-        int dHand = dealer.getHandTotal();
-        int pHand = player.getHandTotal();
-        if (player.hasBlackJack() && !dealer.hasBlackJack()) { //blackjack
-            player.addMoney((int)(player.getBet() * 2.5));
-        } //247blackjack rounds down
-        if (!player.isOver21() && (pHand > dHand || dealer.isOver21())) { //win
-            player.addMoney(player.getBet() * 2);
+        int dealerHand = dealer.getHand().getValue();
+        int moneyWon = 0;
+        for (Hand hand : player.getHands()) {
+            int playerHand = hand.getValue();
+
+            if (hand.isBlackJack() && !dealer.getHand().isBlackJack()) { //blackjack
+                moneyWon = player.getBet(); //return bet
+                moneyWon += (int)(player.getBet() * 1.5); //pay 3:2
+            } else if (!hand.isOver21() && (playerHand > dealerHand || dealer.getHand().isOver21())) { //win
+                moneyWon = player.getBet(); //return bet
+                moneyWon += player.getBet(); //pay 1:1
+            } else if ((!hand.isOver21() && !dealer.getHand().isBlackJack() && playerHand == dealerHand)
+                    || (hand.isBlackJack() && dealer.getHand().isBlackJack())) { //push
+                moneyWon = player.getBet(); //return bet
+            }
         }
-        else if(!player.isOver21() && !dealer.hasBlackJack() && pHand == dHand) { //push
-            player.addMoney(player.getBet());
+        if (player.isInsured() && dealer.getHand().isBlackJack()) {
+            moneyWon += player.getBet()*1.5;
         }
+
+        player.setMoney(player.getMoney() + moneyWon);
     }
 
     /**
      * Returns a string representing the outcome of the last round
      * for the player.
      * (Postcondition: player is unchanged)
-     * @param player the player to get the results of
+     * @param h the hand to get the result of
      * @return a string representing the outcome of the last round
      * for the player.
      * (Precondition: player is nonnull)
      */
-    public String getResult(Player player) {
-        int dHand = dealer.getHandTotal();
-        int pHand = player.getHandTotal();
-        return player.hasBlackJack() ? "BLACKJACK"
-                : player.isOver21() ? "BUST"
-                : pHand < dHand && !dealer.isOver21() ? "LOSE"
+    public String getResult(Hand h) {
+        int dHand = dealer.getHand().getValue();
+        int pHand = h.getValue();
+        String result = h.isBlackJack() ? "BJ"
+                : h.isOver21() ? "BUST"
+                : pHand < dHand && !dealer.getHand().isOver21() ? "LOSE"
                 : pHand == dHand ? "PUSH"
                 : "WIN";
+        return result;
     }
 
     /**
@@ -132,10 +177,18 @@ public class Game {
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i).getMoney() == 0) {
                 moneyless.add(players.get(i));
-                players.remove(i);
+                players.remove(i--);
             }
         }
         return moneyless;
+    }
+
+    public boolean canInsure(Player player) {
+        return player.getMoney() >= player.getBet() / 2 //has money
+                && !player.isInsured() //hasn't insured yet
+                && player.getHands().size() == 1 //hasn't split
+                && player.getHand(0).count() == 2 //hasn't hit
+                && dealer.getFaceUpCard().RANK == Rank.ACE;
     }
 
     public boolean hasPlayers() {
