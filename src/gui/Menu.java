@@ -41,12 +41,6 @@ public class Menu extends javax.swing.JPanel {
         startBtn = new javax.swing.JButton();
         exitBtn = new javax.swing.JButton();
 
-        addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                formMouseClicked(evt);
-            }
-        });
-
         startBtn.setText("Start");
         startBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -110,10 +104,6 @@ public class Menu extends javax.swing.JPanel {
         this.setVisible(false);
         System.exit(0);
     }//GEN-LAST:event_exitBtnActionPerformed
-
-    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
-        System.out.println("ASDF");
-    }//GEN-LAST:event_formMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

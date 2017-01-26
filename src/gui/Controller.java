@@ -23,7 +23,7 @@ import javax.swing.SwingUtilities;
  */
 public class Controller extends JComponent {
     private static boolean debug;
-    
+
     private final Game game;
     private Player player;
     private Hand hand;
@@ -33,7 +33,7 @@ public class Controller extends JComponent {
     private JButton insureBtn;
     private JButton splitBtn;
     private JButton standBtn;
-    
+
     private JButton debugPlayerBtn;
     private JButton debugDealerBtn;
 
@@ -63,10 +63,10 @@ public class Controller extends JComponent {
 
         insureBtn = new JButton("Insure");
         insureBtn.setPreferredSize(new Dimension(80, 40));
-        
+
         debugPlayerBtn = new JButton("P");
         debugPlayerBtn.setPreferredSize(new Dimension(50, 40));
-        
+
         debugDealerBtn = new JButton("D");
         debugDealerBtn.setPreferredSize(new Dimension(50, 40));
 
@@ -77,8 +77,9 @@ public class Controller extends JComponent {
 
             if (hand.getValue() == 21 || hand.isOver21()) {
                 endTurn();
+                return;
             }
-            
+
             showButtons();
         });
 
@@ -88,7 +89,7 @@ public class Controller extends JComponent {
 
         doubleBtn.addActionListener((ActionEvent event) -> {
            game.doubleDown(player);
-           
+
            endTurn();
         });
 
@@ -101,19 +102,19 @@ public class Controller extends JComponent {
 
         insureBtn.addActionListener((ActionEvent event) -> {
             game.insure(player);
-            
+
             showButtons();
         });
-        
+
         debugPlayerBtn.addActionListener((ActionEvent event) -> {
             debugHand(hand);
-            
+
             showButtons();
         });
-        
+
         debugDealerBtn.addActionListener((ActionEvent event) -> {
             debugHand(game.getDealer().getHand());
-            
+
             showButtons();
         });
 
@@ -122,24 +123,24 @@ public class Controller extends JComponent {
         add(doubleBtn);
         add(splitBtn);
         add(insureBtn);
-        
+
         add(debugPlayerBtn);
         add(debugDealerBtn);
     }
-    
+
     private void debugHand(Hand hand) {
         hand.getCards().clear();
         BufferedImage[] cardImages = game.getDealer().getDeck().getCardImages();
         for (int i = 0; i < 2; i++) {
-            int cardId = JOptionPane.showOptionDialog(this, "Choose Card", "DEBUG PLAYER", 
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, 
+            int cardId = JOptionPane.showOptionDialog(this, "Choose Card", "DEBUG PLAYER",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, Rank.values(), null);
             if (cardId != JOptionPane.CLOSED_OPTION) {
-                hand.addCard(new Card(Rank.values()[cardId], Suit.CLUBS, 
+                hand.addCard(new Card(Rank.values()[cardId], Suit.CLUBS,
                                       cardImages[cardId], cardImages[52]));
             }
         }
-        
+
         showButtons();
     }
 
@@ -154,7 +155,7 @@ public class Controller extends JComponent {
             debugPlayerBtn.setVisible(true);
             debugDealerBtn.setVisible(true);
         }
-        
+
         if (hand.isBlackJack()) {
             hitBtn.setVisible(false);
         }
@@ -168,7 +169,7 @@ public class Controller extends JComponent {
         if (game.canInsure(player)) {
             insureBtn.setVisible(true);
         }
-        
+
         repaint();
     }
 
@@ -196,9 +197,6 @@ public class Controller extends JComponent {
 
     public void setHand(Hand hand) {
         this.hand = hand;
-    }
-    public Hand getHand() {
-        return hand;
     }
 
     public static boolean isDebug() {

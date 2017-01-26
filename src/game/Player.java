@@ -41,15 +41,9 @@ public class Player {
         return String.format("Player: %s\nMoney: %d", name, money);
     }
 
-    /**
-     * Returns whether or not a hand is splittable
-     * (Postcondition: hands is unchanged)
-     * @param hand
-     * @return whether hands(i) is splittable
-     * (Precondition: i is a valid index in hands)
-     */
     public boolean canSplitHand(Hand hand) {
-        return hands.contains(hand) && hand.isSplittable() && getMoney() >= getBet();
+        return hands.contains(hand) && hands.size() < 4
+                && hand.isSplittable()&& getMoney() >= getBet();
     }
 
     public boolean canDoubleDown() {

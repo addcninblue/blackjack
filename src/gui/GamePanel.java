@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gui;
 
 import game.Card;
@@ -19,6 +14,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +27,7 @@ import util.SpriteLoader;
 
 
 /**
- *
+ * The GUI that runs a Blackjack Game. Logic runs on a different thread.
  * @author Darian
  */
 public class GamePanel extends JPanel implements Runnable {
@@ -39,6 +35,7 @@ public class GamePanel extends JPanel implements Runnable {
     private Menu menu;
 
     private boolean drawingResults;
+    private Hand activeHand;
 
     private EndRoundButton endRoundBtn;
     private JToggleButton debugBtn;
@@ -46,7 +43,6 @@ public class GamePanel extends JPanel implements Runnable {
         super();
         init();
 
-        this.drawingResults = false;
         this.menu = menu;
         game = new Game();
         game.addPlayer(new Player("Darian"));
@@ -55,7 +51,6 @@ public class GamePanel extends JPanel implements Runnable {
         super();
         init();
 
-        this.drawingResults = false;
         this.menu = menu;
         game = new Game(players);
     }
@@ -77,7 +72,6 @@ public class GamePanel extends JPanel implements Runnable {
     public void start() {
         setVisible(true);
         Dimension size = SwingUtilities.getWindowAncestor(this).getSize();
-        System.out.println(size.width);
         endRoundBtn.setLocation(size.width/2 - 80, size.height/3);
         debugBtn.setLocation(7*size.width/8, size.height/4);
 
@@ -94,30 +88,27 @@ public class GamePanel extends JPanel implements Runnable {
 
         while (game.hasPlayers()) {
             game.newRound();
-
             for (Player player : players) {
                 getBetFromPlayer(player, playerToPreviousBet);
             }
-
             game.initialDeal();
-            update();
+            render();
 
-            //player turns
-            runPlayerTurns();
-
-            //dealer turn
+            runPlayerTurns(players);
             unhideAllHands();
+            runDealerTurn(dealer);
 
-            update();
-            runDealerTurn();
-            //get results
-            endRound();
+            drawingResults = true;
+            for (Player player : players) {
+                game.payBet(player);
+            }
 
             List<Player> peopleRemoved = game.removeMoneyless();
             for (Player player : peopleRemoved) {
-                JOptionPane.showMessageDialog(null, String.format("%s removed from game.", player.getName()));
+                JOptionPane.showMessageDialog(this, String.format("%s removed from game.", player.getName()),
+                                              "Player Eliminated!", JOptionPane.WARNING_MESSAGE);
+                render();
             }
-
             endRoundBtn.start();
         }
         setVisible(false);
@@ -149,12 +140,12 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private void runPlayerTurns() {
-        List<Player> players = game.getPlayers();
+    private void runPlayerTurns(List<Player> players) {
         for (int i = 0; i < players.size(); i++) {
                 Player player = players.get(i);
                 for (int j = 0; j < player.getHands().size(); j++) {
                     Hand hand = player.getHand(j);
+                    activeHand = hand;
                     Controller controller = new Controller(game, player, hand);
 
                     int xOffset = (int)(0.015625*getWidth());
@@ -179,25 +170,15 @@ public class GamePanel extends JPanel implements Runnable {
         dealer.getHand().unhideCards();
     }
 
-    private void runDealerTurn() {
-        Dealer dealer = game.getDealer();
+    private void runDealerTurn(Dealer dealer) {
+        render();
         while (!dealer.getHand().isOver16()) {
-            Card card = game.hit(dealer.getHand());
-            update();
+            game.hit(dealer.getHand());
+            render();
         }
     }
 
-    private void endRound() {
-        List<Player> players = game.getPlayers();
-        drawingResults = true;
-        String[] results = new String[game.getPlayers().size()];
-        for (Player player : players) {
-            update();
-            game.payBet(player);
-        }
-    }
-
-    private void update(int delay) {
+    private void render(int delay) {
         repaint();
         try {
             Thread.sleep(delay);
@@ -205,8 +186,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private void update() {
-        update(200);
+    private void render() {
+        render(200);
     }
 
     @Override
@@ -221,7 +202,7 @@ public class GamePanel extends JPanel implements Runnable {
         paintDeck(g2);
 
         //draw dealer's hand
-        paintDealerHand(g2, CARD_OFFSET);
+        paintDealer(g2, CARD_OFFSET);
 
         //draw players
         paintPlayers(g2, CARD_OFFSET);
@@ -229,25 +210,29 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void paintDeck(Graphics2D g2) {
         Dealer dealer = game.getDealer();
+
+        //rotate graphics
+        Graphics2D g3 = (Graphics2D)g2.create();
+        AffineTransform at = new AffineTransform();
+        at.setToRotation(0.785, 180, 160);
+        g3.setTransform(at);
+
+        g3.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, 180, 140, 72, 100, null);
         for (int i = 0; i < dealer.getDeck().size(); i++) {
             Card card = dealer.getDeck().get(i);
-
-            //rotate graphics to draw
-            Graphics2D g3 = (Graphics2D)g2.create();
-            AffineTransform at = new AffineTransform();
-            at.setToRotation(0.785, 180, 160);
-            g3.setTransform(at);
             g3.drawImage(card.getBack(), (int)Math.floor(180-i/3), (int)Math.floor(140-i/3), null);
-            g3.dispose();
         }
+        g3.dispose();
     }
 
-    private void paintDealerHand(Graphics2D g2, final int CARD_OFFSET) {
+    private void paintDealer(Graphics2D g2, final int CARD_OFFSET) {
         Dealer dealer = game.getDealer();
         for (int i = 0; i < dealer.getHand().getCards().size(); i++) {
             Hand dealerHand = dealer.getHand();
             int xOffset = (int)(getWidth()/2 - 50);
-            int yOffset = (int)(getHeight()/8);
+            int yOffset = (int)(getHeight()/9);
+
+            //draw hand
             g2.drawImage(dealerHand.getCard(i).getImage(), xOffset + i*CARD_OFFSET, yOffset, null);
         }
     }
@@ -255,35 +240,38 @@ public class GamePanel extends JPanel implements Runnable {
     private void paintPlayers(Graphics2D g2, final int CARD_OFFSET) {
         for (int i = 0; i < game.getPlayers().size(); i++) {
             Player player = game.getPlayers().get(i);
+            int xOffset = getWidth()/16;
+            int yOffset = getHeight()/6 + getHeight()/2;
 
-            int xOffset = getWidth() / 16;
-            int yOffset = getHeight() / 8 + getHeight()/2;
+            //draw border
+            g2.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, getWidth()/16 + i*300 - 30, yOffset - 50, getWidth()/6, getHeight()/3, null);
 
-            // draw border
-            g2.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, getWidth() / 16 + i * 300 - 30, yOffset - 50, getWidth() / 6, getHeight() / 3, null);
-
-
-            //draw names
+            //draw name
             drawCenteredString(g2, player.getName(), Color.ORANGE,
-                    new Rectangle(xOffset, 7 * getHeight() / 8 - 40, 150, 150),
+                    new Rectangle(xOffset + i*300, 7*getHeight()/8 - 40, 150, 150),
                     new Font("Courier", Font.PLAIN, 30));
 
             //draw money
             drawCenteredString(g2, String.format("%8s: $%d", player.getName(), player.getMoney()), Color.ORANGE,
-                    new Rectangle(9 * getWidth() / 10, 30 + i * 50, 80, 10),
+                    new Rectangle(9*getWidth()/10, 30 + i*30, 80, 10),
                     new Font("Courier", Font.PLAIN, 20));
             for (int j = 0; j < player.getHands().size(); j++) {
                 Hand hand = player.getHand(j);
 
-                //draw results if necessary
+                //draw results or hand pointer
                 if (drawingResults) {
                     drawCenteredString(g2, game.getResult(hand), Color.ORANGE,
-                            new Rectangle(i * 300, yOffset + j * 50, 80, 80),
+                            new Rectangle(i*300, yOffset-35 + j*50, 80, 80),
                             new Font("Courier", Font.BOLD, 25));
+                } else if (hand == activeHand) {
+                    g2.setColor(new Color(42, 161, 152)); // Solarized Cyan
+                    g2.fill(new Ellipse2D.Double(40 + i*300, yOffset-35 + j*50, 30, 30));
                 }
+
+                //draw hand
                 for (int k = 0; k < hand.getCards().size(); k++) {
                     Card card = hand.getCard(k);
-                    g2.drawImage(card.getImage(), xOffset + i * 300 + k * CARD_OFFSET, yOffset + j * 50, null);
+                    g2.drawImage(card.getImage(), xOffset + i*300 + k*CARD_OFFSET, yOffset-40 + j*50, null);
                 }
             }
         }
@@ -314,6 +302,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         public synchronized void start() {
             setVisible(true);
+            render();
             try {
                 wait();
             } catch (InterruptedException e) {}
