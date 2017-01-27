@@ -6,13 +6,12 @@ import game.Game;
 import game.Hand;
 import game.Player;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
@@ -20,10 +19,11 @@ import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
 import util.SpriteLoader;
 
 
@@ -34,12 +34,12 @@ import util.SpriteLoader;
 public class GamePanel extends JPanel implements Runnable {
     private Game game;
     private Menu menu;
-    private GridBagConstraints c;
 
     private boolean drawingResults;
     private Hand activeHand;
 
     private DealerPanel dealerPnl;
+    private PlayersPanel playersPnl;
     private JToggleButton debugBtn;
     public GamePanel(Menu menu) {
         this.menu = menu;
@@ -57,8 +57,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void initGUI() {
-        setLayout(new GridBagLayout());
-        c = new GridBagConstraints();
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
         dealerPnl = new DealerPanel(game.getDealer());
 
         debugBtn = new JToggleButton("DEBUG");
@@ -66,26 +66,18 @@ public class GamePanel extends JPanel implements Runnable {
             Controller.setDebug(!Controller.isDebug());
         });
         debugBtn.setPreferredSize(new Dimension(80, 40));
+        //debugBtn.setMaximumSize(getPreferredSize());
 
-        c.anchor = GridBagConstraints.PAGE_START;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.gridwidth = 3;
-        c.weightx = 0.1;
-        c.weighty = 0.5;
-        add(dealerPnl, c);
-
-        c.anchor = GridBagConstraints.LINE_END;
-        c.gridx = 2;
-        c.gridy = 1;
-        c.gridwidth = 1;
-        c.weightx = 0.1;
-        add(debugBtn, c);
+        dealerPnl.setAlignmentX(Component.CENTER_ALIGNMENT);
+        debugBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(Box.createRigidArea(new Dimension(0, 80)));
+        add(dealerPnl);
+        add(Box.createRigidArea(new Dimension(0, 80)));
+        add(debugBtn);
     }
 
     public void start() {
         setVisible(true);
-        Dimension size = SwingUtilities.getWindowAncestor(this).getSize();
 
         Thread logicThread = new Thread(this);
         logicThread.start();
@@ -100,6 +92,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         while (game.hasPlayers()) {
             game.newRound();
+            drawingResults = false;
             for (Player player : players) {
                 getBetFromPlayer(player, playerToPreviousBet);
             }
@@ -160,14 +153,14 @@ public class GamePanel extends JPanel implements Runnable {
                     activeHand = hand;
                     Controller controller = new Controller(game, player, hand);
 
-                    c.anchor = GridBagConstraints.PAGE_END;
-                    c.gridx = i;
-                    c.gridy = 2;
-                    c.gridwidth = 1;
-                    c.weightx = 0;
-                    this.add(controller, c);
+                    /*this.add(controller);
                     controller.startTurn();
-                    this.remove(controller);
+                    this.remove(controller);*/
+                    PlayerPanel p = new PlayerPanel(player);
+                    //p.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    add(p);
+
+                    render();
                 }
             }
     }
@@ -210,12 +203,10 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2.drawImage(SpriteLoader.SOLARIZED_TABLE_TOP, 0, 0, getWidth(), getHeight(), null);
 
-        //draw deck
         final int CARD_OFFSET = 14;
         paintDeck(g2);
 
-        //draw players
-        paintPlayers(g2, CARD_OFFSET);
+        //paintPlayers(g2, CARD_OFFSET);
     }
 
     private void paintDeck(Graphics2D g2) {

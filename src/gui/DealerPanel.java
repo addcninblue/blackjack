@@ -32,6 +32,9 @@ public class DealerPanel extends JComponent {
     private void init() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setPreferredSize(new Dimension(350, 170));
+        setMinimumSize(getPreferredSize());
+        setMaximumSize(new Dimension(450, 200));
+
         endRoundBtn = new EndRoundButton();
 
         add(new JComponent() {

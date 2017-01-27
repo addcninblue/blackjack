@@ -8,7 +8,7 @@ import game.Rank;
 import game.Suit;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JButton;
@@ -189,7 +189,10 @@ public class Controller extends JComponent {
         //this is required because otherwise, repaint() will repaint Controller
         //instead, we want it to repaint GamePanel
         super.repaint();
-        SwingUtilities.getWindowAncestor(this).repaint();
+        Window parent = SwingUtilities.getWindowAncestor(this);
+        if (parent != null) {
+            SwingUtilities.getWindowAncestor(this).repaint();
+        }
     }
 
     public void setHand(Hand hand) {
