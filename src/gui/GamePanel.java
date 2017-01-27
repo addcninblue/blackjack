@@ -5,13 +5,14 @@ import game.Dealer;
 import game.Game;
 import game.Hand;
 import game.Player;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
@@ -19,7 +20,6 @@ import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -34,6 +34,7 @@ import util.SpriteLoader;
 public class GamePanel extends JPanel implements Runnable {
     private Game game;
     private Menu menu;
+    private GridBagConstraints c;
 
     private boolean drawingResults;
     private Hand activeHand;
@@ -56,8 +57,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void initGUI() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
+        setLayout(new GridBagLayout());
+        c = new GridBagConstraints();
         dealerPnl = new DealerPanel(game.getDealer());
 
         debugBtn = new JToggleButton("DEBUG");
@@ -66,8 +67,20 @@ public class GamePanel extends JPanel implements Runnable {
         });
         debugBtn.setPreferredSize(new Dimension(80, 40));
 
-        add(dealerPnl);
-        add(debugBtn);
+        c.anchor = GridBagConstraints.PAGE_START;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 3;
+        c.weightx = 0.1;
+        c.weighty = 0.5;
+        add(dealerPnl, c);
+
+        c.anchor = GridBagConstraints.LINE_END;
+        c.gridx = 2;
+        c.gridy = 1;
+        c.gridwidth = 1;
+        c.weightx = 0.1;
+        add(debugBtn, c);
     }
 
     public void start() {
@@ -147,11 +160,12 @@ public class GamePanel extends JPanel implements Runnable {
                     activeHand = hand;
                     Controller controller = new Controller(game, player, hand);
 
-                    int xOffset = getWidth()/64 - 10;
-                    int yOffset = getHeight()/2 - 35;
-                    controller.setLocation(xOffset + i*300, yOffset);
-
-                    this.add(controller);
+                    c.anchor = GridBagConstraints.PAGE_END;
+                    c.gridx = i;
+                    c.gridy = 2;
+                    c.gridwidth = 1;
+                    c.weightx = 0;
+                    this.add(controller, c);
                     controller.startTurn();
                     this.remove(controller);
                 }

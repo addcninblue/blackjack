@@ -4,6 +4,8 @@ package game;
 import gui.DealerPanel;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -40,7 +42,18 @@ public class Test extends JPanel {
         Game game = new Game();
         game.newRound();
         game.initialDeal();
-        frame.add(new DealerPanel(game.getDealer()));
+        frame.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weighty = 1.0;
+      //  c.weightx = 1;
+       // c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.FIRST_LINE_END;
+        frame.add(new DealerPanel(game.getDealer()), c);
+        c.gridx = 0;
+        frame.add(new DealerPanel(game.getDealer()), c);
         frame.setVisible(true);
     }
 }

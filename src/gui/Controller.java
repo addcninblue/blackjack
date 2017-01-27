@@ -45,7 +45,6 @@ public class Controller extends JComponent {
     }
 
     private void init() {
-        this.setVisible(false);
         this.setOpaque(false);
         this.setSize(new Dimension(300, 100));
         this.setLayout(new FlowLayout());
@@ -73,7 +72,7 @@ public class Controller extends JComponent {
         hitBtn.addActionListener((ActionEvent event) -> {
             Card card = game.hit(hand);
 
-            doubleBtn.setVisible(false); //can't double after first move!
+            doubleBtn.setEnabled(false); //can't double after first move!
 
             if (hand.getValue() == 21 || hand.isOver21()) {
                 endTurn();
@@ -145,9 +144,9 @@ public class Controller extends JComponent {
     }
 
     private void showButtons() {
-        doubleBtn.setVisible(false);
-        splitBtn.setVisible(false);
-        insureBtn.setVisible(false);
+        doubleBtn.setEnabled(false);
+        splitBtn.setEnabled(false);
+        insureBtn.setEnabled(false);
 
         debugPlayerBtn.setVisible(false);
         debugDealerBtn.setVisible(false);
@@ -157,24 +156,23 @@ public class Controller extends JComponent {
         }
 
         if (hand.isBlackJack()) {
-            hitBtn.setVisible(false);
+            hitBtn.setEnabled(false);
         }
 
         if (player.canDoubleDown()) {
-            doubleBtn.setVisible(true);
+            doubleBtn.setEnabled(true);
         }
         if (player.canSplitHand(hand)) {
-            splitBtn.setVisible(true);
+            splitBtn.setEnabled(true);
         }
         if (game.canInsure(player)) {
-            insureBtn.setVisible(true);
+            insureBtn.setEnabled(true);
         }
 
         repaint();
     }
 
     public synchronized void startTurn() {
-        setVisible(true);
         showButtons();
         try {
             wait();
@@ -183,7 +181,6 @@ public class Controller extends JComponent {
 
     public synchronized void endTurn() {
         repaint();
-        setVisible(false);
         this.notify();
     }
 

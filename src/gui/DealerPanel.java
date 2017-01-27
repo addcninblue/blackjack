@@ -7,10 +7,11 @@ package gui;
 
 import game.Card;
 import game.Dealer;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import util.SpriteLoader;
@@ -29,7 +30,7 @@ public class DealerPanel extends JComponent {
     }
 
     private void init() {
-        setLayout(new GridBagLayout());
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setPreferredSize(new Dimension(350, 170));
         endRoundBtn = new EndRoundButton();
 
@@ -43,8 +44,8 @@ public class DealerPanel extends JComponent {
                 g2.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, 0, 0, getWidth(), getHeight(), null);
                 for (int i = 0; i < dealer.getHand().getCards().size(); i++) {
                     Card card = dealer.getHand().getCard(i);
-                    int xOffset = (int)(getWidth()/2 - 30);
-                    int yOffset = (int)(getHeight()/3);
+                    int xOffset = (int)(getWidth()/2 - 40);
+                    int yOffset = (int)(getHeight()/4);
                     g2.drawImage(card.getImage(), xOffset + i*CARD_OFFSET, yOffset, null);
                 }
             }
@@ -62,7 +63,8 @@ public class DealerPanel extends JComponent {
             init();
         }
         private void init() {
-            setVisible(false);
+            setEnabled(false);
+            setAlignmentX(Component.CENTER_ALIGNMENT);
             setSize(new Dimension(120, 60));
             setText("Next Round");
             addActionListener((ActionEvent) -> {
@@ -71,7 +73,7 @@ public class DealerPanel extends JComponent {
         }
 
         public synchronized void start() {
-            setVisible(true);
+            setEnabled(true);
             repaint();
             try {
                 wait();
@@ -79,7 +81,7 @@ public class DealerPanel extends JComponent {
         }
 
         public synchronized void stop() {
-            setVisible(false);
+            setEnabled(false);
             notify();
         }
     }
