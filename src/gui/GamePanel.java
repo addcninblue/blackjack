@@ -39,6 +39,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     private EndRoundButton endRoundBtn;
     private JToggleButton debugBtn;
+
+    /**
+     * Constructs a GamePanel with the given menu and a default "Darian" player.
+     * @param menu the menu
+     */
     public GamePanel(Menu menu) {
         super();
         init();
@@ -47,6 +52,12 @@ public class GamePanel extends JPanel implements Runnable {
         game = new Game();
         game.addPlayer(new Player("Darian"));
     }
+
+    /**
+     * Constructs a GamePanel with the given menu and players.
+     * @param menu the menu
+     * @param players the players
+     */
     public GamePanel(Menu menu, List<Player> players) {
         super();
         init();
@@ -69,6 +80,9 @@ public class GamePanel extends JPanel implements Runnable {
         add(debugBtn);
     }
 
+    /**
+     * Starts the GamePanel
+     */
     public void start() {
         setVisible(true);
         Dimension size = SwingUtilities.getWindowAncestor(this).getSize();
@@ -79,6 +93,9 @@ public class GamePanel extends JPanel implements Runnable {
         logicThread.start();
     }
 
+    /**
+     * Runs the GamePanel.
+     */
     @Override
     public void run() {
         Dealer dealer = game.getDealer();
