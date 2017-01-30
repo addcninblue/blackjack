@@ -6,10 +6,9 @@ import game.Game;
 import game.Hand;
 import game.Player;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -19,11 +18,13 @@ import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import util.Painter;
+import static util.Painter.drawCenteredString;
 import util.SpriteLoader;
 
 
@@ -39,7 +40,7 @@ public class GamePanel extends JPanel implements Runnable {
     private Hand activeHand;
 
     private DealerPanel dealerPnl;
-    private PlayersPanel playersPnl;
+    private JComponent playersCmp;
     private JToggleButton debugBtn;
     public GamePanel(Menu menu) {
         this.menu = menu;
@@ -68,12 +69,11 @@ public class GamePanel extends JPanel implements Runnable {
         debugBtn.setPreferredSize(new Dimension(80, 40));
         //debugBtn.setMaximumSize(getPreferredSize());
 
-        dealerPnl.setAlignmentX(Component.CENTER_ALIGNMENT);
-        debugBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(Box.createRigidArea(new Dimension(0, 80)));
+        playersCmp = new JComponent() {};
+        playersCmp.setLayout(new FlowLayout());
         add(dealerPnl);
-        add(Box.createRigidArea(new Dimension(0, 80)));
         add(debugBtn);
+        add(playersCmp);
     }
 
     public void start() {
@@ -90,6 +90,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         Map<Player, Integer> playerToPreviousBet = new HashMap<Player, Integer>();
 
+        for (Player player : players) {
+            playersCmp.add(new PlayerPanel(player));
+        }
         while (game.hasPlayers()) {
             game.newRound();
             drawingResults = false;
@@ -153,14 +156,8 @@ public class GamePanel extends JPanel implements Runnable {
                     activeHand = hand;
                     Controller controller = new Controller(game, player, hand);
 
-                    /*this.add(controller);
-                    controller.startTurn();
-                    this.remove(controller);*/
-                    PlayerPanel p = new PlayerPanel(player);
-                    //p.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    add(p);
-
-                    render();
+                    PlayerPanel playerPanel = (PlayerPanel)playersCmp.getComponent(i);
+                    playerPanel.setController(controller);
                 }
             }
     }
@@ -235,46 +232,28 @@ public class GamePanel extends JPanel implements Runnable {
             //draw border
             g2.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, getWidth()/16 + i*300 - 30, yOffset - 50, getWidth()/6, getHeight()/3 + 20, null);
 
-            //draw name
-            drawCenteredString(g2, player.getName(), Color.ORANGE,
-                    new Rectangle(xOffset + i*300, 7*getHeight()/8, 150, 150),
-                    new Font("Courier", Font.PLAIN, 30));
-
             //draw money
-            drawCenteredString(g2, String.format("%8s: $%d ($%d)", player.getName(), player.getMoney(), player.getBet()), Color.ORANGE,
+            Painter.drawCenteredString(g2, String.format("%8s: $%d ($%d)", player.getName(), player.getMoney(), player.getBet()), Color.ORANGE,
                     new Rectangle(9*getWidth()/10, 30 + i*30, 70, 10),
                     new Font("Courier", Font.PLAIN, 20));
             for (int j = 0; j < player.getHands().size(); j++) {
                 Hand hand = player.getHand(j);
-
-                //draw results or hand pointer
+                 //draw results or hand pointer
                 if (drawingResults) {
                     drawCenteredString(g2, game.getResult(hand), Color.ORANGE,
                             new Rectangle(i*300, yOffset-35 + j*50, 80, 80),
                             new Font("Courier", Font.BOLD, 25));
                 } else if (hand == activeHand) {
-                    g2.setColor(new Color(42, 161, 152)); // Solarized Cyan
+                    g2.setColor(Painter.SOLARIZED_CYAN);
                     g2.fill(new Ellipse2D.Double(40 + i*300, yOffset-35 + j*50, 30, 30));
                 }
-
-                //draw hand
-                for (int k = 0; k < hand.getCards().size(); k++) {
-                    Card card = hand.getCard(k);
-                    g2.drawImage(card.getImage(), xOffset + i*300 + k*CARD_OFFSET, yOffset-40 + j*50, null);
-                }
             }
+
+
         }
     }
 
-    private void drawCenteredString(Graphics g, String text, Color color, Rectangle rect, Font font) {
-        FontMetrics metrics = g.getFontMetrics(font);
-        int x = (rect.width - metrics.stringWidth(text)) / 2;
-        int y = ((rect.height - metrics.getHeight()) / 2) + metrics.getAscent();
 
-        g.setFont(font);
-        g.setColor(color);
-        g.drawString(text, rect.x + x, rect.y + y);
-    }
 
 
 }
