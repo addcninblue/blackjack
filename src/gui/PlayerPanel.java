@@ -33,11 +33,16 @@ public class PlayerPanel extends JComponent {
     private final Queue<Controller> controllerQueue;
     private Controller controller;
 
+    private String[] results;
+    private boolean drawingResults;
+
     public PlayerPanel(Player player) {
         init();
         this.player = player;
         controllerQueue = new LinkedList<Controller>();
         controller = null;
+        results = null;
+        drawingResults = false;
     }
 
     private void init() {
@@ -56,19 +61,34 @@ public class PlayerPanel extends JComponent {
                         new Rectangle(0, getHeight() - 50, 150, 150),
                         new Font("Courier", Font.PLAIN, 30));
 
-                for (int j = 0; j < player.getHands().size(); j++) {
-                    Hand hand = player.getHand(j);
+                for (int i = 0; i < player.getHands().size(); i++) {
+                    Hand hand = player.getHand(i);
+                    final int Y_OFFSET = 20 + i*50;
                     //draw hand
                     for (int k = 0; k < hand.getCards().size(); k++) {
                         Card card = hand.getCard(k);
-                        g2.drawImage(card.getImage(), getWidth()/4 + k*SpriteLoader.CARD_OFFSET, getWidth()/2-40 + j*50, null);
+                        g2.drawImage(card.getImage(), getWidth()/5+ k*SpriteLoader.CARD_OFFSET, Y_OFFSET, null);
+                    }
+
+                    if (results != null) {
+                        drawCenteredString(g2, results[i], Color.ORANGE,
+                            new Rectangle(0, Y_OFFSET, 80, 80),
+                            new Font("Courier", Font.BOLD, 25));
+                    } else if (controller != null && controller.isRunning()) {
+                        g2.setColor(Painter.SOLARIZED_CYAN);
+                        g2.fill(new Ellipse2D.Double(10, Y_OFFSET, 30, 30));
                     }
                 }
             }
-        });
+        }, BorderLayout.CENTER);
+    }
+
+    public void setResults(final String[] results) {
+        this.results = results;
     }
 
     public void setController(Controller controller) {
+        this.controller = controller;
         this.add(controller, BorderLayout.PAGE_START);
         controller.startTurn();
         this.remove(controller);

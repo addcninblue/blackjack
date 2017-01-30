@@ -6,6 +6,7 @@ import game.Game;
 import game.Hand;
 import game.Player;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -14,17 +15,17 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import util.Painter;
-import static util.Painter.drawCenteredString;
 import util.SpriteLoader;
 
 
@@ -69,10 +70,14 @@ public class GamePanel extends JPanel implements Runnable {
         debugBtn.setPreferredSize(new Dimension(80, 40));
         //debugBtn.setMaximumSize(getPreferredSize());
 
-        playersCmp = new JComponent() {};
-        playersCmp.setLayout(new FlowLayout());
+        playersCmp = new JComponent() {{
+            this.setLayout(new FlowLayout());
+        }};
+
+        add(Box.createRigidArea(new Dimension(0, 40)));
         add(dealerPnl);
         add(debugBtn);
+        //add(Box.createRigidArea(new Dimension(0, 50)));
         add(playersCmp);
     }
 
@@ -95,7 +100,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
         while (game.hasPlayers()) {
             game.newRound();
-            drawingResults = false;
+            for (Component playerCmp : playersCmp.getComponents()) {
+                ((PlayerPanel)playerCmp).setResults(null);
+            }
+
             for (Player player : players) {
                 getBetFromPlayer(player, playerToPreviousBet);
             }
@@ -106,7 +114,14 @@ public class GamePanel extends JPanel implements Runnable {
             unhideAllHands();
             runDealerTurn(dealer);
 
-            drawingResults = true;
+            for (int i = 0; i < players.size(); i++) {
+                PlayerPanel playerPanel = (PlayerPanel)playersCmp.getComponent(i);
+                List<String> results = new ArrayList<String>();
+                for (Hand hand : players.get(i).getHands()) {
+                    results.add(game.getResult(hand));
+                }
+                playerPanel.setResults(results.toArray(new String[0]));
+            }
             for (Player player : players) {
                 game.payBet(player);
             }
@@ -200,13 +215,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2.drawImage(SpriteLoader.SOLARIZED_TABLE_TOP, 0, 0, getWidth(), getHeight(), null);
 
-        final int CARD_OFFSET = 14;
-        paintDeck(g2);
-
-        //paintPlayers(g2, CARD_OFFSET);
+        drawDeck(g2);
+        drawScoreboard(g2);
     }
 
-    private void paintDeck(Graphics2D g2) {
+    private void drawDeck(Graphics2D g2) {
         Dealer dealer = game.getDealer();
 
         //rotate graphics
@@ -223,37 +236,12 @@ public class GamePanel extends JPanel implements Runnable {
         g3.dispose();
     }
 
-    private void paintPlayers(Graphics2D g2, final int CARD_OFFSET) {
+    private void drawScoreboard(Graphics2D g2) {
         for (int i = 0; i < game.getPlayers().size(); i++) {
             Player player = game.getPlayers().get(i);
-            int xOffset = getWidth()/16;
-            int yOffset = getHeight()/6 + getHeight()/2;
-
-            //draw border
-            g2.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, getWidth()/16 + i*300 - 30, yOffset - 50, getWidth()/6, getHeight()/3 + 20, null);
-
-            //draw money
             Painter.drawCenteredString(g2, String.format("%8s: $%d ($%d)", player.getName(), player.getMoney(), player.getBet()), Color.ORANGE,
                     new Rectangle(9*getWidth()/10, 30 + i*30, 70, 10),
                     new Font("Courier", Font.PLAIN, 20));
-            for (int j = 0; j < player.getHands().size(); j++) {
-                Hand hand = player.getHand(j);
-                 //draw results or hand pointer
-                if (drawingResults) {
-                    drawCenteredString(g2, game.getResult(hand), Color.ORANGE,
-                            new Rectangle(i*300, yOffset-35 + j*50, 80, 80),
-                            new Font("Courier", Font.BOLD, 25));
-                } else if (hand == activeHand) {
-                    g2.setColor(Painter.SOLARIZED_CYAN);
-                    g2.fill(new Ellipse2D.Double(40 + i*300, yOffset-35 + j*50, 30, 30));
-                }
-            }
-
-
         }
     }
-
-
-
-
 }
