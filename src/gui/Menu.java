@@ -128,7 +128,7 @@ public class Menu extends javax.swing.JPanel {
         }
         if(saveFiles.length > 0) {
             int saveFile = JOptionPane.showOptionDialog(this,
-                    "Save File", "Blackjack",
+                    "Choose your save file:", "Blackjack",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, saveFiles, saveFiles[0]);
             System.out.println(saveFiles[saveFile]);

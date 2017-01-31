@@ -6,6 +6,7 @@ import game.Hand;
 import game.Player;
 import game.Rank;
 import game.Suit;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
@@ -46,7 +47,9 @@ public class Controller extends JComponent {
 
     private void init() {
         this.setOpaque(false);
-        this.setSize(new Dimension(300, 100));
+        this.setPreferredSize(new Dimension(300, 100));
+        this.setMinimumSize(getPreferredSize());
+        this.setMaximumSize(getPreferredSize());
         this.setLayout(new FlowLayout());
         hitBtn = new JButton("HIT");
         hitBtn.setPreferredSize(new Dimension(80, 50));
@@ -181,6 +184,11 @@ public class Controller extends JComponent {
 
     public synchronized void endTurn() {
         repaint();
+        for (Component cmp : getComponents()) {
+            if (cmp instanceof JButton) {
+                cmp.setEnabled(false);
+            }
+        }
         this.notify();
     }
 
@@ -195,8 +203,8 @@ public class Controller extends JComponent {
         }
     }
 
-    public void setHand(Hand hand) {
-        this.hand = hand;
+    public Hand getHand() {
+        return hand;
     }
 
     public static boolean isDebug() {

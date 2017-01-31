@@ -6,8 +6,8 @@ build.xml
 manifest.mf
 /build/
 
-/out/
-/.idea/
+out/
+.idea/
 *.iml
 
 *.swp

@@ -1,8 +1,8 @@
 package game;
 
 
-import gui.DealerPanel;
-import gui.PlayerPanel;
+import gui.DealerComponent;
+import gui.PlayerComponent;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -43,7 +43,7 @@ public class Test extends JPanel {
         game.newRound();
         game.initialDeal();
         frame.setLayout(new FlowLayout());
-        frame.add(new PlayerPanel(new Player("ASDF")));
+        frame.add(new PlayerComponent(new Player("ASDF")));
         frame.setVisible(true);
     }
 }
