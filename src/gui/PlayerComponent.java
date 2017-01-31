@@ -26,13 +26,13 @@ import util.SpriteLoader;
  *
  * @author Darian
  */
-public class PlayerPanel extends JComponent {
+public class PlayerComponent extends JComponent {
     private final Player player;
     private Controller controller;
 
     private String[] results;
 
-    public PlayerPanel(Player player) {
+    public PlayerComponent(Player player) {
         init();
         this.player = player;
         controller = null;
@@ -81,9 +81,13 @@ public class PlayerPanel extends JComponent {
             }
         });
     }
-
-    public void setResults(String[] results) {
-        this.results = results;
+    public void resetTurn() {
+        player.resetTurn();
+        results = null;
+        controller = null;
+    }
+    public Player getPlayer() {
+        return player;
     }
 
     public void setController(Controller controller) {
@@ -95,5 +99,9 @@ public class PlayerPanel extends JComponent {
         this.add(controller, 0); //add to top
         controller.startTurn();
         this.controller = null;
+    }
+
+    public void setResults(String[] results) {
+        this.results = results;
     }
 }

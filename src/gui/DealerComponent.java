@@ -15,11 +15,11 @@ import util.SpriteLoader;
  *
  * @author Darian
  */
-public class DealerPanel extends JComponent {
+public class DealerComponent extends JComponent {
     private Dealer dealer;
 
     private EndRoundButton endRoundBtn;
-    public DealerPanel(Dealer dealer) {
+    public DealerComponent(Dealer dealer) {
         init();
         this.dealer = dealer;
     }
@@ -54,6 +54,10 @@ public class DealerPanel extends JComponent {
         endRoundBtn.start();
     }
 
+    public void resetTurn() {
+        dealer.resetTurn();
+    }
+    
     private class EndRoundButton extends JButton {
         public EndRoundButton() {
             init();

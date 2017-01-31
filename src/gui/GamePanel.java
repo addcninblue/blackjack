@@ -32,10 +32,10 @@ import util.SpriteLoader;
  * @author Darian
  */
 public class GamePanel extends JPanel implements Runnable {
-    private Game game;
-    private Menu menu;
+    private final Game game;
+    private final Menu menu;
 
-    private DealerPanel dealerPnl;
+    private DealerComponent dealerCmp;
     private JComponent playersCmp;
     private JToggleButton debugBtn;
     public GamePanel(Menu menu) {
@@ -56,7 +56,7 @@ public class GamePanel extends JPanel implements Runnable {
     private void initGUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        dealerPnl = new DealerPanel(game.getDealer());
+        dealerCmp = new DealerComponent(game.getDealer());
 
         debugBtn = new JToggleButton("DEBUG");
         debugBtn.addActionListener((ActionEvent event) -> {
@@ -72,7 +72,7 @@ public class GamePanel extends JPanel implements Runnable {
         }};
 
         add(Box.createRigidArea(new Dimension(0, 20)));
-        add(dealerPnl);
+        add(dealerCmp);
         add(debugBtn);
         add(playersCmp);
     }
@@ -84,83 +84,79 @@ public class GamePanel extends JPanel implements Runnable {
         logicThread.start();
     }
 
+    /**
+     * The main game loop.
+     * NOTE: Generally, methods called from run() should not also call render().
+     * - Only run() should call render().
+     * - Single exception is when Dealer has his turn, that is OK.
+     */
     @Override
     public void run() {
         Dealer dealer = game.getDealer();
         List<Player> players = game.getPlayers();
-
         Map<Player, Integer> playerToPreviousBet = new HashMap<Player, Integer>();
-        Map<Player, PlayerPanel> playerToPlayerPanel = new HashMap<Player, PlayerPanel>();
+        Map<Player, PlayerComponent> playerToPlayerCmp = new HashMap<Player, PlayerComponent>();
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
-            PlayerPanel playerPanel = new PlayerPanel(player);
-            playersCmp.add(playerPanel);
-            if (i != players.size() - 1) {
-                playersCmp.add(Box.createRigidArea(new Dimension(20, 0))); //spacer
+            PlayerComponent playerCmp = new PlayerComponent(player);
+            playersCmp.add(playerCmp);
+            if (i != players.size() - 1) { //create spacers between players
+                playersCmp.add(Box.createRigidArea(new Dimension(20, 0)));
             }
-            playerToPlayerPanel.put(player, playerPanel);
+            playerToPlayerCmp.put(player, playerCmp);
         }
         while (game.hasPlayers()) {
             game.newRound();
-            for (PlayerPanel playerPanel : playerToPlayerPanel.values()) {
-                playerPanel.setResults(null);
+            for (PlayerComponent playerCmp : playerToPlayerCmp.values()) {
+                playerCmp.setResults(null);
             }
 
             for (Player player : players) {
-                getBetFromPlayer(player, playerToPreviousBet);
+                int previousBet = playerToPreviousBet.getOrDefault(player, 0);
+                if (player.getMoney() < previousBet) {
+                    previousBet = 0;
+                }
+                playerToPreviousBet.put(player, getBetFromPlayer(player, previousBet));
             }
+
             game.initialDeal();
             render();
 
-            runPlayerTurns(players, playerToPlayerPanel);
+            for (Player player : players) {
+                runPlayerTurn(player, playerToPlayerCmp.get(player));
+            }
             unhideAllHands();
             runDealerTurn(dealer);
 
-            for (int i = 0; i < players.size(); i++) {
-                Player player = players.get(i);
-                PlayerPanel playerPanel = playerToPlayerPanel.get(player);
-
-                List<String> results = new ArrayList<String>();
-                for (Hand hand : player.getHands()) {
-                    results.add(game.getResult(hand));
-                }
-                playerPanel.setResults(results.toArray(new String[0]));
-                render(0);
+            for (PlayerComponent playerCmp : playerToPlayerCmp.values()) {
+                processBets(playerCmp);
             }
-            for (Player player : players) {
-                game.payBet(player);
-            }
+            render();
 
             List<Player> peopleRemoved = game.removeMoneyless();
-            for (int i = 0; i < peopleRemoved.size(); i++) {
-                Player player = peopleRemoved.get(i);
+            for (Player player : peopleRemoved) {
                 JOptionPane.showMessageDialog(this, String.format("%s removed from game.",
                         player.getName()), "Player Eliminated!", JOptionPane.WARNING_MESSAGE);
-                playersCmp.remove(playerToPlayerPanel.get(player));
+                playersCmp.remove(playerToPlayerCmp.get(player));
                 render();
             }
-            dealerPnl.start();
+            dealerCmp.start();
         }
         setVisible(false);
         menu.setVisible(true);
     }
 
-    private void getBetFromPlayer(Player player, Map<Player, Integer> playerToPreviousBet) {
+
+    private int getBetFromPlayer(Player player, int previousBet) {
         String betMsg = String.format("\n\n%s's bet ($%d left): ",
                                       player.getName(), player.getMoney());
-
-        int previousBet = playerToPreviousBet.getOrDefault(player, 0);
-        if (player.getMoney() < previousBet) {
-            previousBet = 0;
-        }
-
         while (player.getBet() == 0) {
             try {
                 int betAmt = Integer.parseInt(JOptionPane.showInputDialog(betMsg,
                                               previousBet == 0 ? null : previousBet));
                 player.bet(betAmt);
-                playerToPreviousBet.put(player, betAmt);
+                return betAmt;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "That is not a valid number!",
                         "Invalid bet!", JOptionPane.ERROR_MESSAGE);
@@ -169,30 +165,28 @@ public class GamePanel extends JPanel implements Runnable {
                         "Invalid bet!", JOptionPane.ERROR_MESSAGE);
             }
         }
+        return -1;
     }
 
-    private void runPlayerTurns(List<Player> players, Map<Player, PlayerPanel> playerToPlayerPanel) {
-        for (int i = 0; i < players.size(); i++) {
-                Player player = players.get(i);
-                for (int j = 0; j < player.getHands().size(); j++) {
-                    Hand hand = player.getHand(j);
-                    Controller controller = new Controller(game, player, hand);
+    private void runPlayerTurn(Player player, PlayerComponent playerCmp) {
+        for (int i = 0; i < player.getHands().size(); i++) { //foreach causes CM exception
+            Hand hand = player.getHand(i);
 
-                    PlayerPanel playerPanel = playerToPlayerPanel.get(player);
-                    playerPanel.setController(controller);
-                }
-            }
+            Controller controller = new Controller(game, player, hand);
+            playerCmp.setController(controller);
+        }
     }
 
     private void unhideAllHands() {
         Dealer dealer = game.getDealer();
         List<Player> players = game.getPlayers();
+
+        dealer.getHand().unhideCards();
         for (Player player : players) {
             for (Hand hand : player.getHands()) {
                 hand.unhideCards();
             }
         }
-        dealer.getHand().unhideCards();
     }
 
     private void runDealerTurn(Dealer dealer) {
@@ -201,6 +195,18 @@ public class GamePanel extends JPanel implements Runnable {
             game.hit(dealer.getHand());
             render();
         }
+    }
+
+    private void processBets(PlayerComponent playerCmp) {
+        Player player = playerCmp.getPlayer();
+
+        List<String> results = new ArrayList<String>(player.getHands().size());
+        for (Hand hand : player.getHands()) {
+            results.add(game.getResult(hand));
+        }
+
+        playerCmp.setResults(results.toArray(new String[0]));
+        game.payBet(player);
     }
 
     private void render(int delay) {
