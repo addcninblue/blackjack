@@ -6,9 +6,7 @@ import game.Game;
 import game.Hand;
 import game.Player;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -36,9 +34,6 @@ import util.SpriteLoader;
 public class GamePanel extends JPanel implements Runnable {
     private Game game;
     private Menu menu;
-
-    private boolean drawingResults;
-    private Hand activeHand;
 
     private DealerPanel dealerPnl;
     private JComponent playersCmp;
@@ -71,13 +66,14 @@ public class GamePanel extends JPanel implements Runnable {
         //debugBtn.setMaximumSize(getPreferredSize());
 
         playersCmp = new JComponent() {{
-            this.setLayout(new FlowLayout());
+            this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            this.setPreferredSize(new Dimension(1000, 360));
+            this.setMinimumSize(getPreferredSize());
         }};
 
-        add(Box.createRigidArea(new Dimension(0, 40)));
+        add(Box.createRigidArea(new Dimension(0, 20)));
         add(dealerPnl);
         add(debugBtn);
-        //add(Box.createRigidArea(new Dimension(0, 50)));
         add(playersCmp);
     }
 
@@ -94,14 +90,21 @@ public class GamePanel extends JPanel implements Runnable {
         List<Player> players = game.getPlayers();
 
         Map<Player, Integer> playerToPreviousBet = new HashMap<Player, Integer>();
+        Map<Player, PlayerPanel> playerToPlayerPanel = new HashMap<Player, PlayerPanel>();
 
-        for (Player player : players) {
-            playersCmp.add(new PlayerPanel(player));
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            PlayerPanel playerPanel = new PlayerPanel(player);
+            playersCmp.add(playerPanel);
+            if (i != players.size() - 1) {
+                playersCmp.add(Box.createRigidArea(new Dimension(20, 0))); //spacer
+            }
+            playerToPlayerPanel.put(player, playerPanel);
         }
         while (game.hasPlayers()) {
             game.newRound();
-            for (Component playerCmp : playersCmp.getComponents()) {
-                ((PlayerPanel)playerCmp).setResults(null);
+            for (PlayerPanel playerPanel : playerToPlayerPanel.values()) {
+                playerPanel.setResults(null);
             }
 
             for (Player player : players) {
@@ -110,26 +113,31 @@ public class GamePanel extends JPanel implements Runnable {
             game.initialDeal();
             render();
 
-            runPlayerTurns(players);
+            runPlayerTurns(players, playerToPlayerPanel);
             unhideAllHands();
             runDealerTurn(dealer);
 
             for (int i = 0; i < players.size(); i++) {
-                PlayerPanel playerPanel = (PlayerPanel)playersCmp.getComponent(i);
+                Player player = players.get(i);
+                PlayerPanel playerPanel = playerToPlayerPanel.get(player);
+
                 List<String> results = new ArrayList<String>();
-                for (Hand hand : players.get(i).getHands()) {
+                for (Hand hand : player.getHands()) {
                     results.add(game.getResult(hand));
                 }
                 playerPanel.setResults(results.toArray(new String[0]));
+                render(0);
             }
             for (Player player : players) {
                 game.payBet(player);
             }
 
             List<Player> peopleRemoved = game.removeMoneyless();
-            for (Player player : peopleRemoved) {
-                JOptionPane.showMessageDialog(this, String.format("%s removed from game.", player.getName()),
-                                              "Player Eliminated!", JOptionPane.WARNING_MESSAGE);
+            for (int i = 0; i < peopleRemoved.size(); i++) {
+                Player player = peopleRemoved.get(i);
+                JOptionPane.showMessageDialog(this, String.format("%s removed from game.",
+                        player.getName()), "Player Eliminated!", JOptionPane.WARNING_MESSAGE);
+                playersCmp.remove(playerToPlayerPanel.get(player));
                 render();
             }
             dealerPnl.start();
@@ -150,7 +158,7 @@ public class GamePanel extends JPanel implements Runnable {
         while (player.getBet() == 0) {
             try {
                 int betAmt = Integer.parseInt(JOptionPane.showInputDialog(betMsg,
-                         previousBet == 0 ? null : previousBet));
+                                              previousBet == 0 ? null : previousBet));
                 player.bet(betAmt);
                 playerToPreviousBet.put(player, betAmt);
             } catch (NumberFormatException e) {
@@ -163,15 +171,14 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private void runPlayerTurns(List<Player> players) {
+    private void runPlayerTurns(List<Player> players, Map<Player, PlayerPanel> playerToPlayerPanel) {
         for (int i = 0; i < players.size(); i++) {
                 Player player = players.get(i);
                 for (int j = 0; j < player.getHands().size(); j++) {
                     Hand hand = player.getHand(j);
-                    activeHand = hand;
                     Controller controller = new Controller(game, player, hand);
 
-                    PlayerPanel playerPanel = (PlayerPanel)playersCmp.getComponent(i);
+                    PlayerPanel playerPanel = playerToPlayerPanel.get(player);
                     playerPanel.setController(controller);
                 }
             }
@@ -227,7 +234,7 @@ public class GamePanel extends JPanel implements Runnable {
         AffineTransform at = new AffineTransform();
         at.setToRotation(0.785, 180, 160);
         g3.setTransform(at);
-
+        //magic numbers galore :(
         g3.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, 180, 140, 72, 100, null);
         for (int i = 0; i < dealer.getDeck().size(); i++) {
             Card card = dealer.getDeck().get(i);
