@@ -17,13 +17,15 @@ public class SpriteLoader {
     public static final BufferedImage RECTANGLE = loadPng("rectangle");
     public static final BufferedImage SOLARIZED_TABLE_TOP = loadPng("solarizedBackground");
     public static final BufferedImage SOLARIZED_RECTANGLE = loadPng("solarizedRectangle");
-    
+
+    public static final int CARD_OFFSET = 14;
+
     public final BufferedImage[] cardImages;
     public final int imageWidth;
     public final int imageHeight;
-    
+
     private BufferedImage spriteSheet;
-    
+
     public SpriteLoader(String sheetFileName, int imageWidth, int imageHeight) {
         this.spriteSheet = loadPng(sheetFileName);
         this.imageWidth = imageWidth;

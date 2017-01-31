@@ -1,6 +1,9 @@
 package game;
 
 
+import gui.DealerComponent;
+import gui.PlayerComponent;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JFrame;
@@ -29,15 +32,18 @@ public class Test extends JPanel {
         Card card = cards[0];
         g2.drawImage(card.getImage(), 0, 0, null);
         System.out.println(card);
-        
+
     }
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setSize(1000, 1000);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        Test table = new Test();
-        frame.add(table);
+
+        Game game = new Game();
+        game.newRound();
+        game.initialDeal();
+        frame.setLayout(new FlowLayout());
+        frame.add(new PlayerComponent(new Player("ASDF")));
         frame.setVisible(true);
     }
 }
