@@ -57,6 +57,13 @@ public class GamePanel extends JPanel implements Runnable {
         initGUI();
     }
 
+    public GamePanel(Menu menu, Game game){
+        this.menu = menu;
+        this.game = game;
+        initGUI();
+
+    }
+
     private void initGUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
