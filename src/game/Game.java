@@ -1,19 +1,33 @@
 package game;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The class that handles all the BlackJack logic.
+ *
+ * @author Addison Chan / Darian Nguyen / Daniel Phan
+ * @version 1.28.17
+ */
 public class Game {
     private ArrayList<Player> players;
     private Dealer dealer;
 
+    /**
+     * Constructs a game with a dealer and no players.
+     */
     public Game(){
         this.players = new ArrayList<>();
         dealer = new Dealer();
     }
 
+    /**
+     * Constructs a game with a dealer and the given players.
+     * @param playersList the players of the game
+     */
     public Game(List<Player> playersList) {
         this();
         for (Player player : playersList) {
@@ -31,6 +45,11 @@ public class Game {
         players.forEach(Player::resetTurn);
     }
 
+    /**
+     * Splits a player's hand, if possible.
+     * @param player the player with the hand to split
+     * @param hand the player's hand to split
+     */
     public void split(Player player, Hand hand) {
         if (!player.canSplitHand(hand)) {
             throw new IllegalArgumentException(player.getName() + " can't split.\n");
@@ -86,7 +105,7 @@ public class Game {
         return c;
     }
     /**
-     *
+     * Double downs a player, if possible.
      * @param player the player to double down
      * @return the card dealt to the hand
      */
@@ -105,7 +124,7 @@ public class Game {
     }
 
     /**
-     *
+     * Insures a player, if possible.
      * @param player the player to insure
      */
     public void insure(Player player) {
@@ -183,6 +202,11 @@ public class Game {
         return moneyless;
     }
 
+    /**
+     * Returns whether or not player can be insured
+     * @param player the player to check if they can be insured
+     * @return whether or not player can be insured
+     */
     public boolean canInsure(Player player) {
         return player.getMoney() >= player.getBet() / 2 //has money
                 && !player.isInsured() //hasn't insured yet
@@ -191,6 +215,10 @@ public class Game {
                 && dealer.getFaceUpCard().RANK == Rank.ACE;
     }
 
+    /**
+     * Returns whether or not the game has players.
+     * @return whether or not the game has players
+     */
     public boolean hasPlayers() {
         return players.size() > 0;
     }
@@ -205,6 +233,10 @@ public class Game {
         return players;
     }
 
+    /**
+     * Returns the game's dealer.
+     * @return the dealer
+     */
     public Dealer getDealer() {
         return dealer;
     }
@@ -236,5 +268,22 @@ public class Game {
             }
         }
         return null;
+    }
+
+    /**
+     * Saves a game to database
+     * @param database the database to save to
+     * @param gameName name of the game (table) to save to
+     */
+    public void saveGame(Database database, String gameName){
+        try {
+            database.readyTable(gameName);
+            for(Player player : this.players){
+                database.addPlayer(gameName, player.getName(), player.getMoney());
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
     }
 }

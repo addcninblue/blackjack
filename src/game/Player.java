@@ -1,6 +1,8 @@
 package game;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
 public class Player {
     private String name;
@@ -13,6 +15,19 @@ public class Player {
         this.name = name;
         hands = new ArrayList<>();
         money = 1000;
+        bet = 0;
+        insured = false;
+    }
+
+    public Player(String name, int money){
+        this(name);
+        this.money = money;
+    }
+
+    public Player(String name, int money, ArrayList<Hand> hands){
+        this.name = name;
+        this.hands = hands;
+        this.money = money;
         bet = 0;
         insured = false;
     }

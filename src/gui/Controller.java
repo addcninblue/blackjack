@@ -6,9 +6,10 @@ import game.Hand;
 import game.Player;
 import game.Rank;
 import game.Suit;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JButton;
@@ -37,6 +38,12 @@ public class Controller extends JComponent {
     private JButton debugPlayerBtn;
     private JButton debugDealerBtn;
 
+    /**
+     * Constructs a new controller with the given game, player, and hand.
+     * @param game the game
+     * @param player the player
+     * @param hand the hand
+     */
     public Controller(Game game, Player player, Hand hand) {
         init();
         this.game = game;
@@ -45,9 +52,10 @@ public class Controller extends JComponent {
     }
 
     private void init() {
-        this.setVisible(false);
         this.setOpaque(false);
-        this.setSize(new Dimension(300, 100));
+        this.setPreferredSize(new Dimension(300, 100));
+        this.setMinimumSize(getPreferredSize());
+        this.setMaximumSize(getPreferredSize());
         this.setLayout(new FlowLayout());
         hitBtn = new JButton("HIT");
         hitBtn.setPreferredSize(new Dimension(80, 50));
@@ -73,7 +81,7 @@ public class Controller extends JComponent {
         hitBtn.addActionListener((ActionEvent event) -> {
             Card card = game.hit(hand);
 
-            doubleBtn.setVisible(false); //can't double after first move!
+            doubleBtn.setEnabled(false); //can't double after first move!
 
             if (hand.getValue() == 21 || hand.isOver21()) {
                 endTurn();
@@ -145,9 +153,9 @@ public class Controller extends JComponent {
     }
 
     private void showButtons() {
-        doubleBtn.setVisible(false);
-        splitBtn.setVisible(false);
-        insureBtn.setVisible(false);
+        doubleBtn.setEnabled(false);
+        splitBtn.setEnabled(false);
+        insureBtn.setEnabled(false);
 
         debugPlayerBtn.setVisible(false);
         debugDealerBtn.setVisible(false);
@@ -157,51 +165,83 @@ public class Controller extends JComponent {
         }
 
         if (hand.isBlackJack()) {
-            hitBtn.setVisible(false);
+            hitBtn.setEnabled(false);
         }
 
         if (player.canDoubleDown()) {
-            doubleBtn.setVisible(true);
+            doubleBtn.setEnabled(true);
         }
         if (player.canSplitHand(hand)) {
-            splitBtn.setVisible(true);
+            splitBtn.setEnabled(true);
         }
         if (game.canInsure(player)) {
-            insureBtn.setVisible(true);
+            insureBtn.setEnabled(true);
         }
 
         repaint();
     }
 
+    /**
+     * Starts the hand's turn.
+     */
     public synchronized void startTurn() {
-        setVisible(true);
         showButtons();
         try {
             wait();
         } catch (InterruptedException e) {}
     }
 
+    /**
+     * Ends the hand's turn.
+     */
     public synchronized void endTurn() {
         repaint();
-        setVisible(false);
+        for (Component cmp : getComponents()) {
+            if (cmp instanceof JButton) {
+                cmp.setEnabled(false);
+            }
+        }
         this.notify();
     }
 
+    /**
+     * Repaints the game panel.
+     */
     @Override
     public void repaint() {
         //this is required because otherwise, repaint() will repaint Controller
         //instead, we want it to repaint GamePanel
         super.repaint();
-        SwingUtilities.getWindowAncestor(this).repaint();
+        Window parent = SwingUtilities.getWindowAncestor(this);
+        if (parent != null) {
+            SwingUtilities.getWindowAncestor(this).repaint();
+        }
     }
 
+    /**
+     * Sets the controller's hand.
+     * @param hand the new hand
+     */
     public void setHand(Hand hand) {
         this.hand = hand;
     }
 
+    public Hand getHand() {
+        return hand;
+    }
+
+    /**
+     * Returns whether or not the controller is in debug state.
+     * @return whether or not the controller is in debug state
+     */
     public static boolean isDebug() {
         return debug;
     }
+
+    /**
+     * Updates the controller's debug state.
+     * @param debug true if in debug state, false otherwise
+     */
     public static void setDebug(boolean debug) {
         Controller.debug = debug;
     }
