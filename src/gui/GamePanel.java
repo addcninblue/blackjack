@@ -38,6 +38,11 @@ public class GamePanel extends JPanel implements Runnable {
     private DealerComponent dealerCmp;
     private JComponent playersCmp;
     private JToggleButton debugBtn;
+
+    /**
+     * Constructs a GamePanel with the given menu and a default "Darian" player.
+     * @param menu the menu
+     */
     public GamePanel(Menu menu) {
         this.menu = menu;
         game = new Game();
@@ -45,6 +50,12 @@ public class GamePanel extends JPanel implements Runnable {
 
         initGUI();
     }
+
+    /**
+     * Constructs a GamePanel with the given menu and players.
+     * @param menu the menu
+     * @param players the players
+     */
 
     public GamePanel(Menu menu, List<Player> players) {
         this.menu = menu;
@@ -88,6 +99,9 @@ public class GamePanel extends JPanel implements Runnable {
         add(playersCmp);
     }
 
+    /**
+     * Starts the GamePanel
+     */
     public void start() {
         setVisible(true);
 
@@ -96,10 +110,14 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
+<<<<<<< HEAD
+     * Runs the GamePanel.
+=======
      * The main game loop.
      * NOTE: Generally, methods called from run() should not also call render().
      * - Only run() should call render().
      * - Single exception is when Dealer has his turn, that is OK.
+>>>>>>> master
      */
     @Override
     public void run() {

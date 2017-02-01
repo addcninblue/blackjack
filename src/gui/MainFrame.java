@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 
 /**
+ * The main class to run the application.
  *
  * @author Darian
  */

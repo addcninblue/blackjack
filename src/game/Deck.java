@@ -6,9 +6,18 @@ import java.util.Collections;
 import java.util.Random;
 import util.SpriteLoader;
 
+/**
+ * A standard deck.
+ *
+ * @author Addison Chan / Darian Nguyen / Daniel Phan
+ * @version 1.28.17
+ */
 public class Deck extends ArrayList<Card> {
     private BufferedImage[] cardImages;
 
+    /**
+     * Constructs a new deck with the standard 52 cards.
+     */
     public Deck() {
         resetDeck();
     }
@@ -32,9 +41,7 @@ public class Deck extends ArrayList<Card> {
 
     /**
      * Deals a card if there are cards left. Else, null is returned.
-     * (Postcondition: deck_ is unchanged.)
      * @return a card if cards are left in the deck, null otherwise
-     * (Precondition: deck_ and cardsLeft_ are initialized, and deck_ is non null)
      */
     public Card deal() {
         return isEmpty() ? null : remove(0);
@@ -65,6 +72,10 @@ public class Deck extends ArrayList<Card> {
         }
     }
 
+    /**
+     * Returns the deck's card images.
+     * @return the deck's card images
+     */
     public BufferedImage[] getCardImages() {
         return cardImages;
     }
