@@ -19,7 +19,7 @@ import util.SpriteLoader;
  */
 public class Menu extends javax.swing.JPanel {
 
-    Database database;
+    public Database database;
 
     /**
      * Creates new form Menu

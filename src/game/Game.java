@@ -1,5 +1,6 @@
 package game;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -236,5 +237,17 @@ public class Game {
             }
         }
         return null;
+    }
+
+    public void saveGame(Database database, String gameName){
+        try {
+            database.readyTable(gameName);
+            for(Player player : this.players){
+                database.addPlayer(gameName, player.getName(), player.getMoney());
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
     }
 }

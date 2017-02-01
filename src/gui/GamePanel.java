@@ -68,7 +68,10 @@ public class GamePanel extends JPanel implements Runnable {
         debugBtn = new JToggleButton("DEBUG");
         debugBtn.addActionListener((ActionEvent event) -> {
             // override here
-            Controller.setDebug(!Controller.isDebug());
+            String gameName = JOptionPane.showInputDialog("Enter a one word name for your savefile:");
+            System.out.println(gameName);
+            game.saveGame(menu.database, gameName);
+//            Controller.setDebug(!Controller.isDebug());
         });
         debugBtn.setPreferredSize(new Dimension(80, 40));
         //debugBtn.setMaximumSize(getPreferredSize());

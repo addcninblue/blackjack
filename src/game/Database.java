@@ -42,7 +42,7 @@ public class Database {
     public void addPlayer(String gameName, String name, int money) throws SQLException{
         String sql = "INSERT INTO " + gameName + " (name, money)\n"
             + "VALUES\n"
-            + String.format(" ('%s', '%s', '%d')", name, money);
+            + String.format(" ('%s', '%d')", name, money);
         statement.execute(sql);
     }
 
