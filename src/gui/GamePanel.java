@@ -118,6 +118,7 @@ public class GamePanel extends JPanel implements Runnable {
             playerToPlayerCmp.put(player, playerCmp);
         }
         while (game.hasPlayers()) {
+            game.saveGame(menu.database, "autosave");
             game.newRound();
             for (PlayerComponent playerCmp : playerToPlayerCmp.values()) {
                 playerCmp.setResults(null);

@@ -239,6 +239,11 @@ public class Game {
         return null;
     }
 
+    /**
+     * Saves a game to database
+     * @param database the database to save to
+     * @param gameName name of the game (table) to save to
+     */
     public void saveGame(Database database, String gameName){
         try {
             database.readyTable(gameName);

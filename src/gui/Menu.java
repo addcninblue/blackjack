@@ -1,6 +1,5 @@
 package gui;
 
-import game.Game;
 import game.Player;
 import game.Database;
 import java.awt.Graphics;
@@ -144,14 +143,9 @@ public class Menu extends javax.swing.JPanel {
             frame.setResizable(false);
             gamePanel.start();
         } else {
-
+            JOptionPane.showMessageDialog(this, "You have no save files.", "Error", JOptionPane.WARNING_MESSAGE);
         }
     } // overridden by add
-
-
-    public void loadSavefiles() {
-
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton exitBtn;

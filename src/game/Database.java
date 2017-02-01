@@ -103,6 +103,11 @@ public class Database {
         statement.execute(sql);
     }
 
+    /**
+     * Gets the names of save files from a database
+     * @return names of save files in a string[]
+     * @throws SQLException
+     */
     public String[] getSavefiles() throws SQLException {
         ArrayList<String> output = new ArrayList<String>();
         DatabaseMetaData dbmd = connection.getMetaData();
