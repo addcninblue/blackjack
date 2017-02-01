@@ -151,33 +151,4 @@ public class Database {
         statement.execute(sql);
         return players;
     }
-
-    /**
-     * @param args the command line arguments
-     * testing program
-     */
-    public static void main(String[] args) {
-        String gameName = "game1";
-        try {
-            Database database = new Database("games");
-            database.readyTable(gameName);
-
-            String[] games = database.getSavefiles();
-            for(String i : games){
-                System.out.println(i);
-            }
-
-            database.addPlayer(gameName,"Addison", 800);
-            database.setPlayerMoney(gameName, 1, 100);
-            database.addPlayer(gameName,"Daniel", 1400);
-            database.addPlayer(gameName,"Darian", 4000);
-            // System.out.format("%s", database.getPlayerName(1));
-            System.out.format("%s: %d\n", database.getPlayerName(gameName,1), database.getPlayerMoney(gameName,1));
-            System.out.format("%s: %d\n", database.getPlayerName(gameName,2), database.getPlayerMoney(gameName,2));
-            System.out.format("%s: %d\n", database.getPlayerName(gameName,3), database.getPlayerMoney(gameName,3));
-        } catch(SQLException e){
-            System.out.println("error");
-            System.out.print(e.getMessage());
-        }
-    }
 }
