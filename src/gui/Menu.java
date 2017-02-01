@@ -1,8 +1,10 @@
 package gui;
 
 import game.Player;
+import game.Database;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -16,11 +18,20 @@ import util.SpriteLoader;
  */
 public class Menu extends javax.swing.JPanel {
 
+    public Database database;
+
     /**
      * Creates new form Menu
      */
     public Menu() {
         initComponents();
+        try {
+            database = new Database("blackjack");
+//            database.readyTable("testing1");
+//            database.readyTable("testing2");
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -100,11 +111,41 @@ public class Menu extends javax.swing.JPanel {
         gamePanel.start();
     }//GEN-LAST:event_startBtnActionPerformed
 
-    private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
-        this.setVisible(false);
-        System.exit(0);
-    }//GEN-LAST:event_exitBtnActionPerformed
+    // private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
+    //     this.setVisible(false);
+    //     System.exit(0);
+    // }//GEN-LAST:event_exitBtnActionPerformed
 
+    private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
+        JFrame frame = (JFrame)SwingUtilities.getWindowAncestor(this);
+        System.out.println("hi");
+        String[] saveFiles = {};
+        try {
+            saveFiles = database.getSavefiles();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        if(saveFiles.length > 0) {
+            int saveFile = JOptionPane.showOptionDialog(this,
+                    "Choose your save file:", "Blackjack",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, saveFiles, saveFiles[0]);
+            System.out.println(saveFiles[saveFile]);
+            List<Player> players = new ArrayList<Player>();
+            try {
+                players = database.getPlayersFromSavefile(saveFiles[saveFile]);
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
+            this.setVisible(false);
+            GamePanel gamePanel = new GamePanel(this, players);
+            frame.add(gamePanel);
+            frame.setResizable(false);
+            gamePanel.start();
+        } else {
+            JOptionPane.showMessageDialog(this, "You have no save files.", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+    } // overridden by add
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton exitBtn;
