@@ -79,9 +79,12 @@ public class GamePanel extends JPanel implements Runnable {
         debugBtn = new JToggleButton("DEBUG");
         debugBtn.addActionListener((ActionEvent event) -> {
             // override here
-            String gameName = JOptionPane.showInputDialog("Enter a one word name for your savefile:");
-            System.out.println(gameName);
-            game.saveGame(menu.database, gameName);
+            String gameName = JOptionPane.showInputDialog("Enter a one word name for your savefile (no numbers): ");
+            if(gameName.matches(".*[1234567890 ].*")){
+                JOptionPane.showMessageDialog(this, "That was not a valid string.", "Error", JOptionPane.WARNING_MESSAGE);
+            } else {
+                game.saveGame(menu.database, gameName);
+            }
 //            Controller.setDebug(!Controller.isDebug());
         });
         debugBtn.setPreferredSize(new Dimension(80, 40));
