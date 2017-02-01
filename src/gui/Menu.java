@@ -27,8 +27,6 @@ public class Menu extends javax.swing.JPanel {
         initComponents();
         try {
             database = new Database("blackjack");
-//            database.readyTable("testing1");
-//            database.readyTable("testing2");
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -118,7 +116,6 @@ public class Menu extends javax.swing.JPanel {
 
     private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
         JFrame frame = (JFrame)SwingUtilities.getWindowAncestor(this);
-        System.out.println("hi");
         String[] saveFiles = {};
         try {
             saveFiles = database.getSavefiles();
@@ -130,7 +127,6 @@ public class Menu extends javax.swing.JPanel {
                     "Choose your save file:", "Blackjack",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, saveFiles, saveFiles[0]);
-            System.out.println(saveFiles[saveFile]);
             List<Player> players = new ArrayList<Player>();
             try {
                 players = database.getPlayersFromSavefile(saveFiles[saveFile]);
