@@ -118,7 +118,6 @@ public class GamePanel extends JPanel implements Runnable {
             playerToPlayerCmp.put(player, playerCmp);
         }
         while (game.hasPlayers()) {
-            game.saveGame(menu.database, "autosave");
             game.newRound();
             for (PlayerComponent playerCmp : playerToPlayerCmp.values()) {
                 playerCmp.setResults(null);
@@ -153,7 +152,13 @@ public class GamePanel extends JPanel implements Runnable {
                 playersCmp.remove(playerToPlayerCmp.get(player));
                 render();
             }
+            game.saveGame(menu.database, "autosave");
             dealerCmp.start();
+        }
+        try {
+            menu.database.deleteTable("autosave");
+        } catch(Exception e){
+            e.printStackTrace();
         }
         setVisible(false);
         menu.setVisible(true);
