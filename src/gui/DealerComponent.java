@@ -12,7 +12,6 @@ import javax.swing.JComponent;
 import util.SpriteLoader;
 
 /**
- * The JFrame component for the dealer.
  *
  * @author Darian
  */
