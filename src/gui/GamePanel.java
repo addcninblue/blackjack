@@ -147,12 +147,14 @@ public class GamePanel extends JPanel implements Runnable {
                 playerCmp.setResults(null);
             }
 
-            for (Player player : players) {
+            for (PlayerComponent playerCmp : playerToPlayerCmp.values()) {
+                Player player = playerCmp.getPlayer();
                 int previousBet = playerToPreviousBet.getOrDefault(player, 0);
                 if (player.getMoney() < previousBet) {
                     previousBet = 0;
                 }
-                playerToPreviousBet.put(player, getBetFromPlayer(player, previousBet));
+                playerCmp.setButtonsCmp(new Better(player, previousBet));
+                playerToPreviousBet.put(player, player.getBet());
             }
 
             game.initialDeal();
@@ -188,33 +190,12 @@ public class GamePanel extends JPanel implements Runnable {
         menu.setVisible(true);
     }
 
-
-    private int getBetFromPlayer(Player player, int previousBet) {
-        String betMsg = String.format("\n\n%s's bet ($%d left): ",
-                                      player.getName(), player.getMoney());
-        while (player.getBet() == 0) {
-            try {
-                int betAmt = Integer.parseInt(JOptionPane.showInputDialog(betMsg,
-                                              previousBet == 0 ? null : previousBet));
-                player.bet(betAmt);
-                return betAmt;
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "That is not a valid number!",
-                        "Invalid bet!", JOptionPane.ERROR_MESSAGE);
-            } catch (IllegalArgumentException e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(),
-                        "Invalid bet!", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        return -1;
-    }
-
     private void runPlayerTurn(Player player, PlayerComponent playerCmp) {
         for (int i = 0; i < player.getHands().size(); i++) { //foreach causes CM exception
             Hand hand = player.getHand(i);
 
             Controller controller = new Controller(game, player, hand);
-            playerCmp.setController(controller);
+            playerCmp.setButtonsCmp(controller);
         }
     }
 

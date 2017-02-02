@@ -22,7 +22,7 @@ import javax.swing.SwingUtilities;
  * for a player to operate.
  * @author Darian
  */
-public class Controller extends JComponent {
+public class Controller extends ButtonsComponent {
     private static boolean debug;
 
     private final Game game;
@@ -45,18 +45,15 @@ public class Controller extends JComponent {
      * @param hand the hand
      */
     public Controller(Game game, Player player, Hand hand) {
-        init();
+        super();
         this.game = game;
         this.player = player;
         this.hand = hand;
+        
     }
 
-    private void init() {
-        this.setOpaque(false);
-        this.setPreferredSize(new Dimension(300, 100));
-        this.setMinimumSize(getPreferredSize());
-        this.setMaximumSize(getPreferredSize());
-        this.setLayout(new FlowLayout());
+    @Override
+    protected void addComponents() {
         hitBtn = new JButton("HIT");
         hitBtn.setPreferredSize(new Dimension(80, 50));
 
@@ -180,41 +177,10 @@ public class Controller extends JComponent {
         repaint();
     }
 
-    /**
-     * Starts the hand's turn.
-     */
-    public synchronized void startTurn() {
-        showButtons();
-        try {
-            wait();
-        } catch (InterruptedException e) {}
-    }
-
-    /**
-     * Ends the hand's turn.
-     */
-    public synchronized void endTurn() {
-        repaint();
-        for (Component cmp : getComponents()) {
-            if (cmp instanceof JButton) {
-                cmp.setEnabled(false);
-            }
-        }
-        this.notify();
-    }
-
-    /**
-     * Repaints the game panel.
-     */
     @Override
-    public void repaint() {
-        //this is required because otherwise, repaint() will repaint Controller
-        //instead, we want it to repaint GamePanel
-        super.repaint();
-        Window parent = SwingUtilities.getWindowAncestor(this);
-        if (parent != null) {
-            SwingUtilities.getWindowAncestor(this).repaint();
-        }
+    public void startTurn() {
+        showButtons();
+        super.startTurn();
     }
 
     /**

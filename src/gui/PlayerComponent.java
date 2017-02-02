@@ -30,7 +30,7 @@ import util.SpriteLoader;
  */
 public class PlayerComponent extends JComponent {
     private final Player player;
-    private Controller controller;
+    private ButtonsComponent buttonsCmp;
 
     private String[] results;
 
@@ -41,7 +41,7 @@ public class PlayerComponent extends JComponent {
     public PlayerComponent(Player player) {
         init();
         this.player = player;
-        controller = null;
+        buttonsCmp = null;
         results = null;
     }
 
@@ -73,7 +73,7 @@ public class PlayerComponent extends JComponent {
                         drawCenteredString(g2, results[i], Color.ORANGE,
                             new Rectangle(0, Y_OFFSET, getWidth()/4, 50),
                             new Font("Courier", Font.BOLD, 25));
-                    } else if (controller != null && controller.getHand() == hand) {
+                    } else if (buttonsCmp instanceof Controller && ((Controller)buttonsCmp).getHand() == hand) {
                         g2.setColor(Painter.SOLARIZED_CYAN);
                         g2.fill(new Ellipse2D.Double(25, Y_OFFSET + 10, 30, 30));
                     }
@@ -94,7 +94,7 @@ public class PlayerComponent extends JComponent {
     public void resetTurn() {
         player.resetTurn();
         results = null;
-        controller = null;
+        buttonsCmp = null;
     }
 
     /**
@@ -107,17 +107,14 @@ public class PlayerComponent extends JComponent {
 
     /**
      * Updates the PlayerComponent's controller.
-     * @param controller the new controller
+     * @param buttonsCmp the new controller
      */
-    public void setController(Controller controller) {
-        this.controller = controller;
-        //remove all but last 2 components
-        for (int i = 0; i < getComponents().length - 2 ; i++) {
-            remove(getComponent(i));
-        }
-        this.add(controller, 0); //add to top
-        controller.startTurn();
-        this.controller = null;
+    public void setButtonsCmp(ButtonsComponent buttonsCmp) {
+        this.buttonsCmp = buttonsCmp;
+        this.remove(0);
+        this.add(buttonsCmp, 0); //add to top
+        buttonsCmp.startTurn();
+        this.buttonsCmp = null;
     }
 
     /**
