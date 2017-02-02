@@ -41,7 +41,7 @@ public class BlackJackCli {
 
     public static void getBet(Player player) {
         while (true) {
-            System.out.printf("\n\n%s's bet ($%d left): ", player.getName(), player.getMoney());
+            System.out.printf("\n\n%s's bet ($%d left): ", player.getPlayerName(), player.getMoney());
             int betAmt = input.nextInt();
             input.nextLine();
 
@@ -59,7 +59,7 @@ public class BlackJackCli {
         System.out.println("Initial deal:\n");
         System.out.printf("Dealer: [%s] [HIDDEN]\n", dealer.getFaceUpCard());
         for(Player player : players){
-            System.out.printf("%s: ", player.getName());
+            System.out.printf("%s: ", player.getPlayerName());
             for(Card card : player.getHand(0)){ //only one hand
                 System.out.printf("[%s]", card);
             }
@@ -67,7 +67,7 @@ public class BlackJackCli {
         }
     }
     public static void playerTurns(Player player) {
-            System.out.printf("\n\n%s's turn\n\n", player.getName());
+            System.out.printf("\n\n%s's turn\n\n", player.getPlayerName());
             loop: for (int i = 0; i < player.getHands().size(); i++) {
                 if (player.canSplitHand(player.getHand(i))) {
                     System.out.printf("Split hand? (y/n): ");
@@ -112,7 +112,7 @@ public class BlackJackCli {
                 }
                 System.out.printf("\nCurrent hand total: %d\n", h.getValue());
                 if (h.isOver21()) {
-                    System.out.printf("%s busted!\n", player.getName());
+                    System.out.printf("%s busted!\n", player.getPlayerName());
                 }
             }
     }
@@ -136,7 +136,7 @@ public class BlackJackCli {
     public static void payBets() {
         System.out.println("\n\nRESULTS: ");
         for (Player player : players) {
-            System.out.printf("%s: ", player.getName());
+            System.out.printf("%s: ", player.getPlayerName());
             for (Hand h : player.getHands()) {
                 System.out.printf("%s ", game.getResult(h));
             }
@@ -148,7 +148,7 @@ public class BlackJackCli {
     public static void removeMoneyless() {
         ArrayList<Player> peopleRemoved = game.removeMoneyless();
         for (Player player : peopleRemoved) {
-            System.out.printf("%s removed from game.\n", player.getName());
+            System.out.printf("%s removed from game.\n", player.getPlayerName());
         }
     }
 }

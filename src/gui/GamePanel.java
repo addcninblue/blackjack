@@ -113,14 +113,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-<<<<<<< HEAD
-     * Runs the GamePanel.
-=======
      * The main game loop.
      * NOTE: Generally, methods called from run() should not also call render().
      * - Only run() should call render().
      * - Single exception is when Dealer has his turn, that is OK.
->>>>>>> master
      */
     @Override
     public void run() {
@@ -169,7 +165,7 @@ public class GamePanel extends JPanel implements Runnable {
             List<Player> peopleRemoved = game.removeMoneyless();
             for (Player player : peopleRemoved) {
                 JOptionPane.showMessageDialog(this, String.format("%s removed from game.",
-                        player.getName()), "Player Eliminated!", JOptionPane.WARNING_MESSAGE);
+                        player.getPlayerName()), "Player Eliminated!", JOptionPane.WARNING_MESSAGE);
                 playersCmp.remove(playerToPlayerCmp.get(player));
                 render();
             }
@@ -188,7 +184,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private int getBetFromPlayer(Player player, int previousBet) {
         String betMsg = String.format("\n\n%s's bet ($%d left): ",
-                                      player.getName(), player.getMoney());
+                                      player.getPlayerName(), player.getMoney());
         while (player.getBet() == 0) {
             try {
                 int betAmt = Integer.parseInt(JOptionPane.showInputDialog(betMsg,
@@ -290,7 +286,7 @@ public class GamePanel extends JPanel implements Runnable {
     private void drawScoreboard(Graphics2D g2) {
         for (int i = 0; i < game.getPlayers().size(); i++) {
             Player player = game.getPlayers().get(i);
-            Painter.drawCenteredString(g2, String.format("%8s: $%d ($%d)", player.getName(), player.getMoney(), player.getBet()), Color.ORANGE,
+            Painter.drawCenteredString(g2, String.format("%8s: $%d ($%d)", player.getPlayerName(), player.getMoney(), player.getBet()), Color.ORANGE,
                     new Rectangle(9*getWidth()/10, 30 + i*30, 70, 10),
                     new Font("Courier", Font.PLAIN, 20));
         }

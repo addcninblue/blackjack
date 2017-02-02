@@ -2,9 +2,7 @@ package game;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The class that handles all the BlackJack logic.
@@ -52,7 +50,7 @@ public class Game {
      */
     public void split(Player player, Hand hand) {
         if (!player.canSplitHand(hand)) {
-            throw new IllegalArgumentException(player.getName() + " can't split.\n");
+            throw new IllegalArgumentException(player.getPlayerName() + " can't split.\n");
         }
 
         List<Hand> hands = player.getHands();
@@ -112,7 +110,7 @@ public class Game {
     public Card doubleDown(Player player) {
         if (!player.canDoubleDown()) {
             throw new IllegalArgumentException(
-                    String.format("%s can't double down.\n", player.getName()));
+                    String.format("%s can't double down.\n", player.getPlayerName()));
         }
         Hand hand = player.getHand(0);
         Card card = hit(hand);
@@ -261,7 +259,7 @@ public class Game {
      */
     public Player removePlayer(String name){
         for(int i = 0; i < players.size(); i++){
-            if(players.get(i).getName().equals(name)){
+            if(players.get(i).getPlayerName().equals(name)){
                 Player playertoRemove = players.get(i);
                 players.remove(i);
                 return playertoRemove;
@@ -279,7 +277,7 @@ public class Game {
         try {
             database.readyTable(gameName);
             for(Player player : this.players){
-                database.addPlayer(gameName, player.getName(), player.getMoney());
+                database.addPlayer(gameName, player.getPlayerName(), player.getMoney());
             }
         } catch (SQLException e){
             e.printStackTrace();

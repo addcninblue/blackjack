@@ -10,7 +10,7 @@ import java.util.StringJoiner;
  * @author Addison Chan / Darian Nguyen / Daniel Phan
  * @version 2.1.17
  */
-public class Player {
+public class Player extends Thread{
     private String name;
     private ArrayList<Hand> hands;
     private int money;
@@ -110,10 +110,11 @@ public class Player {
     }
 
     /**
+     * NOT getName because it's reserved in Thread
      * Returns the player name
      * @return the player name
      */
-    public String getName(){
+    public String getPlayerName(){
         return name;
     }
 

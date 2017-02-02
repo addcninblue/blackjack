@@ -79,7 +79,7 @@ public class PlayerComponent extends JComponent {
                     }
                 }
                 //draw name
-                Painter.drawCenteredString(g2, player.getName(), Color.ORANGE,
+                Painter.drawCenteredString(g2, player.getPlayerName(), Color.ORANGE,
                         new Rectangle(0, getHeight() - 50, getWidth(), 50),
                         new Font("Courier", Font.PLAIN, 30));
                 g2.drawImage(SpriteLoader.SOLARIZED_RECTANGLE, 0, 0,
