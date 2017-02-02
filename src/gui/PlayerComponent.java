@@ -23,8 +23,10 @@ import static util.Painter.drawCenteredString;
 import util.SpriteLoader;
 
 /**
+ * The JFrame component for a player.
  *
  * @author Darian
+ * @version 2.1.17
  */
 public class PlayerComponent extends JComponent {
     private final Player player;
@@ -32,6 +34,10 @@ public class PlayerComponent extends JComponent {
 
     private String[] results;
 
+    /**
+     * Constructs a new PlayerComponent with the given player.
+     * @param player the component's player
+     */
     public PlayerComponent(Player player) {
         init();
         this.player = player;
@@ -81,15 +87,28 @@ public class PlayerComponent extends JComponent {
             }
         });
     }
+
+    /**
+     * Prepares the controller for the next blackjack round.
+     */
     public void resetTurn() {
         player.resetTurn();
         results = null;
         controller = null;
     }
+
+    /**
+     * Returns the component's player.
+     * @return the component's player
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * Updates the PlayerComponent's controller.
+     * @param controller the new controller
+     */
     public void setController(Controller controller) {
         this.controller = controller;
         //remove all but last 2 components
@@ -101,6 +120,10 @@ public class PlayerComponent extends JComponent {
         this.controller = null;
     }
 
+    /**
+     * Sets the player's round results for this component.
+     * @param results the player's round results
+     */
     public void setResults(String[] results) {
         this.results = results;
     }
