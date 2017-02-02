@@ -50,15 +50,11 @@ public class DealerComponent extends JComponent {
         add(endRoundBtn);
     }
 
-    public synchronized void start() {
-        endRoundBtn.start();
+    public EndRoundButton getEndRoundBtn() {
+        return endRoundBtn;
     }
 
-    public void resetTurn() {
-        dealer.resetTurn();
-    }
-    
-    private class EndRoundButton extends JButton {
+    public class EndRoundButton extends JButton {
         public EndRoundButton() {
             init();
         }

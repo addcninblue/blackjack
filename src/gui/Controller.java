@@ -103,7 +103,6 @@ public class Controller extends JComponent {
 
         splitBtn.addActionListener((ActionEvent event) -> {
             game.split(player, hand);
-            // System.out.printf(" -> Total: %d\n", player.getHand(0).getValue());
 
             showButtons();
         });
