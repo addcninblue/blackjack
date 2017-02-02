@@ -12,6 +12,7 @@ import javax.swing.JComponent;
 import util.SpriteLoader;
 
 /**
+ * The JFrame component for the dealer.
  *
  * @author Darian
  */
@@ -19,6 +20,11 @@ public class DealerComponent extends JComponent {
     private Dealer dealer;
 
     private EndRoundButton endRoundBtn;
+
+    /**
+     * Constructs a new DealerComponent with the given dealer.
+     * @param dealer the dealer
+     */
     public DealerComponent(Dealer dealer) {
         init();
         this.dealer = dealer;

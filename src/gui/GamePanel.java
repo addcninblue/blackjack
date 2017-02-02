@@ -88,7 +88,12 @@ public class GamePanel extends JPanel implements Runnable {
             String gameName = JOptionPane.showInputDialog("Enter a one word name for your savefile:");
             if (gameName == null) {
                 return;
+            } else if(gameName.matches(".*[1234567890 ].*")){
+                JOptionPane.showMessageDialog(this, "No numbers or special characters!", "Error", JOptionPane.WARNING_MESSAGE);
+            } else {
+                game.saveGame(menu.database, gameName);
             }
+
 
             game.saveGame(menu.database, gameName.split(" ")[0]);
         });

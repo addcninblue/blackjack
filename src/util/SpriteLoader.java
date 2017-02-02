@@ -8,24 +8,60 @@ import java.io.UncheckedIOException;
 import javax.imageio.ImageIO;
 
 /**
+ * The utility class to load image files.
  *
  * @author Darian
+ * @version 2.1.17
  */
 public class SpriteLoader {
+    /**
+     * The image for the menu background.
+     */
     public static final BufferedImage MENU_BACKGROUND = loadPng("menu");
+    /**
+     * The table top image.
+     */
     public static final BufferedImage TABLE_TOP = loadPng("table");
+    /**
+     * The image for the rectangle that a hand is placed in.
+     */
     public static final BufferedImage RECTANGLE = loadPng("rectangle");
+    /**
+     * The table top image, solarized-dark theme.
+     */
     public static final BufferedImage SOLARIZED_TABLE_TOP = loadPng("solarizedBackground");
+    /**
+     * The image for the rectangle to place a hand in, solarized-dark theme.
+     */
     public static final BufferedImage SOLARIZED_RECTANGLE = loadPng("solarizedRectangle");
 
+    /**
+     * The offset for a card when drawing hands.
+     */
     public static final int CARD_OFFSET = 14;
 
+    /**
+     * The images for the fronts of the standard 52 cards.
+     */
     public final BufferedImage[] cardImages;
+    /**
+     * The width of a card image.
+     */
     public final int imageWidth;
+    /**
+     * The height of a card image.
+     */
     public final int imageHeight;
 
     private BufferedImage spriteSheet;
 
+    /**
+     * Constructs a new SpriteLoader with
+     * the given spritesheet and card image width and height.
+     * @param sheetFileName the spritesheet's name
+     * @param imageWidth the width of a card image
+     * @param imageHeight the height of a card image
+     */
     public SpriteLoader(String sheetFileName, int imageWidth, int imageHeight) {
         this.spriteSheet = loadPng(sheetFileName);
         this.imageWidth = imageWidth;
@@ -42,6 +78,12 @@ public class SpriteLoader {
             }
         }
     }
+
+    /**
+     * Loads an image file.
+     * @param fileName the image file to load
+     * @return the image file as a BufferedImage
+     */
     public static BufferedImage loadPng(String fileName) {
         try {
             return ImageIO.read(new File("res/"+fileName+".png"));

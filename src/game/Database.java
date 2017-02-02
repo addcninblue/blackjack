@@ -3,6 +3,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Database class to load and save game files.
+ *
+ * @author Addison Chan
+ * @version 2.1.17
+ */
 public class Database {
 
     private Connection connection;
