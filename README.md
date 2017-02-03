@@ -1,35 +1,9 @@
 #Blackjack
 
-##Class Design
+##Overview
 
-###Card
+This was a project for computer science AP. We designed it with maintainability in mind, and code is well documented. This program runs the classical card game blackjack inside a JFrame. The database for saves is implemented in SQL.
 
-#####Instance Variables:
-- Suit
-- Value
-- Texture
+##To run
 
-####Methods:
-- toString()
-
-###GameDisplay
-Displays the actual game
-
-###Game
-backend
-
-#####Instance Variables:
-- Card[52]
-- List<Players>
-
-####Methods:
-- start()
-- stop()
-- renamePlayers()
-- addPlayers()
-
-###Players
-
-#####Instance Variables:
-- List<Cards>
-- name
+To run this, download the latest release from the releases tab of Github. After you load this into your IDE, link the JAR file to allow for SQL connections.

@@ -52,6 +52,7 @@ public class Game {
         if (!player.canSplitHand(hand)) {
             throw new IllegalArgumentException(player.getPlayerName() + " can't split.\n");
         }
+        player.bet(player.getBet()/player.getHands().size());
 
         List<Hand> hands = player.getHands();
         int handIndex = hands.indexOf(hand);
@@ -64,8 +65,6 @@ public class Game {
 
         hit(player.getHand(handIndex));
         hit(player.getHand(newHandIndex));
-
-        player.bet(player.getBet());
     }
 
 
