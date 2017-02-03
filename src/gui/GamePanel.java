@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -36,8 +37,9 @@ public class GamePanel extends JPanel implements Runnable {
     private final Menu menu;
 
     private DealerComponent dealerCmp;
-    private JComponent playersCmp;
     private JToggleButton debugBtn;
+    private JButton saveBtn;
+    private JComponent playersCmp;
 
     /**
      * Constructs a GamePanel with the given menu and a default "Darian" player.
@@ -50,12 +52,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         initGUI();
     }
-
-    /**
-     * Constructs a GamePanel with the given menu and players.
-     * @param menu the menu
-     * @param players the players
-     */
 
     public GamePanel(Menu menu, List<Player> players) {
         this.menu = menu;
@@ -75,30 +71,40 @@ public class GamePanel extends JPanel implements Runnable {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         dealerCmp = new DealerComponent(game.getDealer());
-
         debugBtn = new JToggleButton("DEBUG");
-        debugBtn.addActionListener((ActionEvent event) -> {
-            // override here
-            String gameName = JOptionPane.showInputDialog("Enter a one word name for your savefile (no numbers): ");
-            if(gameName.matches(".*[1234567890 ].*")){
-                JOptionPane.showMessageDialog(this, "That was not a valid string.", "Error", JOptionPane.WARNING_MESSAGE);
-            } else {
-                game.saveGame(menu.database, gameName);
-            }
-//            Controller.setDebug(!Controller.isDebug());
-        });
         debugBtn.setPreferredSize(new Dimension(80, 40));
         //debugBtn.setMaximumSize(getPreferredSize());
-
+        saveBtn = new JButton("Save");
         playersCmp = new JComponent() {{
             this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             this.setPreferredSize(new Dimension(1000, 360));
             this.setMinimumSize(getPreferredSize());
         }};
 
+        debugBtn.addActionListener((ActionEvent event) -> {
+            Controller.setDebug(!Controller.isDebug());
+        });
+        saveBtn.addActionListener((ActionEvent event) -> {
+            String gameName = JOptionPane.showInputDialog("Enter a one word name for your savefile:");
+            if (gameName == null) {
+                return;
+            } else if(gameName.matches(".*[1234567890 ].*")){
+                JOptionPane.showMessageDialog(this, "No numbers or special characters!", "Error", JOptionPane.WARNING_MESSAGE);
+            } else {
+                game.saveGame(menu.database, gameName);
+            }
+
+
+            game.saveGame(menu.database, gameName.split(" ")[0]);
+        });
+
         add(Box.createRigidArea(new Dimension(0, 20)));
         add(dealerCmp);
-        add(debugBtn);
+        add(new JComponent() {{
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            add(debugBtn);
+            add(saveBtn);
+        }});
         add(playersCmp);
     }
 
@@ -113,14 +119,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-<<<<<<< HEAD
      * Runs the GamePanel.
-=======
      * The main game loop.
      * NOTE: Generally, methods called from run() should not also call render().
      * - Only run() should call render().
      * - Single exception is when Dealer has his turn, that is OK.
->>>>>>> master
      */
     @Override
     public void run() {
@@ -174,7 +177,7 @@ public class GamePanel extends JPanel implements Runnable {
                 render();
             }
             game.saveGame(menu.database, "autosave");
-            dealerCmp.start();
+            dealerCmp.getEndRoundBtn().start();
         }
         try {
             menu.database.deleteTable("autosave");
