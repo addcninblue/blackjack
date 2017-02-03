@@ -41,10 +41,6 @@ public class GamePanel extends JPanel implements Runnable {
     private JButton saveBtn;
     private JComponent playersCmp;
 
-    /**
-     * Constructs a GamePanel with the given menu and a default "Darian" player.
-     * @param menu the menu
-     */
     public GamePanel(Menu menu) {
         this.menu = menu;
         game = new Game();
@@ -107,10 +103,7 @@ public class GamePanel extends JPanel implements Runnable {
         }});
         add(playersCmp);
     }
-
-    /**
-     * Starts the GamePanel
-     */
+    
     public void start() {
         setVisible(true);
 

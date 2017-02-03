@@ -18,8 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
- * Represents a Controller UI element, unique to each of a player's hand,
- * for a player to operate.
+ * A player's UI to play the Game.
  * @author Darian
  */
 public class Controller extends JComponent {
@@ -38,12 +37,6 @@ public class Controller extends JComponent {
     private JButton debugPlayerBtn;
     private JButton debugDealerBtn;
 
-    /**
-     * Constructs a new controller with the given game, player, and hand.
-     * @param game the game
-     * @param player the player
-     * @param hand the hand
-     */
     public Controller(Game game, Player player, Hand hand) {
         init();
         this.game = game;
@@ -180,9 +173,6 @@ public class Controller extends JComponent {
         repaint();
     }
 
-    /**
-     * Starts the hand's turn.
-     */
     public synchronized void startTurn() {
         showButtons();
         try {
@@ -190,9 +180,6 @@ public class Controller extends JComponent {
         } catch (InterruptedException e) {}
     }
 
-    /**
-     * Ends the hand's turn.
-     */
     public synchronized void endTurn() {
         repaint();
         for (Component cmp : getComponents()) {
@@ -203,9 +190,6 @@ public class Controller extends JComponent {
         this.notify();
     }
 
-    /**
-     * Repaints the game panel.
-     */
     @Override
     public void repaint() {
         //this is required because otherwise, repaint() will repaint Controller
@@ -217,30 +201,18 @@ public class Controller extends JComponent {
         }
     }
 
-    /**
-     * Sets the controller's hand.
-     * @param hand the new hand
-     */
-    public void setHand(Hand hand) {
-        this.hand = hand;
-    }
-
     public Hand getHand() {
         return hand;
     }
 
-    /**
-     * Returns whether or not the controller is in debug state.
-     * @return whether or not the controller is in debug state
-     */
+    public void setHand(Hand hand) {
+        this.hand = hand;
+    }
+
     public static boolean isDebug() {
         return debug;
     }
 
-    /**
-     * Updates the controller's debug state.
-     * @param debug true if in debug state, false otherwise
-     */
     public static void setDebug(boolean debug) {
         Controller.debug = debug;
     }

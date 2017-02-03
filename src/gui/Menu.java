@@ -21,7 +21,8 @@ import javax.swing.SwingUtilities;
 import util.SpriteLoader;
 
 /**
- * The Main menu screen. Don't read the code until it's documented.
+ * The Main menu screen. Has buttons to start a new game, load from DB, or exit.
+ * Don't read the code until it's documented.
  * @author Darian
  */
 public class Menu extends JPanel {
@@ -96,7 +97,7 @@ public class Menu extends JPanel {
             if (saveFile == JOptionPane.CLOSED_OPTION) {
                 return;
             }
-            
+
             List<Player> players = new ArrayList<Player>();
             try {
                 players = database.getPlayersFromSavefile(saveFiles[saveFile]);

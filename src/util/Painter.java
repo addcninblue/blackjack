@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package util;
 
 import java.awt.Color;
@@ -18,21 +13,15 @@ import java.awt.Rectangle;
  * 2.1.17
  */
 public class Painter {
-    /**
-     * The solarized cyan color.
-     */
     public static final Color SOLARIZED_CYAN = new Color(42, 161, 152);
-    /**
-     * It's actually black.
-     */
-    public static final Color SOLARIZED_ORANGE = new Color(0, 0, 0);
+    public static final Color SOLARIZED_ORANGE = new Color(203, 75, 22);
 
     /**
      * Draws a centered string in a rectangle.
      * @param g the graphical utility to draw
      * @param text the string to draw
      * @param color the color of the string
-     * @param rect the rectangle to center the string in
+     * @param rect the bounding rectangle to center the string in
      * @param font the font to draw the string in
      */
     public static void drawCenteredString(Graphics g, String text, Color color, Rectangle rect, Font font) {

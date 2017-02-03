@@ -23,7 +23,8 @@ import static util.Painter.drawCenteredString;
 import util.SpriteLoader;
 
 /**
- * The JFrame component for a player.
+ * A graphical representation of a Player.
+ * Contains a player's name, hands, and a controller.
  *
  * @author Darian
  * @version 2.1.17
@@ -34,10 +35,6 @@ public class PlayerComponent extends JComponent {
 
     private String[] results;
 
-    /**
-     * Constructs a new PlayerComponent with the given player.
-     * @param player the component's player
-     */
     public PlayerComponent(Player player) {
         init();
         this.player = player;
@@ -98,33 +95,30 @@ public class PlayerComponent extends JComponent {
     }
 
     /**
-     * Returns the component's player.
-     * @return the component's player
-     */
-    public Player getPlayer() {
-        return player;
-    }
-
-    /**
-     * Updates the PlayerComponent's controller.
+     * Updates the PlayerComponent's controller and starts his turn immediately.
      * @param controller the new controller
      */
     public void setController(Controller controller) {
         this.controller = controller;
-        //remove all but last 2 components
+        /*remove all but last 2 components
         for (int i = 0; i < getComponents().length - 2 ; i++) {
             remove(getComponent(i));
-        }
+        }*/
+        this.remove(0);
         this.add(controller, 0); //add to top
         controller.startTurn();
         this.controller = null;
     }
 
     /**
-     * Sets the player's round results for this component.
+     * Sets and displays the player's round results for this component.
      * @param results the player's round results
      */
     public void setResults(String[] results) {
         this.results = results;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }

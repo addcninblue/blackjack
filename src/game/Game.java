@@ -16,18 +16,11 @@ public class Game {
     private ArrayList<Player> players;
     private Dealer dealer;
 
-    /**
-     * Constructs a game with a dealer and no players.
-     */
     public Game(){
         this.players = new ArrayList<>();
         dealer = new Dealer();
     }
 
-    /**
-     * Constructs a game with a dealer and the given players.
-     * @param playersList the players of the game
-     */
     public Game(List<Player> playersList) {
         this();
         for (Player player : playersList) {
@@ -46,7 +39,7 @@ public class Game {
     }
 
     /**
-      * Splits a player's hand, if possible.
+     * Splits a player's hand, if possible.
      * @param player the player with the hand to split
      * @param hand the player's hand to split
      */
@@ -88,13 +81,6 @@ public class Game {
         }
     }
 
-    /**
-     * The dealer deals the player a card
-     * (Postcondition: player is dealt a card)
-     * @param hand the hand to hit
-     * @return the card given to the player
-     * (Precondition: player is nonnull)
-     */
     public Card hit(Hand hand) {
         Card c = dealer.deal();
         hand.addCard(c);
@@ -103,11 +89,7 @@ public class Game {
         }
         return c;
     }
-    /**
-     * Double downs a player, if possible.
-     * @param player the player to double down
-     * @return the card dealt to the hand
-     */
+
     public Card doubleDown(Player player) {
         if (!player.canDoubleDown()) {
             throw new IllegalArgumentException(
@@ -122,10 +104,6 @@ public class Game {
         return card;
     }
 
-    /**
-     * Insures a player, if possible.
-     * @param player the player to insure
-     */
     public void insure(Player player) {
         if (!canInsure(player)) {
             throw new IllegalStateException("Can't insure this player!\n");
@@ -134,12 +112,6 @@ public class Game {
         player.setInsured(true);
     }
 
-    /**
-     * Pays the player according to their result and bet
-     * (Postcondition: the player is paid according to their result and bet)
-     * @param player the player to pay
-     * (Precondition: player is nonnull)
-     */
     public void payBet(Player player) {
         int dealerHand = dealer.getHand().getValue();
         int moneyWon = 0;
@@ -164,15 +136,6 @@ public class Game {
         player.setMoney(player.getMoney() + moneyWon);
     }
 
-    /**
-     * Returns a string representing the outcome of the last round
-     * for the player.
-     * (Postcondition: player is unchanged)
-     * @param h the hand to get the result of
-     * @return a string representing the outcome of the last round
-     * for the player.
-     * (Precondition: player is nonnull)
-     */
     public String getResult(Hand h) {
         int dHand = dealer.getHand().getValue();
         int pHand = h.getValue();
