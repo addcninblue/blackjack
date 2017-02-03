@@ -294,7 +294,7 @@ public class GamePanel extends JPanel implements Runnable {
         for (int i = 0; i < game.getPlayers().size(); i++) {
             Player player = game.getPlayers().get(i);
             Painter.drawCenteredString(g2, String.format("%8s: $%d ($%d)", player.getName(), player.getMoney(), player.getBet()), Color.ORANGE,
-                    new Rectangle(9*getWidth()/10, 30 + i*30, 70, 10),
+                    new Rectangle(7*getWidth()/10, 30 + i*30, 70, 10),
                     new Font("Courier", Font.PLAIN, 20));
         }
     }

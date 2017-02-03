@@ -46,7 +46,7 @@ public class Game {
     }
 
     /**
-     * Splits a player's hand, if possible.
+      * Splits a player's hand, if possible.
      * @param player the player with the hand to split
      * @param hand the player's hand to split
      */

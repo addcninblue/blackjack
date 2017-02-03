@@ -19,7 +19,7 @@ public class Database {
      * @throws SQLException
      */
     public Database(String programName) throws SQLException{
-        String url = String.format("jdbc:sqlite:./res/%s.db", programName);
+        String url = String.format("jdbc:sqlite::resource:res/%s.db", programName);
         this.connection = DriverManager.getConnection(url);
         this.statement = connection.createStatement();
     }

@@ -1,11 +1,13 @@
 package util;
 
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URL;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  * The utility class to load image files.
@@ -85,8 +87,9 @@ public class SpriteLoader {
      * @return the image file as a BufferedImage
      */
     public static BufferedImage loadPng(String fileName) {
+        URL url = SpriteLoader.class.getResource("/res/" + fileName + ".png");
         try {
-            return ImageIO.read(new File("res/"+fileName+".png"));
+            return ImageIO.read(url);
         } catch (IOException e) {
             throw new UncheckedIOException("Unable to load " + fileName + ".png", e);
         }
