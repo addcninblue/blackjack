@@ -17,16 +17,21 @@ public class Player extends Thread{
     private int bet; //the amount bet during a turn
     private boolean insured; //whether or not the player is insured
 
+    public Player(){
+        this.name = "Player";
+        hands = new ArrayList<>();
+        money = 1000;
+        bet = 0;
+        insured = false;
+    }
+
     /**
      * Constructs a new player with the given name
      * @param name the player's name
      */
     public Player(String name){
+        this();
         this.name = name;
-        hands = new ArrayList<>();
-        money = 1000;
-        bet = 0;
-        insured = false;
     }
 
     /**

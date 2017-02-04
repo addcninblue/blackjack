@@ -4,17 +4,17 @@ from main
 
   hasPlayers
   - @param none
-  - @returns boolean: whether or not there are still players in the game
+  - @returns boolean: whether or not there are still players in the serverGame
 
   newRound
   - @param none
   - @return none
-  - starts a new round of a game (for initialization purposes). Execute resetTurn() in here.
+  - starts a new round of a serverGame (for initialization purposes). Execute resetTurn() in here.
 
   endRound
   - @param none
   - @return none
-  - ends the current round of a game
+  - ends the current round of a serverGame
 
 from setBets:
 

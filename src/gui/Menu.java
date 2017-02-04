@@ -41,11 +41,11 @@ public class Menu extends JPanel {
     }
     private void init() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        startBtn = new JButton("New Game");
+        startBtn = new JButton("New ServerGame");
         startBtn.setMaximumSize(new Dimension(100, 50));
         startBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
-        loadBtn = new JButton("Load Game");
+        loadBtn = new JButton("Load ServerGame");
         loadBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
         exitBtn = new JButton("Exit");
         exitBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -70,7 +70,7 @@ public class Menu extends JPanel {
             }
 
             this.setVisible(false);
-            GamePanel gamePanel = new GamePanel(this, players);
+            gui.GamePanel gamePanel = new gui.GamePanel(this, players);
             frame.add(gamePanel);
             frame.setResizable(false);
             gamePanel.start();
@@ -104,7 +104,7 @@ public class Menu extends JPanel {
                 e.printStackTrace();
             }
             this.setVisible(false);
-            GamePanel gamePanel = new GamePanel(this, players);
+            gui.GamePanel gamePanel = new gui.GamePanel(this, players);
             frame.add(gamePanel);
             frame.setResizable(false);
             gamePanel.start();

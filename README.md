@@ -2,7 +2,7 @@
 
 ##Overview
 
-This was a project for computer science AP. We designed it with maintainability in mind, and code is well documented. This program runs the classical card game blackjack inside a JFrame. The database for saves is implemented in SQL.
+This was a project for computer science AP. We designed it with maintainability in mind, and code is well documented. This program runs the classical card serverGame blackjack inside a JFrame. The database for saves is implemented in SQL.
 
 ##To run
 

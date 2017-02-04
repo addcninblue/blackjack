@@ -1,6 +1,7 @@
-package gui;
+package server;
 
 import game.*;
+import gui.*;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,11 +28,11 @@ import util.SpriteLoader;
 
 
 /**
- * The GUI that runs a Blackjack Game. Logic runs on a different thread.
+ * The GUI that runs a Blackjack ServerGame. Logic runs on a different thread.
  * @author Darian
  */
-public class GamePanel extends JPanel implements Runnable {
-    private final Game game;
+public class ServerGamePanel extends JPanel implements Runnable {
+    private final ServerGame serverGame;
     private final Menu menu;
 
     private DealerComponent dealerCmp;
@@ -40,27 +41,27 @@ public class GamePanel extends JPanel implements Runnable {
     private JComponent playersCmp;
 
     /**
-     * Constructs a GamePanel with the given menu and a default "Darian" player.
+     * Constructs a ServerGamePanel with the given menu and a default "Darian" player.
      * @param menu the menu
      */
-    public GamePanel(Menu menu) {
+    public ServerGamePanel(Menu menu) {
         this.menu = menu;
-        game = new Game();
-        game.addPlayer(new Player("Darian"));
+        serverGame = new ServerGame();
+        serverGame.addPlayer(new Player("Darian"));
 
         initGUI();
     }
 
-    public GamePanel(Menu menu, List<Player> players) {
+    public ServerGamePanel(Menu menu, List<Player> players) {
         this.menu = menu;
-        game = new Game(players);
+        serverGame = new ServerGame(players);
 
         initGUI();
     }
 
-    public GamePanel(Menu menu, game.Game game){
+    public ServerGamePanel(Menu menu, ServerGame serverGame){
         this.menu = menu;
-        this.game = game;
+        this.serverGame = serverGame;
         initGUI();
 
     }
@@ -68,7 +69,7 @@ public class GamePanel extends JPanel implements Runnable {
     private void initGUI() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        dealerCmp = new DealerComponent(game.getDealer());
+        dealerCmp = new DealerComponent(serverGame.getDealer());
         debugBtn = new JToggleButton("DEBUG");
         debugBtn.setPreferredSize(new Dimension(80, 40));
         //debugBtn.setMaximumSize(getPreferredSize());
@@ -89,11 +90,11 @@ public class GamePanel extends JPanel implements Runnable {
             } else if(gameName.matches(".*[1234567890 ].*")){
                 JOptionPane.showMessageDialog(this, "No numbers or special characters!", "Error", JOptionPane.WARNING_MESSAGE);
             } else {
-                game.saveGame(menu.database, gameName);
+                serverGame.saveGame(menu.database, gameName);
             }
 
 
-            game.saveGame(menu.database, gameName.split(" ")[0]);
+            serverGame.saveGame(menu.database, gameName.split(" ")[0]);
         });
 
         add(Box.createRigidArea(new Dimension(0, 20)));
@@ -107,7 +108,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Starts the GamePanel
+     * Starts the ServerGamePanel
      */
     public void start() {
         setVisible(true);
@@ -117,15 +118,15 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * The main game loop.
+     * The main serverGame loop.
      * NOTE: Generally, methods called from run() should not also call render().
      * - Only run() should call render().
      * - Single exception is when Dealer has his turn, that is OK.
      */
     @Override
     public void run() {
-        Dealer dealer = game.getDealer();
-        List<Player> players = game.getPlayers();
+        Dealer dealer = serverGame.getDealer();
+        List<Player> players = serverGame.getPlayers();
         Map<Player, Integer> playerToPreviousBet = new HashMap<Player, Integer>();
         Map<Player, PlayerComponent> playerToPlayerCmp = new HashMap<Player, PlayerComponent>();
 
@@ -138,8 +139,8 @@ public class GamePanel extends JPanel implements Runnable {
             }
             playerToPlayerCmp.put(player, playerCmp);
         }
-        while (game.hasPlayers()) {
-            game.newRound();
+        while (serverGame.hasPlayers()) {
+            serverGame.newRound();
             for (PlayerComponent playerCmp : playerToPlayerCmp.values()) {
                 playerCmp.setResults(null);
             }
@@ -152,7 +153,7 @@ public class GamePanel extends JPanel implements Runnable {
                 playerToPreviousBet.put(player, getBetFromPlayer(player, previousBet));
             }
 
-            game.initialDeal();
+            serverGame.initialDeal();
             render();
 
             for (Player player : players) {
@@ -166,14 +167,14 @@ public class GamePanel extends JPanel implements Runnable {
             }
             render();
 
-            List<Player> peopleRemoved = game.removeMoneyless();
+            List<Player> peopleRemoved = serverGame.removeMoneyless();
             for (Player player : peopleRemoved) {
-                JOptionPane.showMessageDialog(this, String.format("%s removed from game.",
+                JOptionPane.showMessageDialog(this, String.format("%s removed from serverGame.",
                         player.getPlayerName()), "Player Eliminated!", JOptionPane.WARNING_MESSAGE);
                 playersCmp.remove(playerToPlayerCmp.get(player));
                 render();
             }
-            game.saveGame(menu.database, "autosave");
+            serverGame.saveGame(menu.database, "autosave");
             dealerCmp.getEndRoundBtn().start();
         }
         try {
@@ -210,14 +211,14 @@ public class GamePanel extends JPanel implements Runnable {
         for (int i = 0; i < player.getHands().size(); i++) { //foreach causes CM exception
             Hand hand = player.getHand(i);
 
-            Controller controller = new Controller(game, player, hand);
+            Controller controller = new Controller(serverGame, player, hand);
             playerCmp.setController(controller);
         }
     }
 
     private void unhideAllHands() {
-        Dealer dealer = game.getDealer();
-        List<Player> players = game.getPlayers();
+        Dealer dealer = serverGame.getDealer();
+        List<Player> players = serverGame.getPlayers();
 
         dealer.getHand().unhideCards();
         for (Player player : players) {
@@ -230,7 +231,7 @@ public class GamePanel extends JPanel implements Runnable {
     private void runDealerTurn(Dealer dealer) {
         render();
         while (!dealer.getHand().isOver16()) {
-            game.hit(dealer.getHand());
+            serverGame.hit(dealer.getHand());
             render();
         }
     }
@@ -240,11 +241,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         List<String> results = new ArrayList<String>(player.getHands().size());
         for (Hand hand : player.getHands()) {
-            results.add(game.getResult(hand));
+            results.add(serverGame.getResult(hand));
         }
 
         playerCmp.setResults(results.toArray(new String[0]));
-        game.payBet(player);
+        serverGame.payBet(player);
     }
 
     private void render(int delay) {
@@ -271,7 +272,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void drawDeck(Graphics2D g2) {
-        Dealer dealer = game.getDealer();
+        Dealer dealer = serverGame.getDealer();
 
         //rotate graphics
         Graphics2D g3 = (Graphics2D)g2.create();
@@ -288,8 +289,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void drawScoreboard(Graphics2D g2) {
-        for (int i = 0; i < game.getPlayers().size(); i++) {
-            Player player = game.getPlayers().get(i);
+        for (int i = 0; i < serverGame.getPlayers().size(); i++) {
+            Player player = serverGame.getPlayers().get(i);
             Painter.drawCenteredString(g2, String.format("%8s: $%d ($%d)", player.getPlayerName(), player.getMoney(), player.getBet()), Color.ORANGE,
                     new Rectangle(9*getWidth()/10, 30 + i*30, 70, 10),
                     new Font("Courier", Font.PLAIN, 20));

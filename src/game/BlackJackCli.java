@@ -5,13 +5,13 @@ import java.util.Scanner;
 
 public class BlackJackCli {
     private static Scanner input;
-    private static Game game;
+    private static game.Game game;
     private static Dealer dealer;
     private static ArrayList<Player> players;
 
     public static void main(String[] args) {
         input = new Scanner(System.in);
-        game = new Game();
+        game = new game.Game();
 
         System.out.printf("Number of players: ");
         int playerCount = input.nextInt();

@@ -1,7 +1,6 @@
 package game;
 
 
-import gui.DealerComponent;
 import gui.PlayerComponent;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -39,7 +38,7 @@ public class Test extends JPanel {
         frame.setSize(1000, 1000);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        Game game = new Game();
+        game.Game game = new game.Game();
         game.newRound();
         game.initialDeal();
         frame.setLayout(new FlowLayout());
