@@ -18,9 +18,9 @@ import game.Player;
  */
 public class ServerPlayer extends Player implements Runnable {
     private Socket socket;
-    BufferedReader input;
-    PrintWriter output;
-    int playerNumber;
+    private BufferedReader input;
+    private PrintWriter output;
+    private int playerNumber; // 1 based index
 
     public ServerPlayer(Socket socket, int playerNumber){
         super();
@@ -43,9 +43,21 @@ public class ServerPlayer extends Player implements Runnable {
             e.printStackTrace();
         }
         super.setName(name);
-        System.out.print(name);
+//        System.out.print(name);
     }
 
     public void bet(){
+    }
+
+    public BufferedReader getInput(){
+        return input;
+    }
+
+    public PrintWriter getOutput(){
+        return output;
+    }
+
+    public int getPlayerNumber(){
+        return playerNumber;
     }
 }

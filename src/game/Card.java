@@ -20,6 +20,7 @@ public class Card {
     private final BufferedImage FACE;
     private final BufferedImage BACK;
     private int value;
+    private String suitName;
     private boolean hidden;
 
     /**
@@ -36,6 +37,7 @@ public class Card {
         BACK = back;
 
         value = rank.VALUE;
+        suitName = suit.toString().substring(0,1);
         hidden = false;
     }
 
@@ -94,5 +96,9 @@ public class Card {
     @Override
     public String toString() {
         return String.format("%s of %s", RANK, SUIT);
+    }
+
+    public String toSuitRank() {
+        return suitName + value;
     }
 }

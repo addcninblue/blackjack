@@ -1,7 +1,5 @@
 package server;
 
-import game.Player;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
@@ -10,8 +8,8 @@ import java.util.Scanner;
 
 public class Server {
     private ServerGame serverGame;
-    private List<Player> players;
-    private List<Player> serverPlayers;
+    private ServerGameLogic serverGameLogic;
+    private List<ServerPlayer> serverPlayers;
 
     public Server(){
         Scanner in = new Scanner(System.in);
@@ -20,12 +18,11 @@ public class Server {
 //            System.out.println("Enter the number of players: ");
 //            int numOfPlayers = in.nextInt();
 //            in.nextLine();
-            int numOfPlayers = 1; // change later
+            int numOfPlayers = 2; // change later
             ServerSocket listener = new ServerSocket(25565);
             this.serverPlayers = new ArrayList<>();
 
             for(int i = 0; i < numOfPlayers; i++){
-//                ServerPlayer player = new ServerPlayer();
                 this.serverPlayers.add(new ServerPlayer(listener.accept(), i + 1));
             }
 
@@ -41,14 +38,16 @@ public class Server {
             e.printStackTrace();
         }
         this.serverGame = new ServerGame(serverPlayers);
+        this.serverGameLogic = new ServerGameLogic(serverGame);
+        this.serverGameLogic.run();
     }
 
-    public void addPlayer(Player player){
-        this.players.add(player);
+    public void addPlayer(ServerPlayer player){
+        this.serverPlayers.add(player);
     }
 
     public void startGame(){
-        this.serverGame = new ServerGame(players);
+        this.serverGame = new ServerGame(serverPlayers);
     }
 
     public static void main(String[] args) {

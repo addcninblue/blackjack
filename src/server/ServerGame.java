@@ -221,6 +221,9 @@ public class ServerGame {
         return players.size() > 0;
     }
 
+    public ArrayList<ServerPlayer> getPlayers(){
+        return players;
+    }
     /**
      * Returns the game's dealer.
      * @return the dealer
